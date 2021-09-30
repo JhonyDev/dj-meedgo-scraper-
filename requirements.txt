@@ -1,8 +1,19 @@
-django-ckeditor
 django
-django-crispy-forms
+djangorestframework
+djangorestframework_simplejwt
+
+django-allauth
+dj-rest-auth
+python-dateutil
+
+markdown
+django-filter
+django-resized
 python-decouple
+django-ckeditor
+django-crispy-forms
 pillow
+six
 
 
 # python -m pip install --upgrade Pillow >>> install pillow with this

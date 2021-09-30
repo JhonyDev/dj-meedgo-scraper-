@@ -19,8 +19,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 SECRET_KEY = config('DJANGO_APPLICATION_SECRET')
 ROOT_URLCONF = 'core.urls'
+AUTH_USER_MODEL = 'accounts.User'
 DEBUG = True
 SERVER = False
+SITE_ID = 1
 
 if DEBUG:
     HOST = config('DJANGO_LOCAL_HOST')
@@ -36,16 +38,28 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
     # REQUIRED_APPLICATIONS
     'crispy_forms',
     'ckeditor',
+    'django_filters',
 
-    # EXARTH APPS
-    'src.dev',
+    'rest_framework',
+    'rest_framework.authtoken',
 
-    # CUSTOM APPS
-    'src.website',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    # 'allauth.socialaccount.providers.google',
+    # 'allauth.socialaccount.providers.facebook',
+
+
+    'src.accounts',
+    'src.api',
 ]
 
 """ MIDDLE WARES ----------------------------------------------------------------------------"""
@@ -76,16 +90,52 @@ TEMPLATES = [
     },
 ]
 
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+}
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'src.accounts.serializers.RegisterSerializerRestAPI',
+}
+
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
 WSGI_APPLICATION = 'core.wsgi.application'
 
 """ DATABASES ------------------------------------------------------------------------------------"""
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'myproject',
+            'USER': 'myprojectuser',
+            'PASSWORD': 'password',
+            'HOST': 'localhost',
+            'PORT': '',
+        }
+    }
 
 """ VALIDATORS -----------------------------------------------------------------------------------"""
 
@@ -124,13 +174,47 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 """ EMAIL SYSTEM ---------------------------------------------------------------------------------"""
 
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_USE_TLS = True
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'donald.duck0762@gmail.com'
+EMAIL_HOST_PASSWORD = 'fnoaqtnktvqljrmx'
+EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = 'EXARTH-Team <noreply@exarth.com>'
 
-# EMAIL_HOST = config('EMAIL_HOST')
-# EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-# EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-# EMAIL_PORT = config('EMAIL_HOST_PORT')
+""" RESIZER IMAGE --------------------------------------------------------------------------------"""
+DJANGORESIZED_DEFAULT_SIZE = [1920, 1080]
+DJANGORESIZED_DEFAULT_QUALITY = 75
+DJANGORESIZED_DEFAULT_KEEP_META = True
+DJANGORESIZED_DEFAULT_FORCE_FORMAT = 'JPEG'
+DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {
+    'JPEG': ".jpg",
+    'PNG': ".png",
+    'GIF': ".gif"
+}
+DJANGORESIZED_DEFAULT_NORMALIZE_ROTATION = True
 
-# DEFAULT_FROM_EMAIL = 'Exarth <noreply@application.com>'
+""" ALL-AUTH SETUP --------------------------------------------------------------------------------"""
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
+ACCOUNT_LOGOUT_ON_GET = True
+SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+OLD_PASSWORD_FIELD_ENABLED = True
+LOGOUT_ON_PASSWORD_CHANGE = False
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'

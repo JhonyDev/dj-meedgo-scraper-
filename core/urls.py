@@ -13,22 +13,53 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path, include
-from django.views.generic import TemplateView
-from .settings import DEBUG, MEDIA_ROOT, MEDIA_URL
+
+from dj_rest_auth.registration.views import VerifyEmailView
 from django.conf.urls.static import static
+from django.contrib import admin
+from django.contrib.auth import views as auth_views
+from django.urls import path, include, re_path
+from src.accounts.views import CustomRegisterAccountView  # GoogleLoginView, FacebookLoginView,
+from .settings import DEBUG, MEDIA_ROOT, MEDIA_URL
 
 
 urlpatterns = [
     # ADMIN/ROOT APPLICATION
     path('admin/', admin.site.urls),
 
-    # WEBSITE APPLICATION
-    # path('', include('src.website.urls', namespace='website')),
+    # WEBSITE APPLICATION --------------------------------------------------------------------------------
+    path('accounts/', include('src.accounts.urls', namespace='accounts')),
+    path('accounts/', include('allauth.urls')),
 
-    # EXARTH APPLICATION
-    path('', include('src.dev.urls', namespace='exarth'))
+    path(
+        'reset/password/', auth_views.PasswordResetView.as_view(template_name="accounts/reset_password.html"),
+        name='reset_password'
+    ),
+    path(
+        'reset/password/sent/',
+        auth_views.PasswordResetDoneView.as_view(template_name="accounts/password_reset_sent.html"),
+        name='password_reset_done'
+    ),
+    path(
+        'reset/<uidb64>/<token>',
+        auth_views.PasswordResetConfirmView.as_view(template_name="accounts/password_reset_form.html"),
+        name='password_reset_confirm'
+    ),
+    path(
+        'reset/password/complete/',
+        auth_views.PasswordResetCompleteView.as_view(template_name="accounts/password_reset_done.html"),
+        name='password_reset_complete'
+    ),
+
+    # REST API -------------------------------------------------------------------------------------------
+    path('auth/', include('dj_rest_auth.urls')),
+    path('auth/registration/', CustomRegisterAccountView.as_view(), name='account_create_new_user'),
+    # re_path(r'^account-confirm-email/', VerifyEmailView.as_view(),name='account_email_verification_sent'),
+    # re_path(r'^account-confirm-email/(?P<key>[-:\w]+)/$', VerifyEmailView.as_view(),name='account_confirm_email'),
+    # path('auth/google/', GoogleLoginView.as_view(), name='google-login-view'),
+    # path('auth/facebook/', FacebookLoginView.as_view(), name='facebook-login-view'),
+
+    path('api/', include('src.api.urls', namespace='api')),
 ]
 
 if DEBUG:
