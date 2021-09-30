@@ -25,6 +25,9 @@ class User(AbstractUser):
         help_text='size of logo must be 100*100 and format must be png image file', crop=['middle', 'center']
     )
     phone_number = models.CharField(max_length=30, null=True, blank=True)
+    likes = models.PositiveIntegerField(default=0, null=True, blank=True)
+    friends = models.PositiveIntegerField(default=0, null=False, blank=False)
+    address = models.CharField(max_length=255, default='not-provided', null=False, blank=False)
 
     class Meta:
         ordering = ['-id']

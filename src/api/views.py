@@ -1,16 +1,7 @@
-from django.http import Http404
-from django.utils import timezone
-from datetime import date
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from rest_framework import permissions
-from rest_framework import viewsets, status, serializers
-from rest_framework.generics import get_object_or_404, RetrieveAPIView, ListAPIView
+from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from src.accounts.models import User
 
 
@@ -20,7 +11,7 @@ from .serializers import (
 )
 
 
-class GetUserViewSet(generics.RetrieveUpdateAPIView):
+class UserInformationGetView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -29,7 +20,7 @@ class GetUserViewSet(generics.RetrieveUpdateAPIView):
         return user
 
 
-class UserImageUpdateView(generics.RetrieveUpdateAPIView):
+class UserImageGetUpdateView(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserImageSerializer
     permission_classes = [permissions.IsAuthenticated]
