@@ -1,3 +1,5 @@
+
+from src.api.models import Like
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
@@ -6,7 +8,8 @@ from src.accounts.models import User
 
 
 from .serializers import (
-    UserImageSerializer,
+    UserImageSerializer,UserLikersSerializer, UserLikesSerializer,
+    UserNewsFeedSerializer,
     UserPasswordChangeSerializer, UserSerializer
 )
 
@@ -28,6 +31,33 @@ class UserImageGetUpdateView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         user = User.objects.get(pk=self.request.user.pk)
         return user
+
+
+class UserNewsFeedView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserNewsFeedSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return User.objects.all()
+
+
+class UserLikersGetView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserLikersSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Like.objects.filter(liked_to=self.request.user)
+
+
+class UserLikesGetView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserLikesSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Like.objects.filter(liked_by=self.request.user)
 
 
 class UserPasswordChangeView(generics.UpdateAPIView):

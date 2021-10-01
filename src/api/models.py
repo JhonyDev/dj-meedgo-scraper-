@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import models
 
+from src.api.bll import create_like_logic ,delete_like_logic
+
 
 class FriendList(models.Model):
    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="has_friends")
@@ -13,7 +15,7 @@ class FriendList(models.Model):
        verbose_name_plural = "Friend Lists"
 
    def __str__(self):
-       return f"User {self.user} has a friend {self.friend}"
+       return str(self.pk)
 
 
 class Like(models.Model):
@@ -22,7 +24,15 @@ class Like(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return ''
+        return str(self.pk)
+
+    def save(self, *args, **kwargs):
+        create_like_logic(self)
+        super(Like, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        delete_like_logic(self)
+        super(Like, self).delete(*args, **kwargs)
 
     class Meta:
         ordering = ['-id']
