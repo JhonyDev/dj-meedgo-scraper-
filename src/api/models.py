@@ -23,7 +23,7 @@ class Like(models.Model):
         (1, 'LIKE'),
         (2, 'FAVOURITE')
     )
-    liked_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="liked_by")
+    liked_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="liked_by", blank=True)
     liked_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="liked_to")
     like_type = models.CharField(max_length=1, choices=LIKE_TYPE, default=0)
     created_on = models.DateTimeField(auto_now_add=True)

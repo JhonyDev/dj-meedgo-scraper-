@@ -10,7 +10,7 @@ from src.accounts.models import User, UserImage
 from .serializers import (
     UserImageSerializer, UserLikersSerializer, UserLikesSerializer,
     UserNewsFeedSerializer,
-    UserPasswordChangeSerializer, UserSerializer, UserFriendListSerializer
+    UserPasswordChangeSerializer, UserSerializer, UserFriendListSerializer, LikeSerializer
 )
 
 
@@ -50,6 +50,9 @@ class UserLikesGetView(generics.ListAPIView):
         return Like.objects.filter(liked_by=self.request.user)
 
 
+""" AUTH """
+
+
 class UserPasswordChangeView(generics.UpdateAPIView):
     model = User
     serializer_class = UserPasswordChangeSerializer
@@ -80,7 +83,25 @@ class UserPasswordChangeView(generics.UpdateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-" LIKES LOGICS "
+""" LIKES AND FRIENDS """
+
+
+class LikeUserView(generics.CreateAPIView):
+    queryset = Like.objects.all()
+    serializer_class = LikeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        pass
+
+
+class UserFriendsListView(generics.ListAPIView):
+    queryset = FriendList.objects.all()
+    serializer_class = UserFriendListSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return FriendList.objects.filter(user=self.request.user)
 
 
 class UserLikeDeleteView(generics.DestroyAPIView):
@@ -96,13 +117,16 @@ class UserLikeDeleteView(generics.DestroyAPIView):
             return Http404
 
 
-class UserFriendsListView(generics.ListAPIView):
-    queryset = FriendList.objects.all()
+""" IMAGES VIEWS"""
+
+
+class UserImagesListView(generics.ListAPIView):
+    queryset = UserImage.objects.all()
     serializer_class = UserFriendListSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return FriendList.objects.filter(user=self.request.user)
+        return UserImage.objects.filter(user=self.request.user)
 
 
 class UserImageDeleteView(generics.RetrieveDestroyAPIView):

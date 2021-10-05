@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import FriendList, Like
 
+
 class FriendListAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'friend', 'created_on']
 

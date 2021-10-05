@@ -76,3 +76,12 @@ class UserImageSerializer(serializers.ModelSerializer):
         read_only_fields = [
             'pk', 'image', 'user', 'created_on'
         ]
+
+
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = "__all__"
+        read_only_fields = [
+            'pk', 'liked_by', 'created_on'
+        ]

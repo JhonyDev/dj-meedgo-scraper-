@@ -13,4 +13,9 @@ urlpatterns = [
     path('my/likes/', views.UserLikesGetView.as_view(), name='user-likes-get'),
     path('my/likers/', views.UserLikersGetView.as_view(), name='user-likers-get'),
 
+    path('like/<int:pk>/delete/', views.UserLikeDeleteView.as_view(), name='like-delete'),
+    path('image/<int:pk>/delete/', views.UserImageDeleteView.as_view(), name='image-get-delete'),
+    path('my/images/', views.UserImagesListView.as_view(), name='user-images-get'),
+    path('like/user/<int:pk>/', views.LikeUserView.as_view(), name='like-user-post')
+
 ]
