@@ -20,10 +20,6 @@ Then do next ...
 
 
 class User(AbstractUser):
-    profile_image = ResizedImageField(
-        upload_to='accounts/images/profiles/', null=True, blank=True, size=[100, 100], quality=75, force_format='PNG',
-        help_text='size of logo must be 100*100 and format must be png image file', crop=['middle', 'center']
-    )
     phone_number = models.CharField(max_length=30, null=True, blank=True)
     likes = models.PositiveIntegerField(default=0, null=True, blank=True)
     friends = models.PositiveIntegerField(default=0, null=False, blank=False)
@@ -37,6 +33,22 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
+
+class UserImage(models.Model):
+    image = models.ImageField(upload_to='accounts/images/profiles/', null=False, blank=False)
+    is_profile_image = models.BooleanField(default=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=False, blank=False, related_name='user_image',
+                             on_delete=models.CASCADE)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_on']
+        verbose_name = "User Image"
+        verbose_name_plural = "User Images"
+
+    def __str__(self):
+        return self.image.url
+
     def delete(self, *args, **kwargs):
-        self.profile_image.delete(save=True)
-        super(User, self).delete(*args, **kwargs)
+        self.image.delete(save=True)
+        super(UserImage, self).delete(*args, **kwargs)

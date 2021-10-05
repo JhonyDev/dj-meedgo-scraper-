@@ -3,17 +3,16 @@ from django.db.models.base import Model
 from src.api.models import FriendList, Like
 from rest_framework import serializers
 
-from src.accounts.models import User
+from src.accounts.models import User, UserImage
 
 
 class UserFriendListSerializer(serializers.Serializer):
-
     class Meta:
         model = FriendList
         fields = [
             'friend', 'created_on'
         ]
-        
+
 
 class UserPasswordChangeSerializer(serializers.Serializer):
     model = User
@@ -26,20 +25,20 @@ class UserPasswordChangeSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = [
-            'first_name', 'last_name', 'username', 'email', 'phone_number', 'profile_image',
-            'likes','friends','address','date_joined', 'last_login'
+            'first_name', 'last_name', 'username', 'email', 'phone_number',
+            'likes', 'friends', 'address', 'date_joined', 'last_login'
         ]
         read_only_fields = [
-            'email', 'profile_image', 'date_joined', 'last_login', 'username', 'likes', 'friends'
+            'email', 'date_joined', 'last_login', 'username', 'likes', 'friends'
         ]
 
 
 class UserLikersSerializer(serializers.Serializer):
     liked_by = UserSerializer(many=False, read_only=True)
+
     class Meta:
         model = Like
         fields = [
@@ -49,6 +48,7 @@ class UserLikersSerializer(serializers.Serializer):
 
 class UserLikesSerializer(serializers.Serializer):
     liked_to = UserSerializer(many=False, read_only=True)
+
     class Meta:
         model = Like
         fields = [
@@ -57,20 +57,22 @@ class UserLikesSerializer(serializers.Serializer):
 
 
 class UserNewsFeedSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = [
-            'first_name', 'last_name', 'username', 'email', 'phone_number', 'profile_image',
-            'likes','friends','address'
+            'first_name', 'last_name', 'username', 'email', 'phone_number',
+            'likes', 'friends', 'address'
         ]
         read_only_fields = [
-            'first_name', 'last_name', 'username', 'email', 'phone_number', 'profile_image',
-            'likes','friends','address'
+            'first_name', 'last_name', 'username', 'email', 'phone_number',
+            'likes', 'friends', 'address'
         ]
 
 
 class UserImageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ['profile_image']
+        model = UserImage
+        fields = "__all__"
+        read_only_fields = [
+            'pk', 'image', 'user', 'created_on'
+        ]

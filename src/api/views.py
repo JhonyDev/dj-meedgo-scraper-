@@ -1,31 +1,21 @@
+from django.http import Http404
 
-from src.api.models import Like
+from src.api.models import Like, FriendList
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
-from src.accounts.models import User
-
+from src.accounts.models import User, UserImage
 
 from .serializers import (
-    UserImageSerializer,UserLikersSerializer, UserLikesSerializer,
+    UserImageSerializer, UserLikersSerializer, UserLikesSerializer,
     UserNewsFeedSerializer,
-    UserPasswordChangeSerializer, UserSerializer
+    UserPasswordChangeSerializer, UserSerializer, UserFriendListSerializer
 )
 
 
 class UserInformationGetView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_object(self):
-        user = User.objects.get(pk=self.request.user.pk)
-        return user
-
-
-class UserImageGetUpdateView(generics.RetrieveUpdateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserImageSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
@@ -88,3 +78,43 @@ class UserPasswordChangeView(generics.UpdateAPIView):
             return Response(response)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+" LIKES LOGICS "
+
+
+class UserLikeDeleteView(generics.DestroyAPIView):
+    queryset = Like.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        like_id = self.kwargs['id']
+        objects = Like.objects.filter(pk=like_id, liked_by=self.request.user)
+        if objects:
+            return objects.first()
+        else:
+            return Http404
+
+
+class UserFriendsListView(generics.ListAPIView):
+    queryset = FriendList.objects.all()
+    serializer_class = UserFriendListSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return FriendList.objects.filter(user=self.request.user)
+
+
+class UserImageDeleteView(generics.RetrieveDestroyAPIView):
+    queryset = FriendList.objects.all()
+    serializer_class = UserFriendListSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        image_id = self.kwargs['id']
+        user_images = UserImage.objects.filter(pk=image_id, user=self.request.user)
+
+        if user_images:
+            return user_images.first()
+        else:
+            return Http404
