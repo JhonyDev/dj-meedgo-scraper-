@@ -6,6 +6,15 @@ from rest_framework import serializers
 from src.accounts.models import User, UserImage
 
 
+class UserImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserImage
+        fields = "__all__"
+        read_only_fields = [
+            'pk', 'user', 'created_on'
+        ]
+
+
 class UserFriendListSerializer(serializers.Serializer):
     class Meta:
         model = FriendList
@@ -25,14 +34,16 @@ class UserPasswordChangeSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    images = UserImageSerializer(many=True, read_only=True)
+
     class Meta:
         model = User
         fields = [
             'first_name', 'last_name', 'username', 'email', 'phone_number',
-            'likes', 'friends', 'address', 'date_joined', 'last_login'
+            'likes', 'friends', 'address', 'date_joined', 'last_login', 'images'
         ]
         read_only_fields = [
-            'email', 'date_joined', 'last_login', 'username', 'likes', 'friends'
+            'email', 'date_joined', 'last_login', 'username', 'likes', 'friends', 'images'
         ]
 
 
@@ -66,15 +77,6 @@ class UserNewsFeedSerializer(serializers.ModelSerializer):
         read_only_fields = [
             'first_name', 'last_name', 'username', 'email', 'phone_number',
             'likes', 'friends', 'address'
-        ]
-
-
-class UserImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserImage
-        fields = "__all__"
-        read_only_fields = [
-            'pk', 'image', 'user', 'created_on'
         ]
 
 

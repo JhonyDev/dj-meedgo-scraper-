@@ -1,4 +1,5 @@
 from django.http import Http404
+from rest_framework.generics import get_object_or_404
 
 from src.api.models import Like, FriendList
 from rest_framework import generics
@@ -14,7 +15,7 @@ from .serializers import (
 )
 
 
-class UserInformationGetView(generics.RetrieveUpdateAPIView):
+class UserProfileDetailedView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -23,7 +24,7 @@ class UserInformationGetView(generics.RetrieveUpdateAPIView):
         return user
 
 
-class UserNewsFeedView(generics.ListAPIView):
+class UserNewsFeedListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserNewsFeedSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -32,7 +33,7 @@ class UserNewsFeedView(generics.ListAPIView):
         return User.objects.all()
 
 
-class UserLikersGetView(generics.ListAPIView):
+class UserLikersListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserLikersSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -41,7 +42,7 @@ class UserLikersGetView(generics.ListAPIView):
         return Like.objects.filter(liked_to=self.request.user)
 
 
-class UserLikesGetView(generics.ListAPIView):
+class UserLikesListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserLikesSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -50,7 +51,7 @@ class UserLikesGetView(generics.ListAPIView):
         return Like.objects.filter(liked_by=self.request.user)
 
 
-""" AUTH """
+""" AUTH --- """
 
 
 class UserPasswordChangeView(generics.UpdateAPIView):
@@ -86,7 +87,7 @@ class UserPasswordChangeView(generics.UpdateAPIView):
 """ LIKES AND FRIENDS """
 
 
-class LikeUserView(generics.CreateAPIView):
+class UserLikeCreateView(generics.CreateAPIView):
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -117,28 +118,26 @@ class UserLikeDeleteView(generics.DestroyAPIView):
             return Http404
 
 
-""" IMAGES VIEWS"""
+""" IMAGES VIEWS --- """
 
 
-class UserImagesListView(generics.ListAPIView):
+class UserImagesListCreateView(generics.ListCreateAPIView):
     queryset = UserImage.objects.all()
-    serializer_class = UserFriendListSerializer
+    serializer_class = UserImageSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return UserImage.objects.filter(user=self.request.user)
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 
 class UserImageDeleteView(generics.RetrieveDestroyAPIView):
     queryset = FriendList.objects.all()
-    serializer_class = UserFriendListSerializer
+    serializer_class = UserImageSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        image_id = self.kwargs['id']
-        user_images = UserImage.objects.filter(pk=image_id, user=self.request.user)
-
-        if user_images:
-            return user_images.first()
-        else:
-            return Http404
+        image_id = self.kwargs['pk']
+        return get_object_or_404(UserImage.objects.filter(user=self.request.user), pk=image_id)
