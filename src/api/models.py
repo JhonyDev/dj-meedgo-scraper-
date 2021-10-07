@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.db import models
-
 from src.api.bll import create_like_logic, delete_like_logic
 
 
@@ -20,13 +19,13 @@ class FriendList(models.Model):
 
 class Like(models.Model):
     LIKE_TYPE = (
-        (1, 'LIKE'),
-        (2, 'FAVOURITE')
+        ('l', 'LIKE'),
+        ('f', 'FAVOURITE')
     )
 
     liked_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="liked_by", blank=True)
     liked_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="liked_to")
-    like_type = models.CharField(max_length=1, choices=LIKE_TYPE, default=0)
+    like_type = models.CharField(max_length=1, choices=LIKE_TYPE, default=1)
     created_on = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

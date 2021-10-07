@@ -71,12 +71,7 @@ class UserNewsFeedSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'first_name', 'last_name', 'username', 'email', 'phone_number',
-            'likes', 'friends', 'address'
-        ]
-        read_only_fields = [
-            'first_name', 'last_name', 'username', 'email', 'phone_number',
-            'likes', 'friends', 'address'
+            'pk', 'first_name', 'last_name', 'username', 'email'
         ]
 
 

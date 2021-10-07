@@ -1,4 +1,5 @@
 from django.http import Http404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import get_object_or_404
 
 from src.api.models import Like, FriendList
@@ -28,24 +29,30 @@ class UserNewsFeedListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserNewsFeedSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['username', 'first_name', 'last_name', 'pk']
 
     def get_queryset(self):
-        return User.objects.all()
+        return User.objects.filter()
 
 
 class UserLikersListView(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserLikersSerializer
+    queryset = Like.objects.all()
+    serializer_class = LikeSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['like_type']
 
     def get_queryset(self):
         return Like.objects.filter(liked_to=self.request.user)
 
 
 class UserLikesListView(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserLikesSerializer
+    queryset = Like.objects.all()
+    serializer_class = LikeSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['like_type']
 
     def get_queryset(self):
         return Like.objects.filter(liked_by=self.request.user)
@@ -93,7 +100,7 @@ class UserLikeCreateView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        pass
+        serializer.save(liked_by=self.request.user)
 
 
 class UserFriendsListView(generics.ListAPIView):
@@ -110,12 +117,8 @@ class UserLikeDeleteView(generics.DestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        like_id = self.kwargs['id']
-        objects = Like.objects.filter(pk=like_id, liked_by=self.request.user)
-        if objects:
-            return objects.first()
-        else:
-            return Http404
+        like_id = self.kwargs['pk']
+        return get_object_or_404(Like.objects.filter(liked_by=self.request.user), pk=like_id)
 
 
 """ IMAGES VIEWS --- """
