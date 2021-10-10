@@ -20,9 +20,32 @@ Then do next ...
 
 
 class User(AbstractUser):
-    phone_number = models.CharField(max_length=30, null=True, blank=True)
-    likes = models.PositiveIntegerField(default=0, null=True, blank=True)
+    GENDER_CHOICES = (
+        ('m', 'Male'),
+        ('f', 'Female'),
+        ('o', 'Other'),
+    )
+
+    bio = models.TextField(null=True, blank=True)
+    about = models.TextField(null=True, blank=True)
+    phone_number = models.CharField(max_length=19, null=True, blank=True)
+    age = models.PositiveBigIntegerField(default=25, null=False, blank=False)
+
+    interests = models.TextField(null=True, blank=True)
+    matching = models.PositiveIntegerField(default=50, null=False, blank=False)
+    gender = models.CharField(max_length=1, default='m', null=False, blank=False, choices=GENDER_CHOICES)
+    interested_lower_age = models.PositiveIntegerField(default=25, null=False, blank=False)
+    interested_upper_age = models.PositiveIntegerField(default=50, null=False, blank=False)
+    interested_in_gender = models.CharField(max_length=1, default='m', null=False, blank=False, choices=GENDER_CHOICES)
+
+    likes = models.PositiveIntegerField(default=0, null=False, blank=False)
+    likers = models.PositiveIntegerField(default=0, null=False, blank=False)
     friends = models.PositiveIntegerField(default=0, null=False, blank=False)
+
+    expiry_date = models.DateField(auto_now_add=True)
+    is_paid = models.BooleanField(default=False, null=False, blank=False)
+    is_identified = models.BooleanField(default=False, null=False, blank=False)
+
     address = models.CharField(max_length=255, default='not-provided', null=False, blank=False)
 
     class Meta:

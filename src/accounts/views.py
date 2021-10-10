@@ -1,4 +1,8 @@
 from allauth.account.models import EmailAddress
+from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from dj_rest_auth.registration.views import SocialLoginView
 from django.shortcuts import render
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
@@ -11,6 +15,7 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
+from core.settings import GOOGLE_CALLBACK_ADDRESS
 from src.accounts.models import User
 from src.accounts.serializers import CustomRegisterAccountSerializer
 from src.accounts.tokens import account_activation_token
@@ -56,14 +61,14 @@ from src.accounts.tokens import account_activation_token
 #         return redirect('accounts:administration-login')
 
 
-# class GoogleLoginView(SocialLoginView):
-#     adapter_class = GoogleOAuth2Adapter
-#     client_class = OAuth2Client
-#     callback_url = GOOGLE_CALLBACK_ADDRESS
+class GoogleLoginView(SocialLoginView):
+    adapter_class = GoogleOAuth2Adapter
+    client_class = OAuth2Client
+    callback_url = GOOGLE_CALLBACK_ADDRESS
 
 
-# class FacebookLoginView(SocialLoginView):
-#     adapter_class = FacebookOAuth2Adapter
+class FacebookLoginView(SocialLoginView):
+    adapter_class = FacebookOAuth2Adapter
 
 
 class CustomRegisterAccountView(APIView):

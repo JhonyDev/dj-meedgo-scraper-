@@ -1,6 +1,8 @@
+from django.db.models import Q
 from django.http import Http404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import get_object_or_404
+from rest_framework.views import APIView
 
 from src.api.models import Like, FriendList
 from rest_framework import generics
@@ -8,6 +10,7 @@ from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
 from src.accounts.models import User, UserImage
+from src.api.bll import create_like_logic
 
 from .serializers import (
     UserImageSerializer, UserLikersSerializer, UserLikesSerializer,
@@ -94,13 +97,14 @@ class UserPasswordChangeView(generics.UpdateAPIView):
 """ LIKES AND FRIENDS """
 
 
-class UserLikeCreateView(generics.CreateAPIView):
+class UserLikeCreateView(APIView):
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def perform_create(self, serializer):
-        serializer.save(liked_by=self.request.user)
+    def post(self, request):
+        response_message, response_code = create_like_logic(request)
+        return Response(data=response_message, status=response_code)
 
 
 class UserFriendsListView(generics.ListAPIView):

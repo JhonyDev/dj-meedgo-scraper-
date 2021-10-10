@@ -20,14 +20,21 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 SECRET_KEY = config('DJANGO_APPLICATION_SECRET')
 ROOT_URLCONF = 'core.urls'
 AUTH_USER_MODEL = 'accounts.User'
+
 DEBUG = True
 SERVER = False
-SITE_ID = 1
 
-if DEBUG:
-    HOST = config('DJANGO_LOCAL_HOST')
+if SERVER:
+    if DEBUG:
+        SITE_ID = 2
+        GOOGLE_CALLBACK_ADDRESS = "http://192.168.100.6:8000/accounts/google/login/callback/"
+    else:
+        SITE_ID = 3
+        GOOGLE_CALLBACK_ADDRESS = "https://simbo.com/accounts/google/login/callback/"
 else:
-    HOST = config('DJANGO_SERVER_HOST')
+    SITE_ID = 1
+    GOOGLE_CALLBACK_ADDRESS = "http://127.0.0.1:8000/accounts/google/login/callback/"
+
 ALLOWED_HOSTS = ['*']
 
 """ APPS ---------------------------------------------------------------------------------------"""
@@ -54,8 +61,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    # 'allauth.socialaccount.providers.google',
-    # 'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.facebook',
 
     'src.accounts',
     'src.api',
@@ -136,7 +143,7 @@ else:
         }
     }
 
-""" VALIDATORS -----------------------------------------------------------------------------------"""
+""" VALIDATORS ------------------------------------------------------------------------------------"""
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
@@ -145,7 +152,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', },
 ]
 
-""" INTERNATIONALIZATION -------------------------------------------------------------------------"""
+""" INTERNATIONALIZATION --------------------------------------------------------------------------"""
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
@@ -153,7 +160,7 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-""" STATIC AND MEDIA ----------------------------------------------------------------------------"""
+""" STATIC AND MEDIA -----------------------------------------------------------------------------"""
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [

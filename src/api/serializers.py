@@ -82,3 +82,17 @@ class LikeSerializer(serializers.ModelSerializer):
         read_only_fields = [
             'pk', 'liked_by', 'created_on'
         ]
+
+    # def save(self):
+    #     like = Like(
+    #         liked_to=self.validated_data['liked_to']
+    #     )
+    #     print(like.liked_by)
+    #     print(like.liked_to)
+    #
+    #     # if password != password2:
+    #     #     raise serializers.ValidationError({'password': 'Passwords must be matched'})
+    #     # if EmailAddress.objects.filter(email=email):
+    #     #     raise serializers.ValidationError({'email': 'Email is already registered'})
+    #     like.save()
+    #     return like

@@ -19,7 +19,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path, include, re_path
-from src.accounts.views import CustomRegisterAccountView  # GoogleLoginView, FacebookLoginView,
+from src.accounts.views import CustomRegisterAccountView, GoogleLoginView, FacebookLoginView
 from .settings import DEBUG, MEDIA_ROOT, MEDIA_URL
 
 
@@ -54,10 +54,10 @@ urlpatterns = [
     # REST API -------------------------------------------------------------------------------------------
     path('auth/', include('dj_rest_auth.urls')),
     path('auth/registration/', CustomRegisterAccountView.as_view(), name='account_create_new_user'),
-    # re_path(r'^account-confirm-email/', VerifyEmailView.as_view(),name='account_email_verification_sent'),
-    # re_path(r'^account-confirm-email/(?P<key>[-:\w]+)/$', VerifyEmailView.as_view(),name='account_confirm_email'),
-    # path('auth/google/', GoogleLoginView.as_view(), name='google-login-view'),
-    # path('auth/facebook/', FacebookLoginView.as_view(), name='facebook-login-view'),
+    re_path(r'^account-confirm-email/', VerifyEmailView.as_view(),name='account_email_verification_sent'),
+    re_path(r'^account-confirm-email/(?P<key>[-:\w]+)/$', VerifyEmailView.as_view(),name='account_confirm_email'),
+    path('auth/google/', GoogleLoginView.as_view(), name='google-login-view'),
+    path('auth/facebook/', FacebookLoginView.as_view(), name='facebook-login-view'),
 
     path('api/', include('src.api.urls', namespace='api')),
 ]
