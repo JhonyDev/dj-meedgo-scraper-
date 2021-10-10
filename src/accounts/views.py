@@ -3,9 +3,17 @@ from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
-from django.shortcuts import render
+from django.contrib import messages
+from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
+from django.views import View
 from rest_framework import permissions, status
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
@@ -21,44 +29,44 @@ from src.accounts.serializers import CustomRegisterAccountSerializer
 from src.accounts.tokens import account_activation_token
 
 
-# class LoginView(View):
-#     def post(self, request):
-#         form = AuthenticationForm(request=request, data=request.POST)
-#         if form.is_valid():
-#             user = form.get_user()
-#             if user.is_superuser or user.is_staff:
-#                 login(request, user)
-#                 if 'next' in request.POST:
-#                     return HttpResponseRedirect(reverse('next'))
-#                 else:
-#                     return HttpResponseRedirect(reverse('administration:dashboard'))
-#             else:
-#                 messages.error(
-#                     request, "You are not allowed to access administration. Need help? Please consult admin"
-#                 )
-#         return render(request, 'accounts/login.html', {'form': form})
+class LoginView(View):
+    def post(self, request):
+        form = AuthenticationForm(request=request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            if user.is_superuser or user.is_staff:
+                login(request, user)
+                if 'next' in request.POST:
+                    return HttpResponseRedirect(reverse('next'))
+                else:
+                    return HttpResponseRedirect(reverse('administration:dashboard'))
+            else:
+                messages.error(
+                    request, "You are not allowed to access administration. Need help? Please consult admin"
+                )
+        return render(request, 'accounts/login.html', {'form': form})
 
-#     def get(self, request):
-#         if request.user.is_authenticated:
-#             if request.user.is_superuser or request.user.is_staff:
-#                 return redirect('administration:dashboard')
-#             else:
-#                 logout(request)
-#                 messages.error(
-#                     request, "You are not allowed to access administration. Need help? Please consult admin"
-#                 )
-#                 return redirect('accounts:administration-login')
+    def get(self, request):
+        if request.user.is_authenticated:
+            if request.user.is_superuser or request.user.is_staff:
+                return redirect('administration:dashboard')
+            else:
+                logout(request)
+                messages.error(
+                    request, "You are not allowed to access administration. Need help? Please consult admin"
+                )
+                return redirect('accounts:administration-login')
 
-#         form = AuthenticationForm()
-#         return render(request=request, template_name='accounts/login.html', context={'form': form})
+        form = AuthenticationForm()
+        return render(request=request, template_name='accounts/login.html', context={'form': form})
 
 
-# @method_decorator(login_required, name='dispatch')
-# class LogoutView(View):
-#
-#     def get(self, request):
-#         logout(request)
-#         return redirect('accounts:administration-login')
+@method_decorator(login_required, name='dispatch')
+class LogoutView(View):
+
+    def get(self, request):
+        logout(request)
+        return redirect('accounts:administration-login')
 
 
 class GoogleLoginView(SocialLoginView):

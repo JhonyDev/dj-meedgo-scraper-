@@ -66,6 +66,8 @@ INSTALLED_APPS = [
 
     'src.accounts',
     'src.api',
+    'src.website',
+    'src.administration',
 ]
 
 """ MIDDLE WARES ----------------------------------------------------------------------------"""
