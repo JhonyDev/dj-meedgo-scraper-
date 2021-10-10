@@ -39,7 +39,7 @@ class LoginView(View):
                 if 'next' in request.POST:
                     return HttpResponseRedirect(reverse('next'))
                 else:
-                    return HttpResponseRedirect(reverse('administration:dashboard'))
+                    return HttpResponseRedirect(reverse('admins:dashboard'))
             else:
                 messages.error(
                     request, "You are not allowed to access administration. Need help? Please consult admin"
@@ -49,13 +49,13 @@ class LoginView(View):
     def get(self, request):
         if request.user.is_authenticated:
             if request.user.is_superuser or request.user.is_staff:
-                return redirect('administration:dashboard')
+                return redirect('admins:dashboard')
             else:
                 logout(request)
                 messages.error(
                     request, "You are not allowed to access administration. Need help? Please consult admin"
                 )
-                return redirect('accounts:administration-login')
+                return redirect('accounts:admins-login')
 
         form = AuthenticationForm()
         return render(request=request, template_name='accounts/login.html', context={'form': form})

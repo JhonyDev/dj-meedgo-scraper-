@@ -1,0 +1,142 @@
+{% extends 'administration/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block subtitle %}
+    {{ user.username }}
+{% endblock %}
+
+
+{% block css %}
+
+{% endblock %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+
+
+                    {# NAME AND OTHER #}
+                    <div class="text-center mt-2">
+                        <h5 class="mb-0">{{ user.get_full_name }}
+                            <a href="{% url 'admins:user-update' user.pk %}"><i class="mdi mdi-account-edit"></i></a>
+                        </h5>
+                        <p class="fw-light text-muted mb-0">{{ user.username }}</p>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col">
+                            <p class="mb-0 text-center h3"><i class="mdi mdi-email"></i></p>
+                            <p class="mb-0 text-center h5">Email</p>
+                            <p class="mb-0 text-center">{{ user.email }}</p>
+                        </div>
+                        <div class="col">
+                            <p class="mb-0 text-center h3"><i class="mdi mdi-phone"></i></p>
+                            <p class="mb-0 text-center h5">Phone</p>
+                            <p class="mb-0 text-center">{{ user.phone_number }}</p>
+                        </div>
+                        <div class="col">
+                            <p class="mb-0 text-center h3"><i class="mdi mdi-package"></i></p>
+                            <p class="mb-0 text-center h5">Package</p>
+                            {% if user.current_subscription %}
+                                <p class="mb-0 text-center">{{ user.current_subscription.package.name }}</p>
+                            {% else %}
+                                <p class="mb-0 text-center text-danger">Not subscribed</p>
+                            {% endif %}
+                        </div>
+                        <div class="col">
+                            <p class="mb-0 text-center h3"><i class="mdi mdi-link"></i></p>
+                            <p class="mb-0 text-center h5">Referral</p>
+                            {% if user.referred_by %}
+                                <p class="mb-0 text-center">{{ user.referred_by.username }}</p>
+                            {% else %}
+                                <p class="mb-0 text-center text-danger">Not Linked</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+
+                    {% if statistic %}
+                        <div class="row">
+
+
+
+                            {#                        <div class="mb-2">#}
+                            {#                            <h3 class="mb-0">Statistics</h3>#}
+                            {#                            <p>Statistics report on user tasks, referrals and account.</p>#}
+                            {#                        </div>#}
+
+                            <div class="col">
+                                <p class="mb-0 text-center h3 text-success"><i class="mdi mdi-arrow-up"></i></p>
+                                <p class="mb-0 text-center small">Current Amount</p>
+                                <p class="mb-0 text-center h4"></p>
+                            </div>
+
+                            <div class="col">
+                                <p class="mb-0 text-center h3 text-danger"><i class="mdi mdi-arrow-down"></i></p>
+                                <p class="mb-0 text-center small">Withdrawal Amount</p>
+                                <p class="mb-0 text-center h4"></p>
+                            </div>
+
+                            <div class="col">
+                                <p class="mb-0 text-center h3"><i class="mdi mdi-counter"></i></p>
+                                <p class="mb-0 text-center small">Task Amount</p>
+                                <p class="mb-0 text-center h4"></p>
+                            </div>
+
+                            <div class="col">
+                                <p class="mb-0 text-center h3"><i class="mdi mdi-share"></i></p>
+                                <p class="mb-0 text-center small">Referral Amount</p>
+                                <p class="mb-0 text-center h4"></p>
+                            </div>
+
+                            <div class="col">
+                                <p class="mb-0 text-center h3"><i class="mdi mdi-format-list-checks"></i></p>
+                                <p class="mb-0 text-center small">Total Tasks</p>
+                                <p class="mb-0 text-center h4"></p>
+                            </div>
+
+                            <div class="col">
+                                <p class="mb-0 text-center h3"><i class="mdi mdi-format-list-bulleted-type"></i></p>
+                                <p class="mb-0 text-center small">Total Referrals</p>
+                                <p class="mb-0 text-center h4"></p>
+                            </div>
+
+                        </div>
+                    {% else %}
+                        <p class="text-danger h4 mb-0">Statistics are not available for this account</p>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12 px-4">
+            <a href="{% url 'admins:user-update' user.pk %}">Update Profile</a><br>
+            <a href="{% url 'admins:user-password-reset-view' user.pk %}">Password Reset</a>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+
+{% block js %}
+
+{% endblock %}
+
+

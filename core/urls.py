@@ -26,8 +26,8 @@ from .settings import DEBUG, MEDIA_ROOT, MEDIA_URL
 urlpatterns = [
     # ADMIN/ROOT APPLICATION
     path('admin/', admin.site.urls),
-    path('administration/', include('src.administration.urls', namespace='administration')),
-    path('', include('src.website.urls', namespace='website')),
+    path('administration/', include('src.administration.urls', namespace='admins')),
+    path('', include('src.website.urls', namespace='administration')),
 
     # WEBSITE APPLICATION --------------------------------------------------------------------------------
     path('accounts/', include('src.accounts.urls', namespace='accounts')),

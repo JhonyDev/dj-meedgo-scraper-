@@ -1,0 +1,126 @@
+{% extends 'administration/base.html' %}
+
+{% block subtitle %}
+    Users List
+{% endblock %}
+
+
+{% block css %}
+
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+
+
+                    <div class="table-responsive">
+                        <table class="table table-borderless">
+                            {% if user_list %}
+                                <thead class="border-bottom">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>
+                                        Active<br>
+                                        <small>Subscription</small>
+                                    </th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+
+                                {% for user in user_list %}
+                                    <tr>
+                                        <td>{{ user.get_full_name }}</td>
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.email }}</td>
+                                        <td>
+                                            {% if not user.is_paid %}
+                                                <b class="text-danger">
+                                                    <i class="fa fa-times-circle"></i>
+                                                </b>
+                                            {% else %}
+                                                <b class="text-success">
+                                                    <i class="fa fa-check-circle"></i>
+                                                </b>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if user.is_active %}
+                                                <label class="badge badge-success">
+                                                    active
+                                                </label>
+
+                                            {% else %}
+                                                <label class="badge badge-danger">
+                                                    inactive
+                                                </label>
+
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            <a href="{% url 'admins:user-detail' user.pk %}" class="text-decoration-none"><i
+                                                    class="mdi mdi-eye icon-sm"></i></a>
+                                            <a href="{% url 'admins:user-update' user.pk %}" class="text-decoration-none"><i
+                                                    class="mdi mdi-account-edit icon-sm"></i></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+
+                                </tbody>
+                            {% else %}
+                                <th class="text-danger">No users are listed until now</th>
+                            {% endif %}
+                        </table>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="mt-4">
+                {% if is_paginated %}
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li>
+                                            <span><a
+                                                    href="?page={{ page_obj.previous_page_number }}">Previous</a></span>
+                            </li>
+                        {% endif %}
+                        <li class="">
+                            <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</span>
+                        </li>
+                        {% if page_obj.has_next %}
+                            <li>
+                                <span><a href="?page={{ page_obj.next_page_number }}">Next</a></span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                {% else %}
+
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block js %}
+
+{% endblock %}
+
+

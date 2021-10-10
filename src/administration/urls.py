@@ -1,10 +1,20 @@
 from django.urls import path
-from django.views.generic import TemplateView
+from .views import (
+    DashboardView, UserListView, UserDetailView,
+    UserUpdateView, UserPasswordResetView
+)
 
-from . import views
-
-app_name = 'administration'
+app_name = 'admins'
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='administration/home.html'))
+    path('', DashboardView.as_view(), name='dashboard'),
+    path('user/', UserListView.as_view(), name='user-list'),
+    path('user/<int:pk>/', UserDetailView.as_view(), name='user-detail'),
+    path('user/<int:pk>/change/', UserUpdateView.as_view(), name='user-update'),
+
+    path(
+        'user/<int:pk>/password/reset/',
+        UserPasswordResetView.as_view(),
+        name='user-password-reset-view'
+    ),
 ]
