@@ -17,4 +17,5 @@ urlpatterns = [
         UserPasswordResetView.as_view(),
         name='user-password-reset-view'
     ),
+
 ]

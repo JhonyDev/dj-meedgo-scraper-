@@ -17,6 +17,23 @@ allowed_decorators = [login_required, user_passes_test(lambda u: u.is_superuser)
 class DashboardView(TemplateView):
     template_name = 'administration/dashboard.html'
 
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+
+        user_total = User.objects.all().count()
+        user_admins = User.objects.filter(is_staff=True, is_superuser=True).count()
+        user_customers = User.objects.filter(is_staff=False, is_superuser=False).count()
+        user_unpaid = User.objects.filter(is_staff=False, is_superuser=False, is_paid=False).count()
+        user_paid = User.objects.filter(is_staff=False, is_superuser=False, is_paid=True).count()
+
+        data['user_total'] = user_total
+        data['user_admins'] = user_admins
+        data['user_customers'] = user_customers
+        data['user_unpaid'] = user_unpaid
+        data['user_paid'] = user_paid
+
+        return data
+
 
 """ USERS """
 

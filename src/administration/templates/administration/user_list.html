@@ -24,13 +24,11 @@
                                 <thead class="border-bottom">
                                 <tr>
                                     <th>Name</th>
-                                    <th>Username</th>
                                     <th>Email</th>
+                                    <th>Profile</th>
                                     <th>
-                                        Active<br>
-                                        <small>Subscription</small>
+                                        Status
                                     </th>
-                                    <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                                 </thead>
@@ -39,38 +37,47 @@
 
                                 {% for user in user_list %}
                                     <tr>
-                                        <td>{{ user.get_full_name }}</td>
-                                        <td>{{ user.username }}</td>
+                                        <td><small>({{ user.username }})</small><br>{{ user.get_full_name }}</td>
                                         <td>{{ user.email }}</td>
                                         <td>
-                                            {% if not user.is_paid %}
-                                                <b class="text-danger">
-                                                    <i class="fa fa-times-circle"></i>
-                                                </b>
-                                            {% else %}
-                                                <b class="text-success">
-                                                    <i class="fa fa-check-circle"></i>
-                                                </b>
-                                            {% endif %}
+                                            <b>Likes:</b> {{ user.likes }}<br>
+                                            <b>Likers:</b> {{ user.likers }}<br>
+                                            <b>Friends:</b> {{ user.friends }}<br>
                                         </td>
+
                                         <td>
+                                            <b>Active:</b>
                                             {% if user.is_active %}
-                                                <label class="badge badge-success">
-                                                    active
-                                                </label>
+                                                <i class="mdi mdi-check-circle text-success"></i>
 
                                             {% else %}
-                                                <label class="badge badge-danger">
-                                                    inactive
-                                                </label>
-
+                                                <i class="mdi mdi-close-circle text-danger"></i>
                                             {% endif %}
+                                            <br>
+                                        <b>Verified:</b>
+                                            {% if user.is_identified %}
+                                                <i class="mdi mdi-check-circle text-success"></i>
+
+                                            {% else %}
+                                                <i class="mdi mdi-close-circle text-danger"></i>
+                                            {% endif %}
+                                            <br>
+                                        <b>Paid:</b>
+                                            {% if user.is_paid %}
+                                                <i class="mdi mdi-check-circle text-success"></i>
+
+                                            {% else %}
+                                                <i class="mdi mdi-close-circle text-danger"></i>
+                                            {% endif %}
+                                            <br>
                                         </td>
 
                                         <td>
-                                            <a href="{% url 'admins:user-detail' user.pk %}" class="text-decoration-none"><i
+                                            <a href="{% url 'admins:user-detail' user.pk %}"
+                                               class="text-decoration-none"><i
                                                     class="mdi mdi-eye icon-sm"></i></a>
-                                            <a href="{% url 'admins:user-update' user.pk %}" class="text-decoration-none"><i
+                                            <a href="{% url 'admins:user-update' user.pk %}"
+                                               class="text-decoration-none"><i
                                                     class="mdi mdi-account-edit icon-sm"></i></a>
                                         </td>
                                     </tr>
