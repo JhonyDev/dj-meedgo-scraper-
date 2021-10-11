@@ -15,6 +15,7 @@ urlpatterns = [
     path('like/<int:pk>/delete/', views.UserLikeDeleteView.as_view(), name='like-delete'),
 
     path('like/user/', views.UserLikeCreateView.as_view(), name='like-user-post'),
+    path('subscribe/', views.UserSubscribe.as_view(), name='subscribe-user'),
 
     path('my/news-feed/', views.UserNewsFeedListView.as_view(), name='user-news-feed-get'),
 

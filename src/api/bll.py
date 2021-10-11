@@ -1,9 +1,12 @@
+from datetime import date
+
 from django.db.models.query_utils import Q
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
 
 from src.accounts.models import User
 from src.api import models as api_models
+from dateutil.relativedelta import relativedelta
 
 
 def create_like_logic(request):
@@ -63,3 +66,28 @@ def create_like_logic(request):
         liked_to.save()
 
     return response_message, response_code
+
+
+def subscription_logic(request):
+    """
+    CHECK 1: Already Exists
+    CHECK 2: expiry date
+    """
+    response_message = {'message': 'subscribed successfully'}
+    response_code = status.HTTP_201_CREATED
+
+    user = request.user
+    if not user.is_paid:
+        user.is_paid = True
+        user.expiry_date = date.today() + relativedelta(months=+6)
+    else:
+        if user.expiry_date < date.today():
+            user.is_paid = True
+            user.expiry_date = date.today() + relativedelta(months=6)
+            user.save()
+
+    response_message['message'] = 'Failed to subscribed - already exists'
+    response_code = status.HTTP_409_CONFLICT
+    return response_message, response_code
+
+

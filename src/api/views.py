@@ -1,3 +1,4 @@
+from datetime import date
 from django.db.models import Q
 from django.http import Http404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -10,7 +11,7 @@ from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
 from src.accounts.models import User, UserImage
-from src.api.bll import create_like_logic
+from src.api.bll import create_like_logic, subscription_logic
 
 from .serializers import (
     UserImageSerializer, UserLikersSerializer, UserLikesSerializer,
@@ -104,6 +105,14 @@ class UserLikeCreateView(APIView):
 
     def post(self, request):
         response_message, response_code = create_like_logic(request)
+        return Response(data=response_message, status=response_code)
+
+
+class UserSubscribe(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        response_message, response_code = subscription_logic(request)
         return Response(data=response_message, status=response_code)
 
 

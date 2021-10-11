@@ -42,7 +42,7 @@ class User(AbstractUser):
     likers = models.PositiveIntegerField(default=0, null=False, blank=False)
     friends = models.PositiveIntegerField(default=0, null=False, blank=False)
 
-    expiry_date = models.DateField(auto_now_add=True)
+    expiry_date = models.DateField(default=None, null=True, blank=True)
     is_paid = models.BooleanField(default=False, null=False, blank=False)
     is_identified = models.BooleanField(default=False, null=False, blank=False)
 
