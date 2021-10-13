@@ -91,5 +91,13 @@ def subscription_logic(request):
     return response_message, response_code
 
 
-
+def is_premium_member(user):
+    if user.is_paid:
+        if user.expiry_date >= date.today():
+            return True
+        else:
+            user.is_paid = False
+            user.expiry_date = None
+            user.save()
+    return False
 
