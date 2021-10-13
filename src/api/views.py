@@ -33,11 +33,12 @@ class UserNewsFeedListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserNewsFeedSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['username', 'first_name', 'last_name', 'pk']
 
     def get_queryset(self):
-        return User.objects.filter()
+        users = User.objects.filter(is_active=True, is_superuser=False, is_staff=False)
+        liked_users = Like.objects.filter(liked_by=self.request.user)
+        users = users.exclude(pk__in=liked_users)
+        return users
 
 
 class UserLikersListView(generics.ListAPIView):
