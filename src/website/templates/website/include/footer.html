@@ -1,5 +1,6 @@
 {% load static %}
 
+
 <footer id="footer">
     <div class="container">
         <div class="row">
@@ -10,9 +11,10 @@
                         {% lorem 20 w %}
                     </p>
                     <div>
-                        <small class="text-muted">
-                            <a href="{% url 'website:terms' %}">Terms and Conditions</a> |
-                            <a href="{% url 'website:privacy-policy' %}">Privacy Policy</a></small>
+                        <small>
+                            <a class="color-orange" href="{% url 'website:terms' %}">Terms and Conditions</a> |
+                            <a class="color-orange" href="{% url 'website:privacy-policy' %}">Privacy Policy</a>
+                        </small>
                     </div>
                     <div class="footer-social">
                         <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>

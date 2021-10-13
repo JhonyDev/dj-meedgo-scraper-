@@ -100,4 +100,3 @@ def is_premium_member(user):
             user.expiry_date = None
             user.save()
     return False
-
