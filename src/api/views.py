@@ -1,6 +1,3 @@
-from datetime import date
-from django.db.models import Q
-from django.http import Http404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import get_object_or_404
 from rest_framework.views import APIView
@@ -14,7 +11,7 @@ from src.accounts.models import User, UserImage
 from src.api.bll import create_like_logic, subscription_logic
 
 from .serializers import (
-    UserImageSerializer, UserLikersSerializer, UserLikesSerializer,
+    UserImageSerializer,
     UserNewsFeedSerializer,
     UserPasswordChangeSerializer, UserSerializer, UserFriendListSerializer, LikeSerializer
 )

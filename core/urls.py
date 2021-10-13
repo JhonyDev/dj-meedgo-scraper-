@@ -27,7 +27,7 @@ urlpatterns = [
     # ADMIN/ROOT APPLICATION
     path('admin/', admin.site.urls),
     path('administration/', include('src.administration.urls', namespace='admins')),
-    path('', include('src.website.urls', namespace='administration')),
+    path('', include('src.website.urls', namespace='website')),
 
     # WEBSITE APPLICATION --------------------------------------------------------------------------------
     path('accounts/', include('src.accounts.urls', namespace='accounts')),
