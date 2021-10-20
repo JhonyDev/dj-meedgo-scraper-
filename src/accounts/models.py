@@ -29,6 +29,7 @@ class User(AbstractUser):
     bio = models.TextField(null=True, blank=True)
     about = models.TextField(null=True, blank=True)
     phone_number = models.CharField(max_length=19, null=True, blank=True)
+    profession = models.CharField(max_length=13, null=True, blank=True)
     age = models.PositiveBigIntegerField(default=25, null=False, blank=False)
 
     interests = models.TextField(null=True, blank=True)
