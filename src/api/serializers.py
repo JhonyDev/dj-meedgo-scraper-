@@ -16,14 +16,6 @@ class UserImageSerializer(serializers.ModelSerializer):
         ]
 
 
-class UserFriendListSerializer(serializers.Serializer):
-    class Meta:
-        model = FriendList
-        fields = [
-            'friend', 'created_on'
-        ]
-
-
 class UserPasswordChangeSerializer(serializers.Serializer):
     model = User
 
@@ -35,23 +27,21 @@ class UserPasswordChangeSerializer(serializers.Serializer):
 
 
 class UserPublicSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = [
-            'first_name', 'last_name', 'username', 'email'
+            'pk', 'profile_image', 'first_name', 'last_name', 'username', 'age', 'profession'
         ]
 
 
 class UserSerializer(serializers.ModelSerializer):
-    images = UserImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = User
         fields = [
-            'first_name', 'last_name', 'username', 'email', 'phone_number', 'age', 'bio', 'about', 'address',
+            'pk', 'profile_image', 'first_name', 'last_name', 'username', 'email', 'phone_number', 'age', 'bio', 'about', 'address',
             'interests', 'matching', 'gender', 'interested_lower_age', 'interested_upper_age', 'interested_in_gender',
-            'likes', 'likers', 'friends', 'date_joined', 'address', 'expiry_date', 'is_paid', 'is_identified', 'images'
+            'likes', 'likers', 'friends', 'date_joined', 'address', 'expiry_date', 'is_paid', 'is_identified'
         ]
         read_only_fields = [
             'email', 'likes', 'likers', 'friends', 'date_joined', 'expiry_date', 'is_paid', 'is_identified',
@@ -60,7 +50,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserLikersSerializer(serializers.Serializer):
-    liked_by = UserSerializer(many=False, read_only=True)
+    liked_by = UserPublicSerializer(many=False, read_only=True)
 
     class Meta:
         model = Like
@@ -70,7 +60,7 @@ class UserLikersSerializer(serializers.Serializer):
 
 
 class UserLikesSerializer(serializers.Serializer):
-    liked_to = UserSerializer(many=False, read_only=True)
+    liked_to = UserPublicSerializer(many=False, read_only=True)
 
     class Meta:
         model = Like
@@ -79,17 +69,27 @@ class UserLikesSerializer(serializers.Serializer):
         ]
 
 
-class UserNewsFeedSerializer(serializers.ModelSerializer):
-    images = UserImageSerializer(many=True, read_only=True)
+class FriendSerializer(serializers.ModelSerializer):
+    friend = UserPublicSerializer(many=False, read_only=True)
 
     class Meta:
-        model = User
-        fields = [
-            'pk', 'first_name', 'last_name', 'username', 'age', 'profession', 'images'
-        ]
+        model = FriendList
+        fields = ['pk', 'friend', 'created_on']
 
 
 class LikeSerializer(serializers.ModelSerializer):
+    liked_to = UserPublicSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Like
+        fields = "__all__"
+        read_only_fields = [
+            'pk', 'liked_by', 'created_on'
+        ]
+
+
+class LikeAddSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Like
         fields = "__all__"

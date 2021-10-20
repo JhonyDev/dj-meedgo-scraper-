@@ -22,12 +22,12 @@ ROOT_URLCONF = 'core.urls'
 AUTH_USER_MODEL = 'accounts.User'
 
 DEBUG = True
-SERVER = False
+SERVER = True
 
 if SERVER:
     if DEBUG:
         SITE_ID = 2
-        GOOGLE_CALLBACK_ADDRESS = "http://192.168.100.6:8000/accounts/google/login/callback/"
+        GOOGLE_CALLBACK_ADDRESS = "http://192.168.100.15:8000/accounts/google/login/callback/"
     else:
         SITE_ID = 3
         GOOGLE_CALLBACK_ADDRESS = "https://simbo.com/accounts/google/login/callback/"
@@ -227,4 +227,4 @@ ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 OLD_PASSWORD_FIELD_ENABLED = True
 LOGOUT_ON_PASSWORD_CHANGE = False
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION = 'none'

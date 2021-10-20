@@ -5,12 +5,12 @@ from src.api.bll import create_like_logic
 
 class FriendList(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="has_friends")
-    friend = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="is_friend")
+    friend = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="friend")
     created_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-id']
-        verbose_name = "Firend List"
+        verbose_name = "Friend List"
         verbose_name_plural = "Friend Lists"
 
     def __str__(self):

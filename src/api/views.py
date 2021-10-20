@@ -12,8 +12,8 @@ from src.api.bll import create_like_logic, subscription_logic
 
 from .serializers import (
     UserImageSerializer,
-    UserNewsFeedSerializer,
-    UserPasswordChangeSerializer, UserSerializer, UserFriendListSerializer, LikeSerializer, ReportSerializer
+    UserPasswordChangeSerializer, UserSerializer, FriendSerializer, LikeSerializer, ReportSerializer,
+    LikeAddSerializer, UserPublicSerializer
 )
 
 
@@ -26,7 +26,7 @@ class UserProfileDetailedView(generics.RetrieveUpdateAPIView):
 
 
 class UserNewsFeedListView(generics.ListAPIView):
-    serializer_class = UserNewsFeedSerializer
+    serializer_class = UserPublicSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
@@ -105,7 +105,7 @@ class UserPasswordChangeView(generics.UpdateAPIView):
 
 class UserLikeCreateView(APIView):
     queryset = Like.objects.all()
-    serializer_class = LikeSerializer
+    serializer_class = LikeAddSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
@@ -123,7 +123,7 @@ class UserSubscribe(APIView):
 
 class UserFriendsListView(generics.ListAPIView):
     queryset = FriendList.objects.all()
-    serializer_class = UserFriendListSerializer
+    serializer_class = FriendSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):

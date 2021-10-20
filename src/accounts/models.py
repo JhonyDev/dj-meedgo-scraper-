@@ -26,6 +26,11 @@ class User(AbstractUser):
         ('o', 'Other'),
     )
 
+    profile_image = ResizedImageField(
+        upload_to='accounts/images/profiles/', null=True, blank=True, size=[100, 100], quality=75, force_format='PNG',
+        help_text='size of logo must be 100*100 and format must be png image file', crop=['middle', 'center']
+    )
+
     bio = models.TextField(null=True, blank=True)
     about = models.TextField(null=True, blank=True)
     phone_number = models.CharField(max_length=19, null=True, blank=True)
@@ -60,7 +65,6 @@ class User(AbstractUser):
 
 class UserImage(models.Model):
     image = models.ImageField(upload_to='accounts/images/profiles/', null=False, blank=False)
-    is_profile_image = models.BooleanField(default=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=False, blank=False, related_name='images',
                              on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)

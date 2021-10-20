@@ -8,6 +8,7 @@ urlpatterns = [
     path('my/profile/', views.UserProfileDetailedView.as_view(), name='profile-info-view-update'),
     path('my/profile/details/', views.UserProfileDetailedView.as_view(), name='profile-info-details-get'),
     path('my/image/', views.UserImagesListCreateView.as_view(), name='user-images-view-create-image'),
+    path('my/friends/', views.UserFriendsListView.as_view(), name='user-friends-view'),
     path('image/<int:pk>/', views.UserImageDeleteView.as_view(), name='image-view-delete'),
     path('my/password/change/', views.UserPasswordChangeView.as_view(), name='user-password-chang-put'),
     path('my/likes/', views.UserLikesListView.as_view(), name='user-likes-get'),
