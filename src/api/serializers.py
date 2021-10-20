@@ -6,6 +6,7 @@ from rest_framework import serializers
 from src.accounts.models import User, UserImage
 
 
+# NESTED SERIALIZERS REQUIRED MODEL CHECKUP [related_name]
 class UserImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserImage
@@ -41,11 +42,11 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             'first_name', 'last_name', 'username', 'email', 'phone_number', 'age', 'bio', 'about', 'address',
             'interests', 'matching', 'gender', 'interested_lower_age', 'interested_upper_age', 'interested_in_gender',
-            'likes', 'likers', 'friends', 'date_joined', 'address', 'expiry_date', 'is_paid', 'is_identified','images'
+            'likes', 'likers', 'friends', 'date_joined', 'address', 'expiry_date', 'is_paid', 'is_identified', 'images'
         ]
         read_only_fields = [
             'email', 'likes', 'likers', 'friends', 'date_joined', 'expiry_date', 'is_paid', 'is_identified',
-            'images'
+            'images', 'matching'
         ]
 
 

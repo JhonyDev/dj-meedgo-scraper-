@@ -12,7 +12,7 @@ At the start please be careful to start migrations
 --------------------------------------------------
 
 STEP: 1 comment current_subscription [FIELD] in model [USER]
-STEP: 1 py manage.py makemigrations accounts
+STEP: 1 py manage.py make migrations accounts
 STEP: 2 py manage.py migrate
 Then do next ...
 
@@ -60,7 +60,7 @@ class User(AbstractUser):
 class UserImage(models.Model):
     image = models.ImageField(upload_to='accounts/images/profiles/', null=False, blank=False)
     is_profile_image = models.BooleanField(default=False)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=False, blank=False, related_name='user_image',
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=False, blank=False, related_name='images',
                              on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
 

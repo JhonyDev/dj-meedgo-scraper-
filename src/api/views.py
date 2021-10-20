@@ -22,8 +22,7 @@ class UserProfileDetailedView(generics.RetrieveUpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        user = User.objects.get(pk=self.request.user.pk)
-        return user
+        return self.request.user
 
 
 class UserNewsFeedListView(generics.ListAPIView):
