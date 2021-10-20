@@ -30,7 +30,7 @@ class UserPublicSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'pk', 'profile_image', 'first_name', 'last_name', 'username', 'age', 'profession'
+            'pk', 'profile_image', 'first_name', 'last_name', 'username', 'age', 'profession', 'matching'
         ]
 
 
