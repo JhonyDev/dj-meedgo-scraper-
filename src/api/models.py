@@ -41,3 +41,17 @@ class Like(models.Model):
         ordering = ['-id']
         verbose_name = 'Like'
         verbose_name_plural = 'Likes'
+
+
+class Report(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reports')
+    target = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='target')
+
+    is_active = models.BooleanField(default=True, null=False, blank=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-id']
+
+    def __str__(self):
+        return str(self.pk)

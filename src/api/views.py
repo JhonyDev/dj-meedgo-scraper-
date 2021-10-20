@@ -2,7 +2,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import get_object_or_404
 from rest_framework.views import APIView
 
-from src.api.models import Like, FriendList
+from src.api.models import Like, FriendList, Report
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
@@ -13,7 +13,7 @@ from src.api.bll import create_like_logic, subscription_logic
 from .serializers import (
     UserImageSerializer,
     UserNewsFeedSerializer,
-    UserPasswordChangeSerializer, UserSerializer, UserFriendListSerializer, LikeSerializer
+    UserPasswordChangeSerializer, UserSerializer, UserFriendListSerializer, LikeSerializer, ReportSerializer
 )
 
 
@@ -26,15 +26,23 @@ class UserProfileDetailedView(generics.RetrieveUpdateAPIView):
 
 
 class UserNewsFeedListView(generics.ListAPIView):
-    queryset = User.objects.all()
     serializer_class = UserNewsFeedSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+
         users = User.objects.filter(is_active=True, is_superuser=False, is_staff=False)
         liked_users = Like.objects.filter(liked_by=self.request.user)
-        users = users.exclude(pk__in=liked_users)
-        return users
+        reported_users = Report.objects.filter(user=self.request.user)
+
+        l_u = r_u = []
+        [l_u.append(x.liked_to.pk) for x in liked_users]
+        [r_u.append(x.target.pk) for x in reported_users]
+
+        users = users.exclude(pk__in=r_u)
+        users = users.exclude(pk__in=l_u)
+
+        return users.exclude(pk__in=r_u)
 
 
 class UserLikersListView(generics.ListAPIView):
@@ -154,3 +162,40 @@ class UserImageDeleteView(generics.RetrieveDestroyAPIView):
     def get_object(self):
         image_id = self.kwargs['pk']
         return get_object_or_404(UserImage.objects.filter(user=self.request.user), pk=image_id)
+
+
+class UserReportsListView(generics.ListAPIView):
+    queryset = Report.objects.all()
+    serializer_class = ReportSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Report.objects.filter(user=self.request.user)
+
+
+class ReportUserCreateView(APIView):
+    queryset = Report.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk, format=None):
+        user = get_object_or_404(User.objects.all(), pk=pk)
+
+        if request.user == user:
+            return Response(
+                data={"message": "you can't report yourself"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if Report.objects.filter(user=request.user, target=user):
+            return Response(
+                data={'message': 'Requested user already reported'}, status=status.HTTP_208_ALREADY_REPORTED
+            )
+
+        report = Report(user=request.user, target=user)
+        report.save()
+        return Response(
+            data={
+                'message': f'You have successfully reported {user.username} - '
+                           f'our team will investigate the issue.'
+                  },
+            status=status.HTTP_201_CREATED
+        )

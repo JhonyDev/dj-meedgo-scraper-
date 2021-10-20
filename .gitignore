@@ -135,3 +135,6 @@ assets/
 
 migrations
 migrations/
+
+media/
+media
