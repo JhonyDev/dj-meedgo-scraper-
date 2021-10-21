@@ -68,7 +68,6 @@ class User(AbstractUser):
         super(User, self).save(*args, **kwargs)
 
 
-
 class UserImage(models.Model):
     image = models.ImageField(upload_to='accounts/images/profiles/', null=False, blank=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=False, blank=False, related_name='images',
