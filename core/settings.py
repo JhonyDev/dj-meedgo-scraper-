@@ -17,7 +17,7 @@ import os
 """ VAR ----------------------------------------------------------------------------------------"""
 BASE_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
-SECRET_KEY = config('DJANGO_APPLICATION_SECRET')
+SECRET_KEY = "config('DJANGO_APPLICATION_SECRET')"
 ROOT_URLCONF = 'core.urls'
 AUTH_USER_MODEL = 'accounts.User'
 
