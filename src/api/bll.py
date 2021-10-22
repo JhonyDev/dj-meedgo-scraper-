@@ -25,7 +25,7 @@ def create_like_logic(request):
 
     """
 
-    response_message = {'message': "Liked Successfully"}
+    response_message = {'message': "like Successful"}
     response_code = status.HTTP_201_CREATED
 
     liked_by = request.user
@@ -51,19 +51,19 @@ def create_like_logic(request):
             liked_to.friends -= 1
 
         if like_type == 'l':
-            response_message['message'] = "Successfully disliked"
+            response_message['message'] = "like deleted"
             liked_by.likes -= 1
             liked_to.likers -= 1
             liked_by.save()
             liked_to.save()
             delete_like.delete()
+            response_code = status.HTTP_204_NO_CONTENT
         else:
             '''
             IF ALREADY LIKED AND REQUESTED FAVORITE
             '''
-            response_message['message'] = "fav not allowed"
-
-        response_code = status.HTTP_204_NO_CONTENT
+            response_message['message'] = "favorite not allowed"
+            response_code = status.HTTP_400_BAD_REQUEST
     else:
         faves = api_models.Like.objects.filter(liked_by=liked_by, liked_to=liked_to, like_type='f')
         if faves:
@@ -74,18 +74,20 @@ def create_like_logic(request):
                 delete_like = faves[0]
                 delete_like.delete()
                 response_message = {'message': "favorite deleted"}
+                response_code = status.HTTP_204_NO_CONTENT
             else:
                 '''
                 IF ALREADY FAVORITE AND LIKED REQUESTED LIKE 
                 '''
                 response_message = {'message': "like not allowed"}
+                response_code = status.HTTP_400_BAD_REQUEST
         else:
             api_models.Like.objects.create(
                 liked_by=liked_by, liked_to=liked_to, like_type=like_type
             )
 
             if like_type == 'f':
-                response_message = {'message': "faved Successfully"}
+                response_message = {'message': "favorite Successful"}
             if like_type == 'l' and reverse_likes:
                 api_models.FriendList(user=liked_by, friend=liked_to).save()
                 api_models.FriendList(user=liked_to, friend=liked_by).save()

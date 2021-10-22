@@ -32,15 +32,15 @@ class UserNewsFeedListView(generics.ListAPIView):
     def get_queryset(self):
 
         users = User.objects.filter(is_active=True, is_superuser=False, is_staff=False)
-        liked_users = Like.objects.filter(liked_by=self.request.user)
+        # liked_users = Like.objects.filter(liked_by=self.request.user)
         reported_users = Report.objects.filter(user=self.request.user)
 
-        l_u = r_u = []
-        [l_u.append(x.liked_to.pk) for x in liked_users]
+        r_u = []
+        # [l_u.append(x.liked_to.pk) for x in liked_users]
         [r_u.append(x.target.pk) for x in reported_users]
 
         users = users.exclude(pk__in=r_u)
-        users = users.exclude(pk__in=l_u)
+        # users = users.exclude(pk__in=l_u)
 
         return users.exclude(pk__in=r_u)
 
