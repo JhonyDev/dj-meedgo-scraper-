@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.db import models
-from src.api.bll import create_like_logic
 
 
 class FriendList(models.Model):

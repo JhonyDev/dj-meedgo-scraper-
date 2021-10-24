@@ -36,13 +36,14 @@ class UserPublicSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = [
-            'pk', 'profile_image', 'first_name', 'last_name', 'username', 'email', 'phone_number', 'age', 'bio', 'about', 'address',
+            'pk', 'profile_image', 'first_name', 'last_name', 'username', 'email', 'phone_number', 'age', 'bio',
+            'about', 'address',
             'interests', 'matching', 'gender', 'interested_lower_age', 'interested_upper_age', 'interested_in_gender',
-            'likes', 'likers', 'friends', 'date_joined', 'address', 'expiry_date', 'is_paid', 'is_identified'
+            'likes', 'likers', 'friends', 'date_joined', 'address', 'expiry_date', 'is_paid', 'is_identified',
+            'profession'
         ]
         read_only_fields = [
             'email', 'likes', 'likers', 'friends', 'date_joined', 'expiry_date', 'is_paid', 'is_identified',
@@ -90,7 +91,6 @@ class LikeSerializer(serializers.ModelSerializer):
 
 
 class LikeAddSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Like
         fields = "__all__"
