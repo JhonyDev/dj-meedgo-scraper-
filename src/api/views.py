@@ -92,7 +92,7 @@ class UserLikersListView(generics.ListAPIView):
     filterset_fields = ['like_type']
 
     def get_queryset(self):
-        return Like.objects.filter(liked_to=self.request.user)
+        return Like.objects.filter(liked_to=self.request.user).exclude(liked_by=self.request.user.pk)
 
 
 class UserLikesListView(generics.ListAPIView):
@@ -103,7 +103,7 @@ class UserLikesListView(generics.ListAPIView):
     filterset_fields = ['like_type']
 
     def get_queryset(self):
-        return Like.objects.filter(liked_by=self.request.user)
+        return Like.objects.filter(liked_by=self.request.user).exclude(liked_to=self.request.user)
 
 
 """ AUTH --- """
@@ -166,7 +166,7 @@ class UserFriendsListView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return FriendList.objects.filter(user=self.request.user)
+        return FriendList.objects.filter(user=self.request.user).exclude(friend=self.request.user)
 
 
 class UserLikeDeleteView(generics.DestroyAPIView):
