@@ -114,14 +114,21 @@ def subscription_logic(request):
     response_code = status.HTTP_201_CREATED
 
     user = request.user
+    activate_subscription = False
+
+    """ IF USER DOESN't ACTIVATED PREVIOUSLY """
     if not user.is_paid:
-        user.is_paid = True
-        user.expiry_date = date.today() + relativedelta(months=+6)
+        activate_subscription = True
     else:
+        """ IF USER ACTIVATED PREVIOUSLY BUT EXPIRED"""
         if user.expiry_date < date.today():
-            user.is_paid = True
-            user.expiry_date = date.today() + relativedelta(months=6)
-            user.save()
+            activate_subscription = True
+
+    """ IF ALLOWED TO SUBSCRIBE """
+    if activate_subscription:
+        user.is_paid = True
+        user.expiry_date = date.today() + relativedelta(months=6)
+        user.save()
 
     response_message['message'] = 'Failed to subscribed - already exists'
     response_code = status.HTTP_409_CONFLICT
