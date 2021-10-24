@@ -59,12 +59,20 @@ class UserNewsFeedListView(generics.ListAPIView):
 
     def get_queryset(self):
 
-        users = User.objects.filter(
-            is_active=True, is_superuser=False, is_staff=False,
-            interested_in_gender=self.request.user.interested_in_gender,
-            interested_lower_age__gte=self.request.user.interested_lower_age,
-            interested_upper_age__lte=self.request.user.interested_upper_age
-        )
+        if self.request.user.interested_in_gender != 'o':
+            users = User.objects.filter(
+                is_active=True, is_superuser=False, is_staff=False,
+                interested_in_gender=self.request.user.interested_in_gender,
+                interested_lower_age__gte=self.request.user.interested_lower_age,
+                interested_upper_age__lte=self.request.user.interested_upper_age
+            )
+        else:
+            users = User.objects.filter(
+                is_active=True, is_superuser=False, is_staff=False,
+                interested_lower_age__gte=self.request.user.interested_lower_age,
+                interested_upper_age__lte=self.request.user.interested_upper_age
+            )
+
         reported_users = Report.objects.filter(user=self.request.user)
 
         r_u = []
@@ -227,7 +235,7 @@ class ReportUserCreateView(APIView):
             data={
                 'message': f'You have successfully reported {user.username} - '
                            f'our team will investigate the issue.'
-                  },
+            },
             status=status.HTTP_201_CREATED
         )
 
