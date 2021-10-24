@@ -54,3 +54,24 @@ class Report(models.Model):
 
     def __str__(self):
         return str(self.pk)
+
+
+class MpesaTransaction(models.Model):
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='transactions')
+    user_phone = models.CharField(max_length=100, null=True, blank=True)
+    timestamp = models.CharField(max_length=255)
+    completed = models.BooleanField(default=False)
+    amount = models.PositiveIntegerField()
+    purpose = models.CharField(max_length=255, default="Subscription")
+    request_id = models.CharField(max_length=255, blank=True, null=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    expires_on = models.DateTimeField(null=True, blank=True)
+    objects = models.Manager()
+
+    def __str__(self):
+        return str(self.pk)
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = 'Subscription Transaction'
+        verbose_name_plural = 'Subscription Transactions'

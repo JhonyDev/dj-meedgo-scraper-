@@ -64,7 +64,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
 
-
     'src.accounts',
     'src.api',
     'src.website',
@@ -220,6 +219,12 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
+
+CONSUMER_KEY = "S2CgBmt7RBOrskJIsuWpyABnLoPIKBBW"
+CONSUMER_SECRET = "QBL45acULAxxtvQl"
+PASSKEY = "3c388f8116b610a69eba8110e3ef118078c639af5c1c711ad17a2a74c02c6ed2"
+SHORT_CODE = "4075259"
+CALLBACK_URL = "https://mateappkenya.com/api/mpesa-stk-confirmation/"
 
 ACCOUNT_LOGOUT_ON_GET = True
 SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'

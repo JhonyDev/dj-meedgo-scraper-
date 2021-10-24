@@ -1,21 +1,48 @@
+from base64 import b64encode
+from datetime import datetime, date
+
+import requests
+from dateutil.relativedelta import relativedelta
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from requests.auth import HTTPBasicAuth
+
 from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import rest_framework as filters
+
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
-
-from src.api.models import Like, FriendList, Report
-from rest_framework import generics
+from rest_framework import filters as filterz
+from rest_framework import generics, viewsets
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
+
+from core import settings
+
+from src.api.models import Like, FriendList, Report, MpesaTransaction
 from src.accounts.models import User, UserImage
 from src.api.bll import create_like_logic, subscription_logic
 
 from .serializers import (
     UserImageSerializer,
     UserPasswordChangeSerializer, UserSerializer, FriendSerializer, LikeSerializer, ReportSerializer,
-    LikeAddSerializer, UserPublicSerializer
+    LikeAddSerializer, UserPublicSerializer, MpesaTransactionSerializer
 )
+
+consumer_k = settings.CONSUMER_KEY
+consumer_s = settings.CONSUMER_SECRET
+pass_key = settings.PASSKEY
+s_code = settings.SHORT_CODE
+c_url = settings.CALLBACK_URL
+
+
+class UserPublicDetailedView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.AllowAny]
 
 
 class UserProfileDetailedView(generics.RetrieveUpdateAPIView):
@@ -203,3 +230,147 @@ class ReportUserCreateView(APIView):
                   },
             status=status.HTTP_201_CREATED
         )
+
+
+""" MPAISA END-POINTS """
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class MpesaSTKApiView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, **kwargs):
+        data = request.data
+
+        if "user_id" and "user_phone" in data.keys():
+            try:
+                user = User.objects.get(
+                    pk=data["user_id"])
+            except User.DoesNotExist:
+                user = None
+
+            if not user:
+                return Response({'detail': 'Customer with that id does not exist, please confirm.'},
+                                status=status.HTTP_404_NOT_FOUND)
+
+            if "purpose" in data.keys():
+                stk_purpose = data["purpose"]
+            else:
+                stk_purpose = "Subscription"
+
+            if "amount" in data.keys():
+                amount = data["amount"]
+            else:
+                amount = 2000
+            Passkey = pass_key
+
+            Shortcode = s_code
+            callback_url = c_url
+
+            def get_stk_token():
+                consumer_key = consumer_k
+                consumer_secret = consumer_s
+                auth_url = "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
+                r = requests.get(auth_url, auth=HTTPBasicAuth(consumer_key, consumer_secret))
+                access_token = r.json()['access_token']
+                return access_token
+
+            access_token = get_stk_token()
+
+            def get_time():
+                now = str(datetime.now().strftime("%Y%m%d"))
+                time = str(datetime.now().strftime("%H%M%S"))
+                real = str(now + time)
+                return real
+
+            time_now = get_time()
+
+            def encoded_pass():
+                pwd = (str(Shortcode) + Passkey + time_now).encode('utf-8')
+                pwd_enc = b64encode(pwd).decode('ascii')
+                return pwd_enc
+
+            pass_enc = encoded_pass()
+
+            api_url = "https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
+            headers = {"Authorization": "Bearer %s" % access_token}
+
+            request = {
+                "BusinessShortCode": Shortcode,
+                "Password": pass_enc,
+                "Timestamp": time_now,
+                "TransactionType": "CustomerPayBillOnline",
+                "Amount": amount,
+                "PartyA": data["user_phone"],
+                "PartyB": Shortcode,
+                "PhoneNumber": data["user_phone"],
+                "CallBackURL": callback_url,
+                "AccountReference": "4075259",
+                "TransactionDesc": stk_purpose
+            }
+
+            activate_subscription = False
+
+            """ IF USER DOESN't ACTIVATED PREVIOUSLY """
+            if not user.is_paid:
+                activate_subscription = True
+            else:
+                """ IF USER ACTIVATED PREVIOUSLY BUT EXPIRED"""
+                if user.expiry_date < date.today():
+                    activate_subscription = True
+                else:
+                    return Response({"detail": "Already subscribed"}, status=status.HTTP_200_OK)
+
+            """ IF ALLOWED TO SUBSCRIBE """
+            if activate_subscription:
+                response = requests.post(api_url, json=request, headers=headers)
+                # print(response.json())
+
+                if response.status_code == 200:
+                    MpesaTransaction.objects.create(
+                        user_id=User.objects.get(pk=data["user_id"]),
+                        user_phone=data["user_phone"],
+                        purpose=stk_purpose,
+                        amount=amount,
+                        timestamp=time_now,
+                        expires_on=date.today() + relativedelta(months=6),
+                        request_id=response.json()["MerchantRequestID"],
+
+                    )
+
+            return Response({"detail": "Stk push Succesfull"}, status=status.HTTP_200_OK)
+
+        else:
+            return Response({"detail": "You need to pass the user phone number to make the stk push."},
+                            status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+class MpesaSTKConfirmationApiView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, **kwargs):
+        data = request.data
+        if data["Body"]["stkCallback"]["ResultCode"] == 0:
+            try:
+                transaction = MpesaTransaction.objects.get(
+                    request_id=data["Body"]["stkCallback"]["MerchantRequestID"])
+            except MpesaTransaction.DoesNotExist:
+                transaction = None
+
+            if transaction:
+                transaction.completed = True
+                transaction.save()
+            user_id = transaction.user_id
+            user = User.objects.get(user_id=user_id)
+            user.is_paid = True
+            user.expiry_date = date.today() + relativedelta(months=6)
+            user.save()
+        return Response({"detail": "Done"}, status=status.HTTP_200_OK)
+
+
+class MpesaTransactionsViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = MpesaTransactionSerializer
+    queryset = MpesaTransaction.objects.all()
+    filter_backends = (filters.DjangoFilterBackend, filterz.SearchFilter)
+    filterset_fields = ('user_id', 'user_phone', 'completed', 'purpose')
+    search_fields = ['user_id', 'user_phone', 'purpose']

@@ -1,6 +1,6 @@
 from django.db.models import fields
 from django.db.models.base import Model
-from src.api.models import FriendList, Like, Report
+from src.api.models import FriendList, Like, Report, MpesaTransaction
 from rest_framework import serializers
 
 from src.accounts.models import User, UserImage
@@ -110,6 +110,13 @@ class ReportSerializer(serializers.ModelSerializer):
         read_only_fields = [
             'pk', 'is_active', 'created_on'
         ]
+
+
+class MpesaTransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MpesaTransaction
+        fields = '_all_'
+
 
 # def save(self):
 #     like = Like(

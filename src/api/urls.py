@@ -5,6 +5,7 @@ app_name = 'api'
 
 urlpatterns = [
 
+    path('user/<int:pk>/', views.UserPublicDetailedView.as_view(), name='user-view'),
     path('my/profile/', views.UserProfileDetailedView.as_view(), name='profile-info-view-update'),
     path('my/profile/details/', views.UserProfileDetailedView.as_view(), name='profile-info-details-get'),
     path('my/image/', views.UserImagesListCreateView.as_view(), name='user-images-view-create-image'),
@@ -21,5 +22,10 @@ urlpatterns = [
     path('subscribe/', views.UserSubscribe.as_view(), name='subscribe-user'),
 
     path('my/news-feed/', views.UserNewsFeedListView.as_view(), name='user-news-feed-get'),
+
+    path('mpesa-stk-push/', views.MpesaSTKApiView.as_view(),
+         name='mpesa_stk_push'),
+    path('mpesa-stk-confirmation/', views.MpesaSTKConfirmationApiView.as_view(),
+         name='mpesa_stk_confirmation'),
 
 ]

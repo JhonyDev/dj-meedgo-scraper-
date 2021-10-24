@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import FriendList, Like, Report
+from .models import FriendList, Like, Report, MpesaTransaction
 
 
 class FriendListAdmin(admin.ModelAdmin):
@@ -21,4 +21,5 @@ class ReportAdmin(admin.ModelAdmin):
 
 admin.site.register(FriendList, FriendListAdmin)
 admin.site.register(Like, LikeAdmin)
+admin.site.register(MpesaTransaction)
 admin.site.register(Report, ReportAdmin)
