@@ -1,5 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import get_object_or_404
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.views import APIView
 
 from src.api.models import Like, FriendList, Report
@@ -31,8 +32,16 @@ class UserNewsFeedListView(generics.ListAPIView):
 
     def get_queryset(self):
 
+
         users = User.objects.filter(is_active=True, is_superuser=False, is_staff=False)
         # liked_users = Like.objects.filter(liked_by=self.request.user)
+        users = User.objects.filter(
+            is_active=True, is_superuser=False, is_staff=False,
+            interested_in_gender=self.request.user.interested_in_gender,
+            interested_lower_age__gte=self.request.user.interested_lower_age,
+            interested_upper_age__lte=self.request.user.interested_upper_age
+        )
+        liked_users = Like.objects.filter(liked_by=self.request.user)
         reported_users = Report.objects.filter(user=self.request.user)
 
         r_u = []
