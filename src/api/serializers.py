@@ -43,7 +43,7 @@ class UserSerializer(serializers.ModelSerializer):
             'about', 'address',
             'interests', 'matching', 'gender', 'interested_lower_age', 'interested_upper_age', 'interested_in_gender',
             'likes', 'likers', 'friends', 'date_joined', 'address', 'expiry_date', 'is_paid', 'is_identified',
-            'profession'
+            'profession', 'modes'
         ]
         read_only_fields = [
             'email', 'likes', 'likers', 'friends', 'date_joined', 'expiry_date', 'is_paid', 'is_identified',

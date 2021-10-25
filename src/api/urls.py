@@ -19,10 +19,8 @@ urlpatterns = [
 
     path('like/user/', views.UserLikeCreateView.as_view(), name='like-user-post'),
     path('report/user/<int:pk>/', views.ReportUserCreateView.as_view(), name='report-user'),
-    path('subscribe/', views.UserSubscribe.as_view(), name='subscribe-user'),
-
+    # path('subscribe/', views.UserSubscribe.as_view(), name='subscribe-user'),
     path('my/news-feed/', views.UserNewsFeedListView.as_view(), name='user-news-feed-get'),
-
     path('mpesa-stk-push/', views.MpesaSTKApiView.as_view(),
          name='mpesa_stk_push'),
     path('mpesa-stk-confirmation/', views.MpesaSTKConfirmationApiView.as_view(),

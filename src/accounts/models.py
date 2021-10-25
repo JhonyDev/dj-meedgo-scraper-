@@ -7,7 +7,6 @@ from django.dispatch import receiver
 from django_resized import ResizedImageField
 import random
 
-
 """
 At the start please be careful to start migrations
 --------------------------------------------------
@@ -52,6 +51,7 @@ class User(AbstractUser):
     expiry_date = models.DateField(default=None, null=True, blank=True)
     is_paid = models.BooleanField(default=False, null=False, blank=False)
     is_identified = models.BooleanField(default=False, null=False, blank=False)
+    modes = models.CharField(default="000000", null=False, blank=False, max_length=6)
 
     address = models.CharField(max_length=255, default='not-provided', null=False, blank=False)
 
