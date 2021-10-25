@@ -81,6 +81,7 @@ class FriendSerializer(serializers.ModelSerializer):
 
 class LikeSerializer(serializers.ModelSerializer):
     liked_to = UserPublicSerializer(many=False, read_only=True)
+    liked_by = UserPublicSerializer(many=False, read_only=True)
 
     class Meta:
         model = Like
