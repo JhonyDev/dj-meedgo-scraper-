@@ -27,7 +27,7 @@ class User(AbstractUser):
     )
 
     profile_image = ResizedImageField(
-        upload_to='accounts/images/profiles/', null=True, blank=True, size=[100, 100], quality=75, force_format='PNG',
+        upload_to='accounts/images/profiles/', null=True, blank=True, quality=100, force_format='PNG',
         help_text='size of logo must be 100*100 and format must be png image file', crop=['middle', 'center']
     )
 
