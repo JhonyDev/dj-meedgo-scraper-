@@ -62,7 +62,7 @@ class UserNewsFeedListView(generics.ListAPIView):
         if self.request.user.interested_in_gender != 'o':
             users = User.objects.filter(
                 is_active=True, is_superuser=False, is_staff=False,
-                interested_in_gender=self.request.user.interested_in_gender,
+                gender=self.request.user.interested_in_gender,
                 interested_lower_age__gte=self.request.user.interested_lower_age,
                 interested_upper_age__lte=self.request.user.interested_upper_age
             )
