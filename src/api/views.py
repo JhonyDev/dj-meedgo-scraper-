@@ -369,7 +369,8 @@ class MpesaSTKConfirmationApiView(APIView):
                 transaction.completed = True
                 transaction.save()
             user_id = transaction.user_id
-            user = User.objects.get(user_id=user_id)
+            # user = User.objects.get(user_id=user_id)
+            user = user_id
             user.is_paid = True
             user.expiry_date = date.today() + relativedelta(months=6)
             user.save()
