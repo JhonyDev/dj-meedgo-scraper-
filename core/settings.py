@@ -13,24 +13,26 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 from decouple import config
 import os
+import environ
 
 """ VAR ----------------------------------------------------------------------------------------"""
 BASE_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
-SECRET_KEY = "config('DJANGO_APPLICATION_SECRET')"
 ROOT_URLCONF = 'core.urls'
 AUTH_USER_MODEL = 'accounts.User'
 
-DEBUG = False
-SERVER = True
+env_file = os.path.join(BASE_DIR, ".env")
+env = environ.Env()
+env.read_env(env_file)
+SECRET_KEY = env('SERVER_KEY')
+
+# SECURITY WARNING: don't run with debug turned on in production!
+SERVER = env('SERVER') == 'True'
+DEBUG = env('DEBUG') == 'True'
 
 if SERVER:
-    if DEBUG:
-        SITE_ID = 2
-        GOOGLE_CALLBACK_ADDRESS = "http://192.168.100.15:8000/accounts/google/login/callback/"
-    else:
-        SITE_ID = 3
-        GOOGLE_CALLBACK_ADDRESS = "https://simbo.com/accounts/google/login/callback/"
+    SITE_ID = 4
+    GOOGLE_CALLBACK_ADDRESS = "https://mateappkenya.com/accounts/google/login/callback/"
 else:
     SITE_ID = 1
     GOOGLE_CALLBACK_ADDRESS = "http://127.0.0.1:8000/accounts/google/login/callback/"
