@@ -118,7 +118,6 @@ class MpesaTransactionSerializer(serializers.ModelSerializer):
         model = MpesaTransaction
         fields = '_all_'
 
-
 # def save(self):
 #     like = Like(
 #         liked_to=self.validated_data['liked_to']

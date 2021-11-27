@@ -9,6 +9,7 @@ from requests.auth import HTTPBasicAuth
 
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
+from rest_framework.decorators import api_view
 
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
@@ -191,6 +192,18 @@ class UserImagesListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class PublicUserImage(generics.ListCreateAPIView):
+    queryset = UserImage.objects.all()
+    serializer_class = UserImageSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        return UserImage.objects.filter(image=None)
+
+    def perform_create(self, serializer):
+        serializer.save(user=None)
 
 
 class UserImageDeleteView(generics.RetrieveDestroyAPIView):
