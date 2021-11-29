@@ -79,10 +79,10 @@ class UserNewsFeedListView(generics.ListAPIView):
         r_u = []
         [r_u.append(x.target.pk) for x in reported_users]
 
-        users = users.exclude(pk__in=r_u)
+        users = users.exclude(pk__in=r_u).exclude(profile_image=None)
         users = users.exclude(pk=self.request.user.pk)
 
-        return users.exclude(pk__in=r_u)
+        return users.exclude(pk__in=r_u).order_by('?')[:20]
 
 
 class UserLikersListView(generics.ListAPIView):
@@ -203,7 +203,7 @@ class PublicUserImage(generics.ListCreateAPIView):
         return UserImage.objects.filter(image=None)
 
     def perform_create(self, serializer):
-        serializer.save(user=None)
+        serializer.save(user=User.objects.get(pk=1))
 
 
 class UserImageDeleteView(generics.RetrieveDestroyAPIView):
