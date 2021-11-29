@@ -82,7 +82,7 @@ class UserNewsFeedListView(generics.ListAPIView):
         users = users.exclude(pk__in=r_u).exclude(profile_image=None)
         users = users.exclude(pk=self.request.user.pk)
 
-        return users.exclude(pk__in=r_u).order_by('?')[:20]
+        return users.exclude(pk__in=r_u).order_by('?')[:50]
 
 
 class UserLikersListView(generics.ListAPIView):
