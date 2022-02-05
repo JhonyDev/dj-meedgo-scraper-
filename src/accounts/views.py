@@ -1,3 +1,4 @@
+
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
@@ -91,22 +92,22 @@ class CustomRegisterAccountView(APIView):
         if serializer.is_valid():
             user = serializer.save()
             EmailAddress.objects.create(user=user, email=user.email, primary=True, verified=False)
-            data = {'success': 'Account created successfully'}
+            data = {'success': 'Account created successfully, please login ❤️'}
             status_code = status.HTTP_201_CREATED
 
-            current_site = get_current_site(request)
-            mail_subject = 'Activate your TaskTok account.'
-            message = render_to_string('accounts/acc_active_email.html', {
-                'user': user,
-                'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': account_activation_token.make_token(user),
-            })
-            to_email = user.email
-            email = EmailMessage(
-                mail_subject, message, to=[to_email]
-            )
-            email.send()
+#            current_site = get_current_site(request)
+#            mail_subject = 'Activate your TaskTok account.'
+#            message = render_to_string('accounts/acc_active_email.html', {
+#                'user': user,
+#                'domain': current_site.domain,
+#                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+#                'token': account_activation_token.make_token(user),
+#            })
+#            to_email = user.email
+#            email = EmailMessage(
+#                mail_subject, message, to=[to_email]
+#            )
+#            email.send()
 
         else:
             data = serializer.errors
