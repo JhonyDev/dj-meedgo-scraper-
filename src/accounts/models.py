@@ -27,7 +27,7 @@ class User(AbstractUser):
     )
 
     profile_image = ResizedImageField(
-        upload_to='accounts/images/profiles/', null=True, blank=True, quality=100, force_format='PNG',
+        upload_to='accounts/images/profiles/', null=True, blank=True, quality=75, force_format='PNG',
         help_text='size of logo must be 100*100 and format must be png image file', crop=['middle', 'center']
     )
 
@@ -70,7 +70,7 @@ class User(AbstractUser):
 
 class UserImage(models.Model):
     image = models.ImageField(upload_to='accounts/images/profiles/', null=False, blank=False)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=False, blank=False, related_name='images',
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, related_name='images',
                              on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
 

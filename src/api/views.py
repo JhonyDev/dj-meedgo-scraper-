@@ -9,6 +9,7 @@ from requests.auth import HTTPBasicAuth
 
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
+from rest_framework.decorators import api_view
 
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
@@ -78,10 +79,10 @@ class UserNewsFeedListView(generics.ListAPIView):
         r_u = []
         [r_u.append(x.target.pk) for x in reported_users]
 
-        users = users.exclude(pk__in=r_u)
+        users = users.exclude(pk__in=r_u).exclude(profile_image=None)
         users = users.exclude(pk=self.request.user.pk)
 
-        return users.exclude(pk__in=r_u)
+        return users.exclude(pk__in=r_u).order_by('?')[:50]
 
 
 class UserLikersListView(generics.ListAPIView):
@@ -191,6 +192,18 @@ class UserImagesListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class PublicUserImage(generics.ListCreateAPIView):
+    queryset = UserImage.objects.all()
+    serializer_class = UserImageSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        return UserImage.objects.filter(image=None)
+
+    def perform_create(self, serializer):
+        serializer.save(user=User.objects.get(pk=1))
 
 
 class UserImageDeleteView(generics.RetrieveDestroyAPIView):
