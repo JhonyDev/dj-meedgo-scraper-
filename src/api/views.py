@@ -280,9 +280,9 @@ class MpesaSTKApiView(APIView):
                 stk_purpose = "Subscription"
 
             if "amount" in data.keys():
-                amount = data["amount"]
+                amount = 500
             else:
-                amount = 2000
+                amount = 500
             Passkey = pass_key
 
             Shortcode = s_code
