@@ -27,8 +27,8 @@ env.read_env(env_file)
 SECRET_KEY = 'dkjsahdkashd82ye9w8hdasdknasjkdbak'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-SERVER = False
-DEBUG = True
+SERVER = env('SERVER') == 'True'
+DEBUG = env('SERVER') == 'True'
 
 if SERVER:
     SITE_ID = 4
