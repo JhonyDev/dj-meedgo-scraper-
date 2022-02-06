@@ -176,7 +176,7 @@ class UserLikeDeleteView(generics.DestroyAPIView):
 
     def get_object(self):
         like_id = self.kwargs['pk']
-        return get_object_or_404(Like.objects.filter(liked_by=self.request.user), pk=like11111_id)
+        return get_object_or_404(Like.objects.filter(liked_by=self.request.user), pk=like_id)
 
 
 """ IMAGES VIEWS --- """

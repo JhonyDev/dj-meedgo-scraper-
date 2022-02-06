@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.forms import AdminPasswordChangeForm
+from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -9,6 +10,7 @@ from django.views import View
 from django.views.generic import TemplateView, ListView, DetailView, UpdateView
 
 from src.accounts.models import User
+from .filters import UserFilter
 
 allowed_decorators = [login_required, user_passes_test(lambda u: u.is_superuser)]
 
@@ -44,8 +46,17 @@ class UserListView(ListView):
     paginate_by = 20
     template_name = 'administration/user_list.html'
 
-    def get_queryset(self):
-        return User.objects.exclude(Q(is_staff=True) | Q(is_superuser=True))
+    def get_context_data(self, **kwargs):
+        context = super(UserListView, self).get_context_data(**kwargs)
+        user_filter = UserFilter(self.request.GET, queryset=User.objects.filter(is_superuser=False, is_staff=False))
+        context['user_filter_form'] = user_filter.form
+
+        paginator = Paginator(user_filter.qs, 50)
+        page_number = self.request.GET.get('page')
+        user_page_object = paginator.get_page(page_number)
+
+        context['user_list'] = user_page_object
+        return context
 
 
 @method_decorator(login_required, name='dispatch')

@@ -24,11 +24,11 @@ AUTH_USER_MODEL = 'accounts.User'
 env_file = os.path.join(BASE_DIR, ".env")
 env = environ.Env()
 env.read_env(env_file)
-SECRET_KEY = env('SERVER_KEY')
+SECRET_KEY = 'dkjsahdkashd82ye9w8hdasdknasjkdbak'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-SERVER = env('SERVER') == 'True'
-DEBUG = env('DEBUG') == 'True'
+SERVER = False
+DEBUG = True
 
 if SERVER:
     SITE_ID = 4
@@ -191,10 +191,10 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'donald.duck0762@gmail.com'
-EMAIL_HOST_PASSWORD = 'fnoaqtnktvqljrmx'
+EMAIL_HOST_USER = 'app.simbo@gmail.com'
+EMAIL_HOST_PASSWORD = 'acaciamateapp'
 EMAIL_PORT = 587
-DEFAULT_FROM_EMAIL = 'EXARTH-Team <noreply@exarth.com>'
+DEFAULT_FROM_EMAIL = 'SIMBO <app.simbo@gmail.com>'
 
 """ RESIZER IMAGE --------------------------------------------------------------------------------"""
 DJANGORESIZED_DEFAULT_SIZE = [1920, 1080]
@@ -236,4 +236,4 @@ ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 OLD_PASSWORD_FIELD_ENABLED = True
 LOGOUT_ON_PASSWORD_CHANGE = False
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
