@@ -24,11 +24,11 @@ AUTH_USER_MODEL = 'accounts.User'
 env_file = os.path.join(BASE_DIR, ".env")
 env = environ.Env()
 env.read_env(env_file)
-SECRET_KEY = env('SERVER_KEY')
+SECRET_KEY = 'dkjsahdkashd82ye9w8hdasdknasjkdbak'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-SERVER = env('SERVER') == 'True'
-DEBUG = env('DEBUG') == 'True'
+SERVER = False
+DEBUG = True
 
 if SERVER:
     SITE_ID = 4
@@ -236,4 +236,4 @@ ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 OLD_PASSWORD_FIELD_ENABLED = True
 LOGOUT_ON_PASSWORD_CHANGE = False
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
