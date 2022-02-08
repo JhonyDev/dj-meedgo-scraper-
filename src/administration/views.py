@@ -72,7 +72,7 @@ class UserUpdateView(UpdateView):
         'first_name', 'last_name',
         'email', 'username', 'phone_number', 'bio', 'about',
         'interests', 'matching', 'gender', 'interested_lower_age',
-        'interested_upper_age', 'interested_in_gender', 'address', 'is_identified'
+        'interested_upper_age', 'interested_in_gender', 'address', 'is_identified', 'is_active'
     ]
     template_name = 'administration/user_update_form.html'
 
