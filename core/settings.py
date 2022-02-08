@@ -27,8 +27,8 @@ env.read_env(env_file)
 SECRET_KEY = 'dkjsahdkashd82ye9w8hdasdknasjkdbak'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-SERVER = False
-DEBUG = True
+SERVER = env('SERVER') == 'True'
+DEBUG = env('SERVER') == 'True'
 
 if SERVER:
     SITE_ID = 4
@@ -131,7 +131,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 """ DATABASES ------------------------------------------------------------------------------------"""
 
-if DEBUG:
+if not SERVER:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
