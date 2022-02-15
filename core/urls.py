@@ -18,9 +18,14 @@ from dj_rest_auth.registration.views import VerifyEmailView
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from django.shortcuts import redirect
 from django.urls import path, include, re_path
 from src.accounts.views import CustomRegisterAccountView, GoogleLoginView, FacebookLoginView
 from .settings import DEBUG, MEDIA_ROOT, MEDIA_URL
+
+
+def forget_pass_view(request):
+    return redirect('/accounts/password/reset/')
 
 
 urlpatterns = [
@@ -34,9 +39,9 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
 
     path(
-        'reset/password/', auth_views.PasswordResetView.as_view(template_name="accounts/reset_password.html"),
-        name='reset_password'
+        'reset/password/', forget_pass_view, name="forget_password"
     ),
+
     path(
         'reset/password/sent/',
         auth_views.PasswordResetDoneView.as_view(template_name="accounts/password_reset_sent.html"),
