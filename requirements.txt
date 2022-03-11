@@ -1,7 +1,7 @@
 django_allauth==0.45.0
 django_filter==21.1
 six==1.16.0
-Django==3.2.9
+Django==3.2
 django_resized==0.3.11
 dj_rest_auth==2.1.11
 django_environ==0.4.5
