@@ -39,6 +39,8 @@ ALLOWED_HOSTS = ['*']
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3030',
 ]
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 """ APPS ---------------------------------------------------------------------------------------"""
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -184,7 +186,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 """ LOGIN SYSTEM ---------------------------------------------------------------------------------"""
 
 LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/accounts/login/'
+LOGOUT_REDIRECT_URL = '/admin/'
 
 """ EMAIL SYSTEM ---------------------------------------------------------------------------------"""
 
