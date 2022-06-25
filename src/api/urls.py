@@ -5,26 +5,6 @@ app_name = 'api'
 
 urlpatterns = [
 
-    path('user/<int:pk>/', views.UserPublicDetailedView.as_view(), name='user-view'),
-    path('my/profile/', views.UserProfileDetailedView.as_view(), name='profile-info-view-update'),
-    path('my/profile/details/', views.UserProfileDetailedView.as_view(), name='profile-info-details-get'),
-    path('my/image/', views.UserImagesListCreateView.as_view(), name='user-images-view-create-image'),
-    path('my/friends/', views.UserFriendsListView.as_view(), name='user-friends-view'),
-    path('image/<int:pk>/', views.UserImageDeleteView.as_view(), name='image-view-delete'),
-    path('public/image/', views.PublicUserImage.as_view(), name='image-view-delete'),
-    path('my/password/change/', views.UserPasswordChangeView.as_view(), name='user-password-chang-put'),
-    path('my/likes/', views.UserLikesListView.as_view(), name='user-likes-get'),
-    path('my/likers/', views.UserLikersListView.as_view(), name='user-likers-get'),
-    path('my/reports/', views.UserReportsListView.as_view(), name='user-reports-list'),
-    path('like/<int:pk>/delete/', views.UserLikeDeleteView.as_view(), name='like-delete'),
-
-    path('like/user/', views.UserLikeCreateView.as_view(), name='like-user-post'),
-    path('report/user/<int:pk>/', views.ReportUserCreateView.as_view(), name='report-user'),
-    # path('subscribe/', views.UserSubscribe.as_view(), name='subscribe-user'),
-    path('my/news-feed/', views.UserNewsFeedListView.as_view(), name='user-news-feed-get'),
-    path('mpesa-stk-push/', views.MpesaSTKApiView.as_view(),
-         name='mpesa_stk_push'),
-    path('mpesa-stk-confirmation/', views.MpesaSTKConfirmationApiView.as_view(),
-         name='mpesa_stk_confirmation'),
+    path('', views.APIHomeView.as_view(), name='user-view'),
 
 ]

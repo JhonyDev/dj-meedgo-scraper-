@@ -1,5 +1,3 @@
-from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
 from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.admin.options import IS_POPUP_VAR
@@ -8,7 +6,6 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import (
     AdminPasswordChangeForm, UserChangeForm, UserCreationForm,
 )
-from django.contrib.auth.models import Group, User
 from django.core.exceptions import PermissionDenied
 from django.db import router, transaction
 from django.http import Http404, HttpResponseRedirect
@@ -19,10 +16,10 @@ from django.utils.html import escape, format_html
 from django.utils.translation import gettext, gettext_lazy as _
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
+
 from .models import (
     User, UserImage
 )
-
 
 csrf_protect_m = method_decorator(csrf_protect)
 sensitive_post_parameters_m = method_decorator(sensitive_post_parameters())
@@ -36,24 +33,13 @@ class CustomerUserAdmin(admin.ModelAdmin):
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'age', 'profile_image')}),
         (_('Bio'), {
             'fields': (
-                'bio', 'about'
-            )
-        }),
-        (_('Interests'), {
-            'fields': (
-                'interests', 'matching', 'gender', 'interested_lower_age',
-                'interested_upper_age', 'interested_in_gender'
-            )
-        }),
-        (_('Statistics'), {
-            'fields': (
-                'likes', 'likers', 'friends'
+                'about',
             )
         }),
         (_('Important dates'), {'fields': ('last_login', 'date_joined', 'expiry_date')}),
         (_('Permissions'), {
             'fields': (
-                'is_active', 'is_staff', 'is_superuser', 'is_paid', 'is_identified',
+                'is_active', 'is_staff', 'is_superuser',
                 'groups', 'user_permissions'
             ),
         }),
@@ -69,7 +55,7 @@ class CustomerUserAdmin(admin.ModelAdmin):
     add_form = UserCreationForm
     change_password_form = AdminPasswordChangeForm
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
-    list_filter = ('is_staff', 'is_superuser', 'is_active', 'is_paid', 'groups')
+    list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
     search_fields = ('username', 'first_name', 'last_name', 'email')
     ordering = ('username',)
     filter_horizontal = ('groups', 'user_permissions',)

@@ -1,11 +1,9 @@
-from django.conf import settings
-from django.db import models
-from django.contrib.auth.models import AbstractUser
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-
-from django_resized import ResizedImageField
 import random
+
+from django.conf import settings
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+from django_resized import ResizedImageField
 
 """
 At the start please be careful to start migrations
@@ -31,27 +29,9 @@ class User(AbstractUser):
         help_text='size of logo must be 100*100 and format must be png image file', crop=['middle', 'center']
     )
 
-    bio = models.TextField(null=True, blank=True)
     about = models.TextField(null=True, blank=True)
     phone_number = models.CharField(max_length=19, null=True, blank=True)
-    profession = models.CharField(max_length=13, null=False, blank=False, default='undefined')
     age = models.PositiveBigIntegerField(default=25, null=False, blank=False)
-
-    interests = models.TextField(null=True, blank=True)
-    matching = models.PositiveIntegerField(null=True, blank=True)
-    gender = models.CharField(max_length=1, default='m', null=False, blank=False, choices=GENDER_CHOICES)
-    interested_lower_age = models.PositiveIntegerField(default=25, null=False, blank=False)
-    interested_upper_age = models.PositiveIntegerField(default=50, null=False, blank=False)
-    interested_in_gender = models.CharField(max_length=1, default='m', null=False, blank=False, choices=GENDER_CHOICES)
-
-    likes = models.PositiveIntegerField(default=0, null=False, blank=False)
-    likers = models.PositiveIntegerField(default=0, null=False, blank=False)
-    friends = models.PositiveIntegerField(default=0, null=False, blank=False)
-
-    expiry_date = models.DateField(default=None, null=True, blank=True)
-    is_paid = models.BooleanField(default=False, null=False, blank=False)
-    is_identified = models.BooleanField(default=False, null=False, blank=False)
-    modes = models.CharField(default="000000", null=False, blank=False, max_length=6)
 
     address = models.CharField(max_length=255, default='not-provided', null=False, blank=False)
 

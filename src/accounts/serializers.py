@@ -1,8 +1,7 @@
 from allauth.account.models import EmailAddress
-from django.conf import settings
+from dj_rest_auth.registration.serializers import RegisterSerializer
 from django.db import transaction
 from rest_framework import serializers
-from dj_rest_auth.registration.serializers import RegisterSerializer
 
 from src.accounts.models import User
 
@@ -13,7 +12,7 @@ class CustomRegisterAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'first_name', 'last_name', 'username', 'email', 'password', 'password2', 'phone_number'
+            'first_name', 'last_name', 'username', 'email', 'password', 'password2'
         ]
         extra_kwargs = {
             'password': {'write_only': True}
@@ -25,7 +24,6 @@ class CustomRegisterAccountSerializer(serializers.ModelSerializer):
             last_name=self.validated_data['last_name'],
             email=self.validated_data['email'],
             username=self.validated_data['username'],
-            phone_number= self.validated_data['phone_number']
         )
         password = self.validated_data['password']
         password2 = self.validated_data['password2']
@@ -42,6 +40,7 @@ class CustomRegisterAccountSerializer(serializers.ModelSerializer):
 
 class RegisterSerializerRestAPI(RegisterSerializer):
     phone_number = serializers.CharField(max_length=30)
+
     # profile_image = serializers.ImageField(max_length=None, allow_empty_file=False, use_url=True)
 
     @transaction.atomic

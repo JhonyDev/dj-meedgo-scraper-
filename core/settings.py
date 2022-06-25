@@ -10,10 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
-from pathlib import Path
-from decouple import config
 import os
+from pathlib import Path
+
 import environ
+from decouple import config
 
 """ VAR ----------------------------------------------------------------------------------------"""
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,9 +22,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 ROOT_URLCONF = 'core.urls'
 AUTH_USER_MODEL = 'accounts.User'
 
-env_file = os.path.join(BASE_DIR, ".env")
-env = environ.Env()
-env.read_env(env_file)
 SECRET_KEY = 'dkjsahdkashd82ye9w8hdasdknasjkdbak'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -38,7 +36,9 @@ else:
     GOOGLE_CALLBACK_ADDRESS = "http://127.0.0.1:8000/accounts/google/login/callback/"
 
 ALLOWED_HOSTS = ['*']
-
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3030',
+]
 """ APPS ---------------------------------------------------------------------------------------"""
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -68,8 +68,8 @@ INSTALLED_APPS = [
 
     'src.accounts',
     'src.api',
-    'src.website',
-    'src.administration',
+
+    'corsheaders',
 ]
 
 """ MIDDLE WARES ----------------------------------------------------------------------------"""
@@ -78,6 +78,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
