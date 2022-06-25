@@ -219,6 +219,6 @@ admin.site.register(UserImage, UserImageAdmin)
 # admin.site.register(User, UserAdmin)
 
 
-admin.site.site_header = "SIMBO - Admin"
-admin.site.site_title = "SIMBO - Admin"
-admin.site.index_title = "SIMBO - Administration"
+admin.site.site_header = "NICHE-CARE - Admin"
+admin.site.site_title = "NICHE-CARE - Admin"
+admin.site.index_title = "NICHE-CARE - Administration"
