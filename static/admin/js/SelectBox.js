@@ -26,7 +26,7 @@
             box.scrollTop = scroll_value_from_top;
         },
         filter: function(id, text) {
-            // Redisplay the HTML select box, displaying only the choices containing ALL
+            // Redisplay the HTML select box, displaying only the MARITAL_STATUS containing ALL
             // the words in text. (It's an AND search.)
             const tokens = text.toLowerCase().split(/\s+/);
             for (const node of SelectBox.cache[id]) {

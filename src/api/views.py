@@ -1,11 +1,11 @@
-from rest_framework import permissions, status
-from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework import permissions, generics
+
+from . import serializers
 
 
-class APIHomeView(APIView):
+class PostRegistrationFormView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
+    serializer_class = serializers.UserDetailsSerializer
 
-    def post(self, request, *args, **kwargs):
-        return Response(data={"detail": f'Test Api'},
-                        status=status.HTTP_202_ACCEPTED)
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
