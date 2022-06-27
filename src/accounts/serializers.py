@@ -18,6 +18,10 @@ class CustomRegisterAccountSerializer(serializers.ModelSerializer):
             'password': {'write_only': True}
         }
 
+        read_only_fields = [
+            'password', 'username', 'email'
+        ]
+
     def save(self):
         user = User(
             first_name=self.validated_data['first_name'],
@@ -36,6 +40,20 @@ class CustomRegisterAccountSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+
+
+class CustomLoginSerializer(serializers.ModelSerializer):
+    email = serializers.CharField(style={'input_type': 'email'})
+    password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
+
+    class Meta:
+        model = User
+        fields = [
+            'username', 'email', 'password'
+        ]
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
 
 
 class RegisterSerializerRestAPI(RegisterSerializer):

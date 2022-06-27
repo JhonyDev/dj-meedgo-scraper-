@@ -1,25 +1,14 @@
 from allauth.account.models import EmailAddress
-from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
-from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
-from allauth.socialaccount.providers.oauth2.client import OAuth2Client
-from dj_rest_auth.registration.views import SocialLoginView
 from rest_framework import permissions, status
 from rest_framework.authtoken.models import TokenProxy
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from core.settings import GOOGLE_CALLBACK_ADDRESS
-from src.accounts.serializers import CustomRegisterAccountSerializer
-
-
-class GoogleLoginView(SocialLoginView):
-    adapter_class = GoogleOAuth2Adapter
-    client_class = OAuth2Client
-    callback_url = GOOGLE_CALLBACK_ADDRESS
-
-
-class FacebookLoginView(SocialLoginView):
-    adapter_class = FacebookOAuth2Adapter
+from src.accounts.models import User
+from src.accounts.serializers import CustomRegisterAccountSerializer, CustomLoginSerializer
+from src.api import utils
+from src.api.models import UserDetail
+from src.api.serializers import UserSerializer
 
 
 class CustomRegisterAccountView(APIView):
@@ -39,3 +28,34 @@ class CustomRegisterAccountView(APIView):
         else:
             data = serializer.errors
         return Response(data=data, status=status_code)
+
+
+class CustomLoginView(APIView):
+    serializer_class = CustomLoginSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        email = request.data['email']
+        password = request.data['password']
+
+        user = User.objects.filter(email=email).first()
+
+        if user is None:
+            raise utils.get_api_exception('Invalid credential User invalid', status.HTTP_400_BAD_REQUEST)
+
+        if not user.check_password(password):
+            raise utils.get_api_exception('Invalid credential', status.HTTP_400_BAD_REQUEST)
+
+        try:
+            token = TokenProxy.objects.get(user=user)
+        except TokenProxy.DoesNotExist:
+            token = TokenProxy.objects.create(user=user)
+
+        response = Response()
+        serializer = UserSerializer(user)
+        response.data = {
+            'key': token.key,
+            'is_new_registration': not UserDetail.objects.filter(user=user).exists(),
+            'user': serializer.data
+        }
+        return response

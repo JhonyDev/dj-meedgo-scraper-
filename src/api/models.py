@@ -1,6 +1,7 @@
-from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+
+from src.accounts.models import User
 
 
 class UserDetail(models.Model):
@@ -20,11 +21,11 @@ class UserDetail(models.Model):
     what_brings = models.TextField(default='')
     date_of_birth = models.DateField()
     marital_status = models.CharField(max_length=15, choices=MARITAL_STATUS)
-    sex = models.CharField(max_length=15, choices=MARITAL_STATUS)
-    name = models.CharField(max_length=15)
+    sex = models.CharField(max_length=15, choices=SEX)
+    name = models.CharField(max_length=50)
     ssn = models.CharField(max_length=25)
     address = models.TextField()
-    zip_code = models.IntegerField(default=0)
+    zip_code = models.CharField(max_length=15)
     cell = models.CharField(max_length=19)
     home_alternate = models.TextField()
     email_address = models.EmailField()
@@ -45,7 +46,7 @@ class UserDetail(models.Model):
     insurance_secondary_id = models.CharField(max_length=50)
     insurance_secondary_group = models.CharField(max_length=30)
 
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -54,4 +55,51 @@ class UserDetail(models.Model):
         verbose_name_plural = "User details"
 
     def __str__(self):
-        return self.user
+        return str(self.pk)
+
+
+class Clinic(models.Model):
+    title = models.CharField(default='', max_length=50)
+    address = models.TextField(default='', max_length=50)
+    manager = models.OneToOneField(User, on_delete=models.CASCADE, null=False, blank=False)
+
+    class Meta:
+        verbose_name = "Clinic"
+        verbose_name_plural = "Clinics"
+
+    def __str__(self):
+        return str(self.pk)
+
+
+class Slot(models.Model):
+    title = models.CharField(default='', max_length=20)
+    address = models.TextField(default='')
+    date = models.DateField(null=False, blank=False)
+    time = models.TimeField(null=False, blank=False)
+    number_of_appointments = models.PositiveIntegerField()
+    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=False, blank=False)
+
+    class Meta:
+        verbose_name = "Appointment Slot"
+        verbose_name_plural = "Appointment Slots"
+
+    def __str__(self):
+        return str(self.pk)
+
+
+class Appointment(models.Model):
+    STATUS = (
+        ('Cancelled', 'Cancelled'),
+        ('Waiting', 'Waiting'),
+        ('Complete', 'Complete'),
+    )
+    patient = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
+    slot = models.ForeignKey(Slot, on_delete=models.CASCADE, null=False, blank=False)
+    status = models.CharField(default='Waiting', choices=STATUS, max_length=20)
+
+    class Meta:
+        verbose_name = "Appointment"
+        verbose_name_plural = "Appointments"
+
+    def __str__(self):
+        return str(self.pk)

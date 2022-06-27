@@ -18,20 +18,21 @@ Then do next ...
 
 
 class User(AbstractUser):
-    GENDER_CHOICES = (
-        ('m', 'Male'),
-        ('f', 'Female'),
-        ('o', 'Other'),
+    USER_TYPES = (
+        ('Manager', 'Manager'),
+        ('Patient', 'Patient'),
+        ('Admin', 'Admin'),
     )
 
     profile_image = ResizedImageField(
         upload_to='accounts/images/profiles/', null=True, blank=True, quality=60, force_format='PNG',
         help_text='size of logo must be 100*100 and format must be png image file', crop=['middle', 'center']
     )
-
+    creator = models.ForeignKey('User', on_delete=models.SET_NULL, default=None, null=True, blank=True)
     about = models.TextField(null=True, blank=True)
     phone_number = models.CharField(max_length=19, null=True, blank=True)
     age = models.PositiveBigIntegerField(default=25, null=False, blank=False)
+    type = models.CharField(max_length=25, null=False, blank=False, default='Patient', choices=USER_TYPES)
 
     address = models.CharField(max_length=255, default='not-provided', null=False, blank=False)
 

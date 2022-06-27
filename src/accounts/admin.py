@@ -36,10 +36,10 @@ class CustomerUserAdmin(admin.ModelAdmin):
                 'about',
             )
         }),
-        (_('Important dates'), {'fields': ('last_login', 'date_joined', 'expiry_date')}),
+        (_('Important dates'), {'fields': ('last_login', 'date_joined',)}),
         (_('Permissions'), {
             'fields': (
-                'is_active', 'is_staff', 'is_superuser',
+                'is_active', 'is_staff', 'is_superuser', 'type',
                 'groups', 'user_permissions'
             ),
         }),

@@ -16,12 +16,10 @@ Including another URLconf
 
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.shortcuts import redirect
 from django.urls import path, include
 
-from src.accounts.views import CustomRegisterAccountView, GoogleLoginView
+from src.accounts.views import CustomRegisterAccountView, CustomLoginView
 from .settings import DEBUG, MEDIA_ROOT, MEDIA_URL
-
 
 urlpatterns = [
     # ADMIN/ROOT APPLICATION
@@ -32,6 +30,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
 
     # REST API -------------------------------------------------------------------------------------------
+    path('auth/login/', CustomLoginView.as_view(), name='login-user'),
     path('auth/', include('dj_rest_auth.urls')),
     path('auth/registration/', CustomRegisterAccountView.as_view(), name='account_create_new_user'),
 
