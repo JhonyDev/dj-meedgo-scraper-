@@ -61,7 +61,7 @@ class ManagerView(generics.RetrieveUpdateAPIView):
 class MyClinicsView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated,
                           cp.SubAdminPermission | cp.SuperAdminPermission]
-    serializer_class = serializers.ClinicSerializer
+    serializer_class = serializers.ClinicAdminSerializer
 
     def get_queryset(self):
         return Clinic.objects.filter(manager=self.request.user)
@@ -70,13 +70,25 @@ class MyClinicsView(generics.ListCreateAPIView):
         serializer.save(manager=self.request.user)
 
 
+class MyClinicRUView(generics.RetrieveUpdateAPIView):
+    permission_classes = [permissions.IsAuthenticated,
+                          cp.SubAdminPermission | cp.SuperAdminPermission]
+    serializer_class = serializers.ClinicAdminSerializer
+
+    def get_object(self):
+        return get_object_or_404(Clinic, pk=self.kwargs['pk'], creator=self.request.user)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+
 """ MANAGER + SUB-ADMIN APIS + SUPER-ADMIN APIS """
 
 
 class ClinicView(generics.RetrieveUpdateAPIView):
     permission_classes = [permissions.IsAuthenticated,
                           cp.SuperAdminPermission | cp.ManagerPermission]
-    serializer_class = serializers.ClinicSerializer
+    serializer_class = serializers.ClinicManagerSerializer
 
     def get_object(self):
         return get_object_or_404(Clinic, manager=self.request.user)

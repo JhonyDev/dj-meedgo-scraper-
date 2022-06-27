@@ -25,19 +25,38 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
 
-class ClinicSerializer(serializers.ModelSerializer):
-    manager = UserSerializer(many=False, read_only=True)
+class ClinicAdminSerializer(serializers.ModelSerializer):
+    manager_details = serializers.SerializerMethodField('get_manager', read_only=True)
+
+    def get_manager(self, clinic):
+        return UserSerializer(clinic.manager, many=False).data
 
     class Meta:
         model = models.Clinic
         fields = '__all__'
         read_only_fields = [
-            'manager'
+            'creator'
         ]
 
 
+class ClinicManagerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Clinic
+        fields = '__all__'
+        read_only_fields = [
+            'creator', 'manager'
+        ]
+
+
+class ClinicGenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Clinic
+        fields = '__all__'
+        read_only_fields = ['title', 'manager', 'creator', 'address']
+
+
 class SlotSerializer(serializers.ModelSerializer):
-    clinic = ClinicSerializer(many=False, read_only=True)
+    clinic = ClinicManagerSerializer(many=False, read_only=True)
 
     class Meta:
         model = models.Slot

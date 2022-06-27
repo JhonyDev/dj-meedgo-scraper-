@@ -62,6 +62,7 @@ class Clinic(models.Model):
     title = models.CharField(default='', max_length=50)
     address = models.TextField(default='', max_length=50)
     manager = models.OneToOneField(User, on_delete=models.CASCADE, null=False, blank=False)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False, related_name="creator-admin+")
 
     class Meta:
         verbose_name = "Clinic"

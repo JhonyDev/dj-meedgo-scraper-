@@ -11,6 +11,7 @@ urlpatterns = [
     path('admin/managers/', views.MyManagersView.as_view(), name='admin-mangers'),
     path('admin/managers/<int:pk>/', views.ManagerView.as_view(), name='admin-manager-view'),
     path('admin/clinics/', views.MyClinicsView.as_view(), name='admin-clinics'),
+    path('admin/clinics/<int:pk>/', views.MyClinicRUView.as_view(), name='admin-clinic-view'),
 
     path('manager/clinic/', views.ClinicView.as_view(), name='manager-clinic-view'),
     path('manager/slots/', views.SlotsView.as_view(), name='manager-slots'),
