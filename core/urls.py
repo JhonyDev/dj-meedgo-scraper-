@@ -17,6 +17,7 @@ Including another URLconf
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework_simplejwt import views as jwt_views
 
 from src.accounts.views import CustomRegisterAccountView, CustomLoginView
 from .settings import DEBUG, MEDIA_ROOT, MEDIA_URL
@@ -35,6 +36,8 @@ urlpatterns = [
     path('auth/registration/', CustomRegisterAccountView.as_view(), name='account_create_new_user'),
 
     path('api/', include('src.api.urls', namespace='api')),
+    path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
 ]
 
 if DEBUG:

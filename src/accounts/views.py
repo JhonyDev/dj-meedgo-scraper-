@@ -1,9 +1,9 @@
 from allauth.account.models import EmailAddress
 from rest_framework import permissions, status
-from rest_framework.authtoken.models import TokenProxy
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from src.accounts import authentication
 from src.accounts.models import User
 from src.accounts.serializers import CustomRegisterAccountSerializer, CustomLoginSerializer
 from src.api import utils
@@ -22,8 +22,13 @@ class CustomRegisterAccountView(APIView):
         if serializer.is_valid():
             user = serializer.save()
             EmailAddress.objects.create(user=user, email=user.email, primary=True, verified=False)
-            token = TokenProxy.objects.create(user=user)
-            data = {'key': f'{token}'}
+            access_token = authentication.create_access_token(UserSerializer(user).data,
+                                                              not UserDetail.objects.filter(user=user).exists())
+            refresh_token = authentication.create_refresh_token(user.pk)
+            data = {
+                'access_token': access_token,
+                'refresh_token': refresh_token
+            }
             status_code = status.HTTP_201_CREATED
         else:
             data = serializer.errors
@@ -46,16 +51,13 @@ class CustomLoginView(APIView):
         if not user.check_password(password):
             raise utils.get_api_exception('Invalid credential', status.HTTP_400_BAD_REQUEST)
 
-        try:
-            token = TokenProxy.objects.get(user=user)
-        except TokenProxy.DoesNotExist:
-            token = TokenProxy.objects.create(user=user)
-
         response = Response()
         serializer = UserSerializer(user)
+        access_token = authentication.create_access_token(serializer.data,
+                                                          not UserDetail.objects.filter(user=user).exists())
+        refresh_token = authentication.create_refresh_token(user.pk)
         response.data = {
-            'key': token.key,
-            'is_new_registration': not UserDetail.objects.filter(user=user).exists(),
-            'user': serializer.data
+            'access_token': access_token,
+            'refresh_token': refresh_token
         }
         return response

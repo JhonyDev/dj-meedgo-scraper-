@@ -7,6 +7,7 @@ from . import permissions as cp
 from . import serializers
 from . import utils
 from .models import Clinic, Slot, Appointment
+from ..accounts.authentication import JWTAuthentication
 from ..accounts.models import User
 
 
@@ -22,8 +23,9 @@ class PostRegistrationFormView(generics.CreateAPIView):
 
 
 class UserDetailsView(generics.RetrieveUpdateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
     serializer_class = serializers.UserSerializer
+    queryset = User.objects.all()
 
     def get_object(self):
         return self.request.user
@@ -33,8 +35,9 @@ class UserDetailsView(generics.RetrieveUpdateAPIView):
 
 
 class MyManagersView(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated,
-                          cp.SubAdminPermission | cp.SuperAdminPermission]
+    permission_classes = [
+        cp.SubAdminPermission | cp.SuperAdminPermission]
+    authentication_classes = [JWTAuthentication]
     serializer_class = serializers.UserSerializer
 
     def get_queryset(self):
@@ -45,8 +48,9 @@ class MyManagersView(generics.ListCreateAPIView):
 
 
 class ManagerView(generics.RetrieveUpdateAPIView):
-    permission_classes = [permissions.IsAuthenticated,
-                          cp.SubAdminPermission | cp.SuperAdminPermission]
+    permission_classes = [
+        cp.SubAdminPermission | cp.SuperAdminPermission]
+    authentication_classes = [JWTAuthentication]
     serializer_class = serializers.UserSerializer
     lookup_field = 'pk'
 
@@ -59,8 +63,8 @@ class ManagerView(generics.RetrieveUpdateAPIView):
 
 
 class MyClinicsView(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated,
-                          cp.SubAdminPermission | cp.SuperAdminPermission]
+    permission_classes = [cp.SubAdminPermission | cp.SuperAdminPermission]
+    authentication_classes = [JWTAuthentication]
     serializer_class = serializers.ClinicAdminSerializer
 
     def get_queryset(self):
@@ -71,8 +75,8 @@ class MyClinicsView(generics.ListCreateAPIView):
 
 
 class MyClinicRUView(generics.RetrieveUpdateAPIView):
-    permission_classes = [permissions.IsAuthenticated,
-                          cp.SubAdminPermission | cp.SuperAdminPermission]
+    permission_classes = [cp.SubAdminPermission | cp.SuperAdminPermission]
+    authentication_classes = [JWTAuthentication]
     serializer_class = serializers.ClinicAdminSerializer
 
     def get_object(self):
@@ -86,8 +90,8 @@ class MyClinicRUView(generics.RetrieveUpdateAPIView):
 
 
 class ClinicView(generics.RetrieveUpdateAPIView):
-    permission_classes = [permissions.IsAuthenticated,
-                          cp.SuperAdminPermission | cp.ManagerPermission]
+    permission_classes = [cp.SuperAdminPermission | cp.ManagerPermission]
+    authentication_classes = [JWTAuthentication]
     serializer_class = serializers.ClinicManagerSerializer
 
     def get_object(self):
@@ -101,7 +105,8 @@ class ClinicView(generics.RetrieveUpdateAPIView):
 
 
 class SlotsView(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated, cp.ManagerPermission | cp.SuperAdminPermission]
+    permission_classes = [cp.ManagerPermission | cp.SuperAdminPermission]
+    authentication_classes = [JWTAuthentication]
     serializer_class = serializers.SlotSerializer
 
     def get_queryset(self):
@@ -113,7 +118,8 @@ class SlotsView(generics.ListCreateAPIView):
 
 
 class SlotView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated, cp.ManagerPermission | cp.SuperAdminPermission]
+    permission_classes = [cp.ManagerPermission | cp.SuperAdminPermission]
+    authentication_classes = [JWTAuthentication]
     serializer_class = serializers.SlotSerializer
     lookup_field = 'pk'
 
@@ -126,7 +132,8 @@ class SlotView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ClinicAppointmentsView(generics.ListAPIView):
-    permission_classes = [permissions.IsAuthenticated, cp.ManagerPermission | cp.SuperAdminPermission]
+    permission_classes = [cp.ManagerPermission | cp.SuperAdminPermission]
+    authentication_classes = [JWTAuthentication]
     serializer_class = serializers.AppointmentSerializer
 
     def get_queryset(self):
@@ -135,7 +142,8 @@ class ClinicAppointmentsView(generics.ListAPIView):
 
 
 class UpdateAppointmentStatus(generics.RetrieveUpdateAPIView):
-    permission_classes = [permissions.IsAuthenticated, cp.ManagerPermission | cp.SuperAdminPermission]
+    permission_classes = [cp.ManagerPermission | cp.SuperAdminPermission]
+    authentication_classes = [JWTAuthentication]
     serializer_class = serializers.ManagerAppointmentSerializer
     lookup_field = 'pk'
 
@@ -149,7 +157,8 @@ class UpdateAppointmentStatus(generics.RetrieveUpdateAPIView):
 
 
 class CustomerAppointmentView(generics.ListAPIView):
-    permission_classes = [permissions.IsAuthenticated, cp.PatientPermission | cp.SuperAdminPermission]
+    permission_classes = [cp.PatientPermission | cp.SuperAdminPermission]
+    authentication_classes = [JWTAuthentication]
     serializer_class = serializers.AppointmentSerializer
 
     def get_queryset(self):
@@ -157,7 +166,8 @@ class CustomerAppointmentView(generics.ListAPIView):
 
 
 class AppointmentHistory(generics.ListAPIView):
-    permission_classes = [permissions.IsAuthenticated, cp.PatientPermission | cp.SuperAdminPermission]
+    permission_classes = [cp.PatientPermission | cp.SuperAdminPermission]
+    authentication_classes = [JWTAuthentication]
     serializer_class = serializers.AppointmentSerializer
 
     def get_queryset(self):
@@ -165,7 +175,8 @@ class AppointmentHistory(generics.ListAPIView):
 
 
 class CreateAppointmentView(APIView):
-    permission_classes = [permissions.IsAuthenticated, cp.PatientPermission | cp.SuperAdminPermission]
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [cp.PatientPermission | cp.SuperAdminPermission]
 
     def get(self, request, *args, **kwargs):
         appointments = Appointment.objects.filter(patient=self.request.user)

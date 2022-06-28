@@ -18,10 +18,6 @@ class CustomRegisterAccountSerializer(serializers.ModelSerializer):
             'password': {'write_only': True}
         }
 
-        read_only_fields = [
-            'password', 'username', 'email'
-        ]
-
     def save(self):
         user = User(
             first_name=self.validated_data['first_name'],
