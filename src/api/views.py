@@ -1,4 +1,4 @@
-from rest_framework import permissions, generics, status
+from rest_framework import generics, status
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from . import permissions as cp
 from . import serializers
 from . import utils
-from .models import Clinic, Slot, Appointment
+from .models import Clinic, Slot, Appointment, UserDetail
 from ..accounts.authentication import JWTAuthentication
 from ..accounts.models import User
 
@@ -14,6 +14,7 @@ from ..accounts.models import User
 class PostRegistrationFormView(generics.CreateAPIView):
     authentication_classes = [JWTAuthentication]
     serializer_class = serializers.UserDetailsSerializer
+    queryset = UserDetail.objects.all()
 
     def perform_create(self, serializer):
         try:
