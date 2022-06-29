@@ -217,8 +217,6 @@ class UserImageAdmin(admin.ModelAdmin):
 admin.site.register(User, CustomerUserAdmin)
 admin.site.register(UserImage, UserImageAdmin)
 # admin.site.register(User, UserAdmin)
-
-
 admin.site.site_header = "NICHE-CARE - Admin"
 admin.site.site_title = "NICHE-CARE - Admin"
 admin.site.index_title = "NICHE-CARE - Administration"
