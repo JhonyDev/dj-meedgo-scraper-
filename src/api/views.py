@@ -12,7 +12,7 @@ from ..accounts.models import User
 
 
 class PostRegistrationFormView(generics.CreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
     serializer_class = serializers.UserDetailsSerializer
 
     def perform_create(self, serializer):
