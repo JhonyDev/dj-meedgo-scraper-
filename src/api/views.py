@@ -17,6 +17,7 @@ class PostRegistrationFormView(generics.CreateAPIView):
     queryset = UserDetail.objects.all()
 
     def perform_create(self, serializer):
+        print("Creating form data")
         try:
             serializer.save(user=self.request.user)
         except Exception as e:
