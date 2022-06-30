@@ -12,10 +12,13 @@ class CustomRegisterAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'first_name', 'last_name', 'username', 'email', 'password', 'password2'
+            'first_name', 'last_name', 'username', 'email', 'password', 'password2', 'type'
+        ]
+        read_only_fields = [
+            'type'
         ]
         extra_kwargs = {
-            'password': {'write_only': True}
+            'password': {'write_only': True},
         }
 
     def save(self):
@@ -33,6 +36,7 @@ class CustomRegisterAccountSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'password': 'Passwords must be matched'})
         if EmailAddress.objects.filter(email=email):
             raise serializers.ValidationError({'email': 'Email is already registered'})
+
         user.set_password(password)
         user.save()
         return user

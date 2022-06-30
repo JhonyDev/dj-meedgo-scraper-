@@ -1,4 +1,5 @@
-from rest_framework import generics, status
+from allauth.account.models import EmailAddress
+from rest_framework import generics, status, permissions
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -9,6 +10,7 @@ from . import utils
 from .models import Clinic, Slot, Appointment, UserDetail
 from ..accounts.authentication import JWTAuthentication
 from ..accounts.models import User
+from ..accounts.serializers import CustomRegisterAccountSerializer
 
 
 class PostRegistrationFormView(generics.CreateAPIView):
@@ -25,8 +27,9 @@ class PostRegistrationFormView(generics.CreateAPIView):
 
 
 class UserDetailsView(generics.RetrieveUpdateAPIView):
-    authentication_classes = [JWTAuthentication]
     serializer_class = serializers.UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
     queryset = User.objects.all()
 
     def get_object(self):
@@ -37,16 +40,19 @@ class UserDetailsView(generics.RetrieveUpdateAPIView):
 
 
 class MyManagersView(generics.ListCreateAPIView):
-    permission_classes = [
-        cp.SubAdminPermission | cp.SuperAdminPermission]
+    serializer_class = CustomRegisterAccountSerializer
+    permission_classes = [cp.SubAdminPermission | cp.SuperAdminPermission]
     authentication_classes = [JWTAuthentication]
-    serializer_class = serializers.UserSerializer
 
     def get_queryset(self):
         return User.objects.filter(creator=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(creator=self.request.user, type='Manager')
+        user = serializer.save()
+        EmailAddress.objects.create(user=user, email=user.email, primary=True, verified=False)
+        user.creator = self.request.user
+        user.type = 'Manager'
+        user.save()
 
 
 class ManagerView(generics.RetrieveUpdateAPIView):
