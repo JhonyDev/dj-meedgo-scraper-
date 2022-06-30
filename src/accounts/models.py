@@ -42,13 +42,6 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
-    def save(self, *args, **kwargs):
-        if self.email is not None:
-            if self.email:
-                if User.objects.filter(email=self.email).exists():
-                    self.email = ""
-        super(User, self).save(*args, **kwargs)
-
 
 class UserImage(models.Model):
     image = models.ImageField(upload_to='accounts/images/profiles/', null=False, blank=False)
