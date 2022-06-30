@@ -1,6 +1,5 @@
 from allauth.account.models import EmailAddress
 from rest_framework import permissions, status
-from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -23,7 +22,7 @@ class CustomRegisterAccountView(APIView):
         if serializer.is_valid():
             user_email = serializer.validated_data['email']
             if User.objects.filter(email=user_email):
-                raise ValidationError("Account with this email already exists")
+                raise utils.get_api_exception("Account with this email already exists", status.HTTP_409_CONFLICT)
 
             user = serializer.save()
 
