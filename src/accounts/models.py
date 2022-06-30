@@ -2,7 +2,6 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django_resized import ResizedImageField
-from rest_framework.exceptions import ValidationError
 
 """
 At the start please be careful to start migrations
@@ -47,7 +46,7 @@ class User(AbstractUser):
         if self.email is not None:
             if self.email:
                 if User.objects.filter(email=self.email).exists():
-                    raise ValidationError("Email Already associated with an account")
+                    self.email = ""
         super(User, self).save(*args, **kwargs)
 
 
