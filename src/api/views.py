@@ -55,7 +55,7 @@ class MyManagersView(generics.ListCreateAPIView):
         user.save()
 
 
-class ManagerView(generics.RetrieveUpdateAPIView):
+class ManagerView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [
         cp.SubAdminPermission | cp.SuperAdminPermission]
     authentication_classes = [JWTAuthentication]
@@ -76,13 +76,13 @@ class MyClinicsView(generics.ListCreateAPIView):
     serializer_class = serializers.ClinicAdminSerializer
 
     def get_queryset(self):
-        return Clinic.objects.filter(manager=self.request.user)
+        return Clinic.objects.filter(creator=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(manager=self.request.user)
+        serializer.save(creator=self.request.user)
 
 
-class MyClinicRUView(generics.RetrieveUpdateAPIView):
+class MyClinicRUView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [cp.SubAdminPermission | cp.SuperAdminPermission]
     authentication_classes = [JWTAuthentication]
     serializer_class = serializers.ClinicAdminSerializer

@@ -12,7 +12,7 @@ class CustomRegisterAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'first_name', 'last_name', 'username', 'email', 'password', 'password2', 'type'
+            'pk', 'first_name', 'last_name', 'username', 'email', 'password', 'password2', 'type'
         ]
         read_only_fields = [
             'type'
