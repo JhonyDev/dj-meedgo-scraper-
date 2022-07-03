@@ -80,9 +80,9 @@ class MyClinicsView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         if serializer.is_valid():
-            manager = serializer.validated_data('manager')
+            manager = serializer.validated_data['manager']
             try:
-                User.objects.get(pk=manager, creator=self.request.user)
+                User.objects.get(username=manager, creator=self.request.user)
             except User.DoesNotExist:
                 raise utils.get_api_exception(
                     "Requested manager cannot be associated with the clinic, since you have not created this manager",
