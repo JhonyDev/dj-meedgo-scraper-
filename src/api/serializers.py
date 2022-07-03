@@ -42,10 +42,7 @@ class ClinicAdminSerializer(serializers.ModelSerializer):
 class ClinicManagerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Clinic
-        fields = '__all__'
-        read_only_fields = [
-            'creator', 'manager'
-        ]
+        fields = ['pk', 'title', 'address']
 
 
 class ClinicGenSerializer(serializers.ModelSerializer):
@@ -60,7 +57,7 @@ class SlotSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Slot
-        fields = ['date', 'time', 'number_of_appointments',
+        fields = ['pk', 'date', 'time', 'number_of_appointments',
                   'clinic']
         read_only_fields = [
             'clinic'

@@ -29,6 +29,7 @@ class JWTAuthentication(BaseAuthentication):
                 id = decode_access_token(token)
                 try:
                     user = User.objects.get(pk=id)
+                    print(user.type)
                     if user.type == "Manager":
                         from src.api.models import Clinic
                         try:
@@ -84,7 +85,7 @@ class JWTAuthentication(BaseAuthentication):
         if not user.is_active:
             raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
 
-        return (user, None)
+        return user, None
 
     def authenticate_header(self, request):
         return 'Basic realm="%s"' % self.www_authenticate_realm
