@@ -79,7 +79,17 @@ class MyClinicsView(generics.ListCreateAPIView):
         return Clinic.objects.filter(creator=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(creator=self.request.user)
+        if serializer.is_valid():
+            manager = serializer.validated_data('manager')
+            try:
+                User.objects.get(pk=manager, creator=self.request.user)
+            except User.DoesNotExist:
+                raise utils.get_api_exception(
+                    "Requested manager cannot be associated with the clinic, since you have not created this manager",
+                    status.HTTP_403_FORBIDDEN)
+            serializer.save(creator=self.request.user)
+        else:
+            raise utils.get_api_exception(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
 
 class MyClinicRUView(generics.RetrieveUpdateDestroyAPIView):
