@@ -67,6 +67,12 @@ class ManagerView(generics.RetrieveUpdateAPIView):
         return get_object_or_404(User, pk=pk, creator=self.request.user)
 
     def put(self, request, *args, **kwargs):
+        email = self.request.data.get('email')
+        pk = self.kwargs["pk"]
+        user = User.objects.get(pk=pk)
+        if user.email != email:
+            if EmailAddress.objects.filter(email=email):
+                raise utils.get_api_exception('Email is already registered', status.HTTP_406_NOT_ACCEPTABLE)
         return self.update(request, *args, **kwargs)
 
 

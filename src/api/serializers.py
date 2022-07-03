@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from src.accounts.models import User
 from . import models
+from allauth.account.models import EmailAddress
 
 
 class UserDetailsSerializer(serializers.ModelSerializer):
