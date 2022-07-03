@@ -124,8 +124,8 @@ class SlotsView(generics.ListCreateAPIView):
         try:
             clinic = Clinic.objects.get(manager=self.request.user)
         except Clinic.DoesNotExist:
-            raise utils.get_api_exception("You are not associated with any clinic, Please request admin", status.HTTP_406_NOT_ACCEPTABLE)
-        clinic = get_object_or_404(Clinic, manager=self.request.user)
+            raise utils.get_api_exception("You are not associated with any clinic, Please request your admin",
+                                          status.HTTP_406_NOT_ACCEPTABLE)
         serializer.save(clinic=clinic)
 
 
