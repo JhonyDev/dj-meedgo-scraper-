@@ -73,8 +73,6 @@ class Clinic(models.Model):
 
 
 class Slot(models.Model):
-    title = models.CharField(default='', max_length=20)
-    address = models.TextField(default='')
     date = models.DateField(null=False, blank=False)
     time = models.TimeField(null=False, blank=False)
     number_of_appointments = models.PositiveIntegerField()
