@@ -39,7 +39,7 @@ class CustomerUserAdmin(admin.ModelAdmin):
         (_('Important dates'), {'fields': ('last_login', 'date_joined',)}),
         (_('Permissions'), {
             'fields': (
-                'is_active', 'is_staff', 'is_superuser', 'type',
+                'is_active', 'is_staff', 'is_superuser', 'type', 'creator',
                 'groups', 'user_permissions'
             ),
         }),
