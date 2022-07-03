@@ -12,7 +12,10 @@ class CustomRegisterAccountSerializer(serializers.ModelSerializer):
     is_associated_with_clinic = serializers.SerializerMethodField('get_association', read_only=True)
 
     def get_association(self, user):
-        is_associated = Clinic.objects.filter(manager=user).exists()
+        try:
+            is_associated = Clinic.objects.filter(manager=user).exists()
+        except:
+            is_associated = False
         return is_associated
 
     class Meta:
