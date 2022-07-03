@@ -29,6 +29,14 @@ class JWTAuthentication(BaseAuthentication):
                 id = decode_access_token(token)
                 try:
                     user = User.objects.get(pk=id)
+                    if user.type == "Manager":
+                        from src.api.models import Clinic
+                        try:
+                            Clinic.objects.get(manager=user)
+                        except Clinic.DoesNotExist:
+                            msg = _('Login forbidden! You are not associated with any clinic, Please contact your '
+                                    'admin.')
+                            raise exceptions.AuthenticationFailed(msg)
                     return user, None
                 except User.DoesNotExist:
                     pass
@@ -40,6 +48,7 @@ class JWTAuthentication(BaseAuthentication):
         if len(auth) == 1:
             msg = _('Invalid basic header. No credentials provided.')
             raise exceptions.AuthenticationFailed(msg)
+
         elif len(auth) > 2:
             msg = _('Invalid basic header. Credentials string should not contain spaces.')
             raise exceptions.AuthenticationFailed(msg)
@@ -55,6 +64,7 @@ class JWTAuthentication(BaseAuthentication):
             raise exceptions.AuthenticationFailed(msg)
 
         userid, password = auth_parts[0], auth_parts[2]
+
         return self.authenticate_credentials(userid, password, request)
 
     def authenticate_credentials(self, userid, password, request=None):
