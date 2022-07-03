@@ -52,6 +52,14 @@ class CustomLoginView(APIView):
         if not user.check_password(password):
             raise utils.get_api_exception('Invalid credential', status.HTTP_400_BAD_REQUEST)
 
+        if user.type == "Manager":
+            from src.api.models import Clinic
+            try:
+                Clinic.objects.get(manager=user)
+            except Clinic.DoesNotExist:
+                msg = 'Login forbidden! You are not associated with any clinic, Please contact your admin.'
+                raise utils.get_api_exception(msg, status.HTTP_403_FORBIDDEN)
+
         response = Response()
         serializer = UserSerializer(user)
         access_token = authentication.create_access_token(serializer.data,
