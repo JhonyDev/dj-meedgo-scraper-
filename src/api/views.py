@@ -55,7 +55,7 @@ class MyManagersView(generics.ListCreateAPIView):
         user.save()
 
 
-class ManagerView(generics.RetrieveUpdateDestroyAPIView):
+class ManagerView(generics.RetrieveUpdateAPIView):
     permission_classes = [
         cp.SubAdminPermission | cp.SuperAdminPermission]
     authentication_classes = [JWTAuthentication]
