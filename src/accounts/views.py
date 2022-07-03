@@ -57,7 +57,7 @@ class CustomLoginView(APIView):
             try:
                 Clinic.objects.get(manager=user)
             except Clinic.DoesNotExist:
-                msg = 'Login forbidden! You are not associated with any clinic, Please contact your admin.'
+                msg = 'Login forbidden! You are not associated with any clinic.'
                 raise utils.get_api_exception(msg, status.HTTP_403_FORBIDDEN)
 
         response = Response()
