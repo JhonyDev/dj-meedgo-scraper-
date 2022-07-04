@@ -237,7 +237,7 @@ class CreateAppointmentView(APIView):
 class AvailableClinics(generics.ListAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [cp.PatientPermission | cp.SuperAdminPermission]
-    serializer_class = serializers.ClinicGenSerializer
+    serializer_class = serializers.ClinicManagerSerializer
 
     def get_queryset(self):
         return Clinic.objects.all()
