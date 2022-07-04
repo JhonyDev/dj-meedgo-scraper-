@@ -1,5 +1,5 @@
 from allauth.account.models import EmailAddress
-from rest_framework import generics, status, permissions
+from rest_framework import generics, status, permissions, viewsets
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -184,13 +184,23 @@ class UpdateAppointmentStatus(generics.RetrieveUpdateAPIView):
 """ PATIENT APIS """
 
 
-class CustomerAppointmentView(generics.ListAPIView):
+class CustomerAppointmentView(viewsets.ModelViewSet):
     permission_classes = [cp.PatientPermission | cp.SuperAdminPermission]
     authentication_classes = [JWTAuthentication]
-    serializer_class = serializers.AppointmentSerializer
+    serializer_classes = {
+        'list': serializers.AppointmentSerializer,
+        'create': serializers.AppointmentCreateSerializer,
+    }
+    default_serializer_class = serializers.AppointmentSerializer
+
+    def get_serializer_class(self):
+        return self.serializer_classes.get(self.action, self.default_serializer_class)
 
     def get_queryset(self):
         return Appointment.objects.filter(patient=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(patient=self.request.user, status='Waiting')
 
 
 class AppointmentHistory(generics.ListAPIView):

@@ -66,11 +66,24 @@ class SlotSerializer(serializers.ModelSerializer):
 
 class AppointmentSerializer(serializers.ModelSerializer):
     slot = SlotSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = models.Appointment
+        fields = '__all__'
+        read_only_fields = [
+            'status'
+        ]
+
+
+class AppointmentCreateSerializer(serializers.ModelSerializer):
     patient = UserSerializer(many=False, read_only=True)
 
     class Meta:
         model = models.Appointment
         fields = '__all__'
+        read_only_fields = [
+            'status'
+        ]
 
 
 class ManagerAppointmentSerializer(serializers.ModelSerializer):
