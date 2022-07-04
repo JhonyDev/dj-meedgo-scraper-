@@ -232,3 +232,12 @@ class CreateAppointmentView(APIView):
         appointment = Appointment.objects.create(patient=request.user, slot=slot)
         serializer = serializers.AppointmentSerializer(appointment, many=False).data
         return Response(data=serializer, status=status.HTTP_201_CREATED)
+
+
+class AvailableClinics(generics.ListAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [cp.PatientPermission | cp.SuperAdminPermission]
+    serializer_class = serializers.ClinicGenSerializer
+
+    def get_queryset(self):
+        return Clinic.objects.all()

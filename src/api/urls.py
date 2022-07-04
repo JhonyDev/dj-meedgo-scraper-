@@ -1,7 +1,8 @@
 from django.urls import path, include
+from rest_framework import routers
 
 from . import views
-from rest_framework import routers
+
 router = routers.DefaultRouter()
 router.register(r'', views.CustomerAppointmentView, basename='customer-appointment')
 app_name = 'api'
@@ -22,6 +23,7 @@ urlpatterns = [
     path('manager/clinic/appointments/<int:pk>/', views.UpdateAppointmentStatus.as_view(),
          name='update-status-appointment'),
 
+    path('available/clinics/', views.AvailableClinics.as_view(), name='available-appointment'),
     path('customer/appointments/', include(router.urls)),
     path('create/appointment/slot/<int:pk>/', views.CreateAppointmentView.as_view(), name='create-appointment'),
     path('customer/history/appointments/', views.AppointmentHistory.as_view(),
