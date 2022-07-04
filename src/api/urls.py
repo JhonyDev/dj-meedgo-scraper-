@@ -24,6 +24,8 @@ urlpatterns = [
          name='update-status-appointment'),
 
     path('available/clinics/', views.AvailableClinics.as_view(), name='available-appointment'),
+    # path('customer/clinic/slots/<int:pk>/', views.CustomerClinicSlots.as_view(),
+    #      name='available-appointment'),
     path('customer/appointments/', include(router.urls)),
     path('create/appointment/slot/<int:pk>/', views.CreateAppointmentView.as_view(), name='create-appointment'),
     path('customer/history/appointments/', views.AppointmentHistory.as_view(),

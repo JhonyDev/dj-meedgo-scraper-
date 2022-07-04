@@ -16,7 +16,10 @@ from ..accounts.serializers import CustomRegisterAccountSerializer
 class PostRegistrationFormView(generics.CreateAPIView):
     authentication_classes = [JWTAuthentication]
     serializer_class = serializers.UserDetailsSerializer
-    queryset = UserDetail.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return UserDetail.objects.all()
 
     def perform_create(self, serializer):
         print("Creating form data")
@@ -24,6 +27,7 @@ class PostRegistrationFormView(generics.CreateAPIView):
             serializer.save(user=self.request.user)
         except Exception as e:
             raise utils.get_api_exception(str(e), status.HTTP_409_CONFLICT)
+
 
 
 class UserDetailsView(generics.RetrieveUpdateAPIView):
@@ -184,25 +188,6 @@ class UpdateAppointmentStatus(generics.RetrieveUpdateAPIView):
 """ PATIENT APIS """
 
 
-class CustomerAppointmentView(viewsets.ModelViewSet):
-    permission_classes = [cp.PatientPermission | cp.SuperAdminPermission]
-    authentication_classes = [JWTAuthentication]
-    serializer_classes = {
-        'list': serializers.AppointmentSerializer,
-        'create': serializers.AppointmentCreateSerializer,
-    }
-    default_serializer_class = serializers.AppointmentSerializer
-
-    def get_serializer_class(self):
-        return self.serializer_classes.get(self.action, self.default_serializer_class)
-
-    def get_queryset(self):
-        return Appointment.objects.filter(patient=self.request.user)
-
-    def perform_create(self, serializer):
-        serializer.save(patient=self.request.user, status='Waiting')
-
-
 class AppointmentHistory(generics.ListAPIView):
     permission_classes = [cp.PatientPermission | cp.SuperAdminPermission]
     authentication_classes = [JWTAuthentication]
@@ -241,3 +226,44 @@ class AvailableClinics(generics.ListAPIView):
 
     def get_queryset(self):
         return Clinic.objects.all()
+
+
+"""----------------------------VIEW SETS-----------------------------"""
+
+
+class CustomerAppointmentView(viewsets.ModelViewSet):
+    permission_classes = [cp.PatientPermission | cp.SuperAdminPermission]
+    authentication_classes = [JWTAuthentication]
+    serializer_classes = {
+        'list': serializers.AppointmentSerializer,
+        'create': serializers.AppointmentCreateSerializer,
+    }
+    default_serializer_class = serializers.AppointmentSerializer
+
+    def get_serializer_class(self):
+        return self.serializer_classes.get(self.action, self.default_serializer_class)
+
+    def get_queryset(self):
+        return Appointment.objects.filter(patient=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(patient=self.request.user, status='Waiting')
+
+#
+# class CustomerSlotsViewSets(viewsets.ModelViewSet):
+#     permission_classes = [cp.PatientPermission | cp.SuperAdminPermission]
+#     authentication_classes = [JWTAuthentication]
+#     serializer_classes = {
+#         'list': serializers.AppointmentSerializer,
+#         'create': serializers.AppointmentCreateSerializer,
+#     }
+#     default_serializer_class = serializers.AppointmentSerializer
+#
+#     def get_serializer_class(self):
+#         return self.serializer_classes.get(self.action, self.default_serializer_class)
+#
+#     def get_queryset(self):
+#         return Appointment.objects.filter(patient=self.request.user)
+#
+#     def perform_create(self, serializer):
+#         serializer.save(patient=self.request.user, status='Waiting')

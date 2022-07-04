@@ -64,6 +64,12 @@ class SlotSerializer(serializers.ModelSerializer):
         ]
 
 
+class SlotCustomerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Slot
+        fields = ['pk', 'date', 'time']
+
+
 class AppointmentSerializer(serializers.ModelSerializer):
     slot = SlotSerializer(many=False, read_only=True)
 
