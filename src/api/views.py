@@ -256,5 +256,6 @@ class CustomerSlotsViewSets(generics.ListAPIView):
 
     def get_queryset(self):
         date = self.kwargs.get('date')
-        slots = Slot.objects.filter(date=date)
+        clinic_pk = self.kwargs.get('clinic_pk')
+        slots = Slot.objects.filter(date=date, clinic__pk=clinic_pk)
         return slots
