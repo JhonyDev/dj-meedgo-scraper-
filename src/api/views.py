@@ -1,3 +1,5 @@
+import datetime
+
 from allauth.account.models import EmailAddress
 from rest_framework import generics, status, permissions, viewsets
 from rest_framework.generics import get_object_or_404
@@ -265,6 +267,10 @@ class CustomerSlotsViewSets(generics.ListAPIView):
 
     def get_queryset(self):
         date = self.kwargs.get('date')
+
+        target_date = datetime.datetime.strptime(date, '%Y-%m-%d').date()
         clinic_pk = self.kwargs.get('clinic_pk')
         slots = Slot.objects.filter(date=date, clinic__pk=clinic_pk, is_active=True)
+        if target_date < datetime.date.today():
+            slots = Slot.objects.none()
         return slots
