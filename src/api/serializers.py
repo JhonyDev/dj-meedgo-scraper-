@@ -99,3 +99,9 @@ class ManagerAppointmentSerializer(serializers.ModelSerializer):
         read_only_fields = [
             'patient', 'slot', 'pk'
         ]
+
+
+class CustomerSlotSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Slot
+        fields = ['pk', 'date', 'time']

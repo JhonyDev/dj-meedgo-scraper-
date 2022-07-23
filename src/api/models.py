@@ -78,6 +78,7 @@ class Slot(models.Model):
     time = models.TimeField(null=False, blank=False)
     number_of_appointments = models.PositiveIntegerField()
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=False, blank=False)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "Appointment Slot"

@@ -29,7 +29,6 @@ class PostRegistrationFormView(generics.CreateAPIView):
             raise utils.get_api_exception(str(e), status.HTTP_409_CONFLICT)
 
 
-
 class UserDetailsView(generics.RetrieveUpdateAPIView):
     serializer_class = serializers.UserSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -249,21 +248,13 @@ class CustomerAppointmentView(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(patient=self.request.user, status='Waiting')
 
-#
-# class CustomerSlotsViewSets(viewsets.ModelViewSet):
-#     permission_classes = [cp.PatientPermission | cp.SuperAdminPermission]
-#     authentication_classes = [JWTAuthentication]
-#     serializer_classes = {
-#         'list': serializers.AppointmentSerializer,
-#         'create': serializers.AppointmentCreateSerializer,
-#     }
-#     default_serializer_class = serializers.AppointmentSerializer
-#
-#     def get_serializer_class(self):
-#         return self.serializer_classes.get(self.action, self.default_serializer_class)
-#
-#     def get_queryset(self):
-#         return Appointment.objects.filter(patient=self.request.user)
-#
-#     def perform_create(self, serializer):
-#         serializer.save(patient=self.request.user, status='Waiting')
+
+class CustomerSlotsViewSets(generics.ListAPIView):
+    permission_classes = [cp.PatientPermission | cp.SuperAdminPermission]
+    authentication_classes = [JWTAuthentication]
+    serializer_class = serializers.CustomerSlotSerializer
+
+    def get_queryset(self):
+        date = self.kwargs.get('date')
+        slots = Slot.objects.filter(date=date)
+        return slots

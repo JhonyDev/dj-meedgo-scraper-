@@ -27,6 +27,7 @@ urlpatterns = [
     # path('customer/clinic/slots/<int:pk>/', views.CustomerClinicSlots.as_view(),
     #      name='available-appointment'),
     path('customer/appointments/', include(router.urls)),
+    path('customer/slots/<str:date>/', views.CustomerSlotsViewSets.as_view(), name='customer-slots'),
     path('create/appointment/slot/<int:pk>/', views.CreateAppointmentView.as_view(), name='create-appointment'),
     path('customer/history/appointments/', views.AppointmentHistory.as_view(),
          name='customer-history-appointment'),
