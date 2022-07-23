@@ -246,7 +246,16 @@ class CustomerAppointmentView(viewsets.ModelViewSet):
         return Appointment.objects.filter(patient=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(patient=self.request.user, status='Waiting')
+        slot = serializer.validated_data["slot"]
+        if Appointment.objects.filter(patient=self.request.user, slot=slot).exists():
+            raise utils.get_api_exception("Appointment already exists", 400)
+
+        appointment = serializer.save(patient=self.request.user, status='Waiting')
+        slot = Slot.objects.get(pk=appointment.slot.pk)
+        count_appointments = Appointment.objects.filter(slot=slot).count()
+        if count_appointments >= slot.number_of_appointments:
+            slot.is_active = False
+            slot.save()
 
 
 class CustomerSlotsViewSets(generics.ListAPIView):
@@ -257,5 +266,5 @@ class CustomerSlotsViewSets(generics.ListAPIView):
     def get_queryset(self):
         date = self.kwargs.get('date')
         clinic_pk = self.kwargs.get('clinic_pk')
-        slots = Slot.objects.filter(date=date, clinic__pk=clinic_pk)
+        slots = Slot.objects.filter(date=date, clinic__pk=clinic_pk, is_active=True)
         return slots
