@@ -267,10 +267,12 @@ class CustomerSlotsViewSets(generics.ListAPIView):
 
     def get_queryset(self):
         date = self.kwargs.get('date')
-
-        target_date = datetime.datetime.strptime(date, '%Y-%m-%d').date()
+        try:
+            target_date = datetime.datetime.strptime(date, '%Y-%m-%d').date()
+        except:
+            raise utils.get_api_exception("Date format incorrect", status.HTTP_400_BAD_REQUEST)
         clinic_pk = self.kwargs.get('clinic_pk')
         slots = Slot.objects.filter(date=date, clinic__pk=clinic_pk, is_active=True)
-        if target_date < datetime.date.today():
+        if target_date <= datetime.date.today():
             slots = Slot.objects.none()
         return slots
