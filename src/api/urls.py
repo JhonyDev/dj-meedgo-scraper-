@@ -6,7 +6,6 @@ from . import views
 router = routers.DefaultRouter()
 router.register(r'', views.CustomerAppointmentView, basename='customer-appointment')
 app_name = 'api'
-
 urlpatterns = [
     path('registration/details/', views.PostRegistrationFormView.as_view(), name='reg-details'),
     path('my/profile/', views.UserDetailsView.as_view(), name='my-profile'),
@@ -26,6 +25,7 @@ urlpatterns = [
     path('available/clinics/', views.AvailableClinics.as_view(), name='available-appointment'),
     # path('customer/clinic/slots/<int:pk>/', views.CustomerClinicSlots.as_view(),
     #      name='available-appointment'),
+    path('customer/appointments/<int:pk>/', views.CustomerAppointmentRUView.as_view()),
     path('customer/appointments/', include(router.urls)),
     path('customer/slots/date/<str:date>/clinic/<int:clinic_pk>/', views.CustomerSlotsViewSets.as_view(),
          name='customer-slots'),
@@ -34,3 +34,4 @@ urlpatterns = [
          name='customer-history-appointment'),
 
 ]
+

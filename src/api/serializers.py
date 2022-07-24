@@ -105,3 +105,9 @@ class CustomerSlotSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Slot
         fields = ['pk', 'date', 'time']
+
+
+class AppointmentCustomerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Appointment
+        fields = ['slot', 'status']

@@ -272,7 +272,24 @@ class CustomerSlotsViewSets(generics.ListAPIView):
         except:
             raise utils.get_api_exception("Date format incorrect", status.HTTP_400_BAD_REQUEST)
         clinic_pk = self.kwargs.get('clinic_pk')
-        slots = Slot.objects.filter(date=date, clinic__pk=clinic_pk, is_active=True)
+
+        appointments = Appointment.objects.filter(patient=self.request.user).values("slot__pk")
+        slots = []
+        for appointment in appointments:
+            slots.append(appointment["slot__pk"])
+
+        slots = Slot.objects.filter(date=date, clinic__pk=clinic_pk, is_active=True).exclude(pk__in=slots)
         if target_date <= datetime.date.today():
             slots = Slot.objects.none()
         return slots
+
+
+class CustomerAppointmentRUView(generics.RetrieveUpdateAPIView):
+    permission_classes = [cp.PatientPermission | cp.SuperAdminPermission]
+    authentication_classes = [JWTAuthentication]
+    serializer_class = serializers.AppointmentCustomerSerializer
+    lookup_field = 'pk'
+
+    def get_object(self):
+        pk = self.kwargs['pk']
+        return get_object_or_404(Appointment, pk=pk)
