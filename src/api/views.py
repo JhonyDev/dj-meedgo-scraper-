@@ -291,7 +291,7 @@ class CustomerSlotsViewSets(generics.ListAPIView):
 
 
 class CustomerAppointmentRUView(generics.RetrieveUpdateAPIView):
-    permission_classes = [cp.PatientPermission | cp.SuperAdminPermission | cp.SubAdminPermission]
+    permission_classes = [cp.PatientPermission | cp.SuperAdminPermission]
     authentication_classes = [JWTAuthentication]
     serializer_class = serializers.AppointmentCustomerSerializer
     lookup_field = 'pk'
@@ -303,7 +303,7 @@ class CustomerAppointmentRUView(generics.RetrieveUpdateAPIView):
 
 class MyRelativesView(generics.ListCreateAPIView):
     serializer_class = UserChildSerializer
-    permission_classes = [cp.PatientPermission | cp.SuperAdminPermission]
+    permission_classes = [cp.PatientPermission | cp.SuperAdminPermission| cp.SubAdminPermission]
     authentication_classes = [JWTAuthentication]
 
     def get_queryset(self):
