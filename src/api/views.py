@@ -291,7 +291,7 @@ class CustomerSlotsViewSets(generics.ListAPIView):
 
 
 class CustomerAppointmentRUView(generics.RetrieveUpdateAPIView):
-    permission_classes = [cp.PatientPermission | cp.SuperAdminPermission]
+    permission_classes = [cp.PatientPermission | cp.SuperAdminPermission | cp.SubAdminPermission]
     authentication_classes = [JWTAuthentication]
     serializer_class = serializers.AppointmentCustomerSerializer
     lookup_field = 'pk'
