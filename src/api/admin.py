@@ -11,4 +11,5 @@ class ClinicView(admin.ModelAdmin):
 admin.site.register(models.UserDetail)
 admin.site.register(models.Appointment)
 admin.site.register(models.Slot)
+admin.site.register(models.Images)
 admin.site.register(models.Clinic, ClinicView)

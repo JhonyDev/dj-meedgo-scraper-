@@ -72,6 +72,12 @@ class SlotCustomerSerializer(serializers.ModelSerializer):
         fields = ['pk', 'date', 'time']
 
 
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Images
+        fields = '__all__'
+
+
 class AppointmentSerializer(serializers.ModelSerializer):
     slot = SlotSerializer(many=False, read_only=True)
     id_images = serializers.SerializerMethodField(read_only=True)
@@ -79,11 +85,11 @@ class AppointmentSerializer(serializers.ModelSerializer):
 
     def get_id_images(self, obj):
         images = models.Images.objects.filter(image_type="ID", appointment=obj)
-        return images
+        return ImageSerializer(images, many=True).data
 
     def get_insurance_images(self, obj):
         images = models.Images.objects.filter(image_type="Insurance", appointment=obj)
-        return images
+        return ImageSerializer(images, many=True).data
 
     class Meta:
         model = models.Appointment
@@ -118,6 +124,7 @@ class AppointmentCreateSerializer(serializers.ModelSerializer):
         insurance_images = validated_data.pop('insurance_images')
         for img in id_images:
             models.Images.objects.create(image=img, image_type="ID", appointment=appointment)
+
         for img in insurance_images:
             models.Images.objects.create(image=img, image_type="Insurance", appointment=appointment)
 
