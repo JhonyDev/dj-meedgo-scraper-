@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django_resized import ResizedImageField
 
 from src.accounts.models import User
 
@@ -101,6 +102,26 @@ class Appointment(models.Model):
     class Meta:
         verbose_name = "Appointment"
         verbose_name_plural = "Appointments"
+
+    def __str__(self):
+        return str(self.pk)
+
+
+class Images(models.Model):
+    TYPE_IMAGE = (
+        ('Insurance', 'Insurance'),
+        ('ID', 'ID'),
+    )
+    image = ResizedImageField(
+        upload_to='accounts/images/', null=True, blank=True, quality=60, force_format='PNG',
+        help_text='size of logo must be 100*100 and format must be png image file', crop=['middle', 'center']
+    )
+    image_type = models.CharField(default='Insurance', choices=TYPE_IMAGE, max_length=10)
+    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE, null=False, blank=False)
+
+    class Meta:
+        verbose_name = "Appointment Image"
+        verbose_name_plural = "Appointment Images"
 
     def __str__(self):
         return str(self.pk)

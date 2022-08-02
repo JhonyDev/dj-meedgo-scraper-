@@ -33,5 +33,7 @@ urlpatterns = [
     path('customer/history/appointments/', views.AppointmentHistory.as_view(),
          name='customer-history-appointment'),
 
-]
+    path('my/relatives/', views.MyRelativesView.as_view(), name='user-relatives'),
 
+    #     TODO: CREATE POST Image after appointment
+]

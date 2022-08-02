@@ -10,6 +10,7 @@ from . import permissions as cp
 from . import serializers
 from . import utils
 from .models import Clinic, Slot, Appointment, UserDetail
+from .serializers import UserChildSerializer
 from ..accounts.authentication import JWTAuthentication
 from ..accounts.models import User
 from ..accounts.serializers import CustomRegisterAccountSerializer
@@ -249,6 +250,11 @@ class CustomerAppointmentView(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         slot = serializer.validated_data["slot"]
+        total_appointments_in_slot = Appointment.objects.filter(slot=slot).count()
+        if total_appointments_in_slot >= slot.number_of_appointments:
+            raise utils.get_api_exception("Slot full, Further appointments cannot be created",
+                                          status.HTTP_406_NOT_ACCEPTABLE)
+
         if Appointment.objects.filter(patient=self.request.user, slot=slot).exists():
             raise utils.get_api_exception("Appointment already exists", 400)
 
@@ -293,3 +299,19 @@ class CustomerAppointmentRUView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         pk = self.kwargs['pk']
         return get_object_or_404(Appointment, pk=pk)
+
+
+class MyRelativesView(generics.ListCreateAPIView):
+    serializer_class = UserChildSerializer
+    permission_classes = [cp.PatientPermission | cp.SuperAdminPermission]
+    authentication_classes = [JWTAuthentication]
+
+    def get_queryset(self):
+        return User.objects.filter(related_to=self.request.user)
+
+    def perform_create(self, serializer):
+        user = serializer.save()
+        EmailAddress.objects.create(user=user, email=user.email, primary=True, verified=False)
+        user.related_to = self.request.user
+        user.type = 'Patient'
+        user.save()

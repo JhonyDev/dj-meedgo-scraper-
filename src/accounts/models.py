@@ -31,6 +31,9 @@ class User(AbstractUser):
     phone_number = models.CharField(max_length=19, null=True, blank=True)
     age = models.PositiveBigIntegerField(default=25, null=False, blank=False)
     type = models.CharField(max_length=25, null=False, blank=False, default='Patient', choices=USER_TYPES)
+    date_of_birth = models.DateField(default=None, null=True, blank=True)
+    related_to = models.ForeignKey("User", null=True, blank=True, on_delete=models.CASCADE, related_name="+")
+    relation = models.CharField(max_length=25, null=True, blank=True, default=None)
 
     address = models.CharField(max_length=255, default='not-provided', null=False, blank=False)
 
