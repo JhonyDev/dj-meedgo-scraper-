@@ -241,8 +241,15 @@ class CustomAppointmentApi(APIView):
     def post(self, request, format=None):
         slot = request.data.get('slot')
         patient = request.data.get('patient')
-        slot = Slot.objects.get(pk=slot)
-        patient = User.objects.get(pk=patient)
+        try:
+            slot = Slot.objects.get(pk=slot)
+        except Slot.DoesNotExist:
+            raise utils.get_api_exception("Slot not found", status.HTTP_404_NOT_FOUND)
+        try:
+            patient = User.objects.get(pk=patient)
+        except User.DoesNotExist:
+            raise utils.get_api_exception("User not found", status.HTTP_404_NOT_FOUND)
+
         appointment = Appointment.objects.create(patient=patient, slot=slot)
         id_keys = request.data.get('id_keys').split(',')
         insurance_keys = request.data.get('insurance_keys').split(',')
