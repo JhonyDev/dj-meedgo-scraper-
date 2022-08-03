@@ -317,10 +317,11 @@ class CustomerAppointmentRUView(APIView):
         patient = User.objects.get(pk=patient)
         appointment = Appointment.objects.get(pk=pk)
         if slot == appointment.slot and patient == appointment.patient:
-            pass
+            print("NOT Updating slot and patient since they are same")
         else:
             if Appointment.objects.filter(slot=slot, patient=patient).exists():
                 raise utils.get_api_exception("Appointment already exists", status.HTTP_409_CONFLICT)
+            print("Updating slot and patient")
             appointment.slot = slot
             appointment.patient = patient
         id_keys = request.data.get('id_keys')
