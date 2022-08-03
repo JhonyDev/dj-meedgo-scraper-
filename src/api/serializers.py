@@ -80,6 +80,7 @@ class ImageSerializer(serializers.ModelSerializer):
 
 class AppointmentSerializer(serializers.ModelSerializer):
     slot = SlotSerializer(many=False, read_only=True)
+    patient = UserSerializer(many=False, read_only=True)
     id_images = serializers.SerializerMethodField(read_only=True)
     insurance_images = serializers.SerializerMethodField(read_only=True)
 
@@ -100,7 +101,6 @@ class AppointmentSerializer(serializers.ModelSerializer):
 
 
 class AppointmentCreateSerializer(serializers.ModelSerializer):
-    patient = UserSerializer(many=False, read_only=True)
     id_images = serializers.ListField(
         child=serializers.FileField(max_length=100000,
                                     allow_empty_file=False,

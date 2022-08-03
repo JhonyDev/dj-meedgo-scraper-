@@ -1,6 +1,7 @@
 import datetime
 
 from allauth.account.models import EmailAddress
+from django.db.models import Q
 from rest_framework import generics, status, permissions, viewsets
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
@@ -246,11 +247,13 @@ class CustomerAppointmentView(viewsets.ModelViewSet):
         return self.serializer_classes.get(self.action, self.default_serializer_class)
 
     def get_queryset(self):
-        return Appointment.objects.filter(patient=self.request.user)
+        relatives = list(User.objects.filter(related_to=self.request.user))
+        return Appointment.objects.filter(Q(patient=self.request.user) | Q(patient__in=relatives))
 
     def perform_create(self, serializer):
         slot = serializer.validated_data["slot"]
         total_appointments_in_slot = Appointment.objects.filter(slot=slot).count()
+
         if total_appointments_in_slot >= slot.number_of_appointments:
             raise utils.get_api_exception("Slot full, Further appointments cannot be created",
                                           status.HTTP_406_NOT_ACCEPTABLE)
@@ -303,7 +306,7 @@ class CustomerAppointmentRUView(generics.RetrieveUpdateAPIView):
 
 class MyRelativesView(generics.ListCreateAPIView):
     serializer_class = UserChildSerializer
-    permission_classes = [cp.PatientPermission | cp.SuperAdminPermission| cp.SubAdminPermission]
+    permission_classes = [cp.PatientPermission | cp.SuperAdminPermission | cp.SubAdminPermission]
     authentication_classes = [JWTAuthentication]
 
     def get_queryset(self):

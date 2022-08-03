@@ -35,5 +35,4 @@ urlpatterns = [
 
     path('my/relatives/', views.MyRelativesView.as_view(), name='user-relatives'),
 
-    #     TODO: CREATE POST Image after appointment
 ]
