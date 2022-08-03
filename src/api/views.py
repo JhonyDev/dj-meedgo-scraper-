@@ -312,6 +312,7 @@ class CustomerAppointmentRUView(APIView):
     def put(self, request, pk, format=None):
         slot = request.data.get('slot')
         patient = request.data.get('patient')
+        print(request.data)
         slot = Slot.objects.get(pk=slot)
         patient = User.objects.get(pk=patient)
         appointment = Appointment.objects.get(pk=pk)
