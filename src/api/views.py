@@ -255,8 +255,16 @@ class CustomAppointmentApi(APIView):
             raise utils.get_api_exception("Appointment already exists", status.HTTP_409_CONFLICT)
 
         appointment = Appointment.objects.create(patient=patient, slot=slot)
-        id_keys = request.data.get('id_keys').split(',')
-        insurance_keys = request.data.get('insurance_keys').split(',')
+        id_keys = request.data.get('id_keys')
+        insurance_keys = request.data.get('insurance_keys')
+        if id_keys is None and insurance_keys is None:
+            return Response(data={"message": "Appointment created successfully"},
+                            status=status.HTTP_201_CREATED)
+
+        if id_keys is not None:
+            id_keys = id_keys.split(',')
+        if insurance_keys is not None:
+            insurance_keys = insurance_keys.split(',')
         for id in id_keys:
             Images.objects.create(appointment=appointment, image=request.data.get(id), image_type="ID")
 
@@ -314,8 +322,12 @@ class CustomerAppointmentRUView(APIView):
                 raise utils.get_api_exception("Appointment already exists", status.HTTP_409_CONFLICT)
             appointment.slot = slot
             appointment.patient = patient
-        id_keys = request.data.get('id_keys').split(',')
-        insurance_keys = request.data.get('insurance_keys').split(',')
+        id_keys = request.data.get('id_keys')
+        insurance_keys = request.data.get('insurance_keys')
+        if id_keys is None and insurance_keys is None:
+            return Response(data={"message": "Appointment updated successfully"},
+                            status=status.HTTP_201_CREATED)
+
         for id in id_keys:
             Images.objects.create(appointment=appointment, image=request.data.get(id), image_type="ID")
 
@@ -323,7 +335,7 @@ class CustomerAppointmentRUView(APIView):
             Images.objects.create(appointment=appointment, image=request.data.get(id), image_type="Insurance")
 
         appointment.save()
-        return Response(data={"message": "Appointment created successfully"},
+        return Response(data={"message": "Appointment updated successfully"},
                         status=status.HTTP_201_CREATED)
 
     def get(self, request, pk, *args, **kwargs):
