@@ -245,10 +245,14 @@ class CustomAppointmentApi(APIView):
             slot = Slot.objects.get(pk=slot)
         except Slot.DoesNotExist:
             raise utils.get_api_exception("Slot not found", status.HTTP_404_NOT_FOUND)
+
         try:
             patient = User.objects.get(pk=patient)
         except User.DoesNotExist:
             raise utils.get_api_exception("User not found", status.HTTP_404_NOT_FOUND)
+
+        if Appointment.objects.filter(patient=patient, slot=slot).exists():
+            raise utils.get_api_exception("Appointment already exists", status.HTTP_409_CONFLICT)
 
         appointment = Appointment.objects.create(patient=patient, slot=slot)
         id_keys = request.data.get('id_keys').split(',')
@@ -303,17 +307,22 @@ class CustomerAppointmentRUView(APIView):
         slot = Slot.objects.get(pk=slot)
         patient = User.objects.get(pk=patient)
         appointment = Appointment.objects.get(pk=pk)
-        appointment.slot = slot
-        appointment.patient = patient
+        if slot == appointment.slot and patient == appointment.patient:
+            pass
+        else:
+            if Appointment.objects.filter(slot=slot, patient=patient).exists():
+                raise utils.get_api_exception("Appointment already exists", status.HTTP_409_CONFLICT)
+            appointment.slot = slot
+            appointment.patient = patient
         id_keys = request.data.get('id_keys').split(',')
         insurance_keys = request.data.get('insurance_keys').split(',')
-
         for id in id_keys:
             Images.objects.create(appointment=appointment, image=request.data.get(id), image_type="ID")
 
         for id in insurance_keys:
             Images.objects.create(appointment=appointment, image=request.data.get(id), image_type="Insurance")
 
+        appointment.save()
         return Response(data={"message": "Appointment created successfully"},
                         status=status.HTTP_201_CREATED)
 
@@ -329,7 +338,7 @@ class MyRelativesView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
 
     def get_queryset(self):
-        return User.objects.filter(Q(pk=self.request.user.pk) | Q(related_to=self.request.user))
+        return User.objects.filter(pk=self.request.user.pk)
 
     def perform_create(self, serializer):
         user = serializer.save()
