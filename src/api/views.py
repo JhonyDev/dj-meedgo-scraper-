@@ -2,7 +2,7 @@ import datetime
 
 from allauth.account.models import EmailAddress
 from django.db.models import Q
-from rest_framework import generics, status, permissions, viewsets
+from rest_framework import generics, status, permissions
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -253,7 +253,7 @@ class CustomAppointmentApi(APIView):
             Images.objects.create(appointment=appointment, image=request.data.get(id), image_type="Insurance")
 
         return Response(data={"message": "Appointment created successfully"},
-                        status=status.HTTP_400_BAD_REQUEST)
+                        status=status.HTTP_201_CREATED)
 
     def get(self, request, *args, **kwargs):
         relatives = list(User.objects.filter(related_to=self.request.user))
@@ -308,7 +308,7 @@ class CustomerAppointmentRUView(APIView):
             Images.objects.create(appointment=appointment, image=request.data.get(id), image_type="Insurance")
 
         return Response(data={"message": "Appointment created successfully"},
-                        status=status.HTTP_400_BAD_REQUEST)
+                        status=status.HTTP_201_CREATED)
 
     def get(self, request, pk, *args, **kwargs):
         appointments = Appointment.objects.get(pk=pk)
