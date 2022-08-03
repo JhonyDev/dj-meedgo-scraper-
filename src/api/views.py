@@ -329,9 +329,13 @@ class CustomerAppointmentRUView(APIView):
         insurance_keys = request.data.get('insurance_keys')
         if id_keys is None:
             id_keys = []
-            
+        else:
+            id_keys = id_keys.split(',')
+
         if insurance_keys is None:
             insurance_keys = []
+        else:
+            insurance_keys = insurance_keys.split(',')
 
         for id in id_keys:
             Images.objects.create(appointment=appointment, image=request.data.get(id), image_type="ID")

@@ -113,7 +113,7 @@ class Images(models.Model):
         ('ID', 'ID'),
     )
     image = ResizedImageField(
-        upload_to='accounts/images/', null=True, blank=True, quality=60, force_format='PNG',
+        upload_to='accounts/images/', null=False, blank=False, quality=60, force_format='PNG',
         help_text='size of logo must be 100*100 and format must be png image file', crop=['middle', 'center']
     )
     image_type = models.CharField(default='Insurance', choices=TYPE_IMAGE, max_length=10)
