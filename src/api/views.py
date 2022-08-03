@@ -10,8 +10,8 @@ from rest_framework.views import APIView
 from . import permissions as cp
 from . import serializers
 from . import utils
-from .models import Clinic, Slot, Appointment, UserDetail
-from .serializers import UserChildSerializer
+from .models import Clinic, Slot, Appointment, UserDetail, RawImage, Images
+from .serializers import UserChildSerializer, ImagesSimpleSerializer, AppointmentSerializer
 from ..accounts.authentication import JWTAuthentication
 from ..accounts.models import User
 from ..accounts.serializers import CustomRegisterAccountSerializer
@@ -234,35 +234,32 @@ class AvailableClinics(generics.ListAPIView):
 """----------------------------VIEW SETS-----------------------------"""
 
 
-class CustomerAppointmentView(viewsets.ModelViewSet):
+class CustomAppointmentApi(APIView):
     permission_classes = [cp.PatientPermission | cp.SuperAdminPermission]
     authentication_classes = [JWTAuthentication]
-    serializer_classes = {
-        'list': serializers.AppointmentSerializer,
-        'create': serializers.AppointmentCreateSerializer,
-    }
-    default_serializer_class = serializers.AppointmentSerializer
 
-    def get_serializer_class(self):
-        return self.serializer_classes.get(self.action, self.default_serializer_class)
+    def post(self, request, format=None):
+        slot = request.data.get('slot')
+        patient = request.data.get('patient')
+        slot = Slot.objects.get(pk=slot)
+        patient = User.objects.get(pk=patient)
+        appointment = Appointment.objects.create(patient=patient, slot=slot)
+        id_keys = request.data.get('id_keys').split(',')
+        insurance_keys = request.data.get('insurance_keys').split(',')
+        for id in id_keys:
+            Images.objects.create(appointment=appointment, image=request.data.get(id), image_type="ID")
 
-    def get_queryset(self):
+        for id in insurance_keys:
+            Images.objects.create(appointment=appointment, image=request.data.get(id), image_type="Insurance")
+
+        return Response(data={"message": "Appointment created successfully"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, *args, **kwargs):
         relatives = list(User.objects.filter(related_to=self.request.user))
-        return Appointment.objects.filter(Q(patient=self.request.user) | Q(patient__in=relatives))
-
-    def perform_create(self, serializer):
-
-        slot = serializer.validated_data["slot"]
-
-        if Appointment.objects.filter(patient=self.request.user, slot=slot).exists():
-            raise utils.get_api_exception("Appointment already exists", 400)
-
-        appointment = serializer.save(patient=self.request.user, status='Waiting')
-        slot = Slot.objects.get(pk=appointment.slot.pk)
-        count_appointments = Appointment.objects.filter(slot=slot).count()
-        if count_appointments >= slot.number_of_appointments:
-            slot.is_active = False
-            slot.save()
+        appointments = Appointment.objects.filter(Q(patient=self.request.user) | Q(patient__in=relatives))
+        return Response(data=AppointmentSerializer(appointments, many=True).data,
+                        status=status.HTTP_200_OK)
 
 
 class CustomerSlotsViewSets(generics.ListAPIView):
@@ -289,15 +286,34 @@ class CustomerSlotsViewSets(generics.ListAPIView):
         return slots
 
 
-class CustomerAppointmentRUView(generics.RetrieveUpdateAPIView):
+class CustomerAppointmentRUView(APIView):
     permission_classes = [cp.PatientPermission | cp.SuperAdminPermission]
     authentication_classes = [JWTAuthentication]
-    serializer_class = serializers.AppointmentCustomerSerializer
-    lookup_field = 'pk'
 
-    def get_object(self):
-        pk = self.kwargs['pk']
-        return get_object_or_404(Appointment, pk=pk)
+    def put(self, request, pk, format=None):
+        slot = request.data.get('slot')
+        patient = request.data.get('patient')
+        slot = Slot.objects.get(pk=slot)
+        patient = User.objects.get(pk=patient)
+        appointment = Appointment.objects.get(pk=pk)
+        appointment.slot = slot
+        appointment.patient = patient
+        id_keys = request.data.get('id_keys').split(',')
+        insurance_keys = request.data.get('insurance_keys').split(',')
+
+        for id in id_keys:
+            Images.objects.create(appointment=appointment, image=request.data.get(id), image_type="ID")
+
+        for id in insurance_keys:
+            Images.objects.create(appointment=appointment, image=request.data.get(id), image_type="Insurance")
+
+        return Response(data={"message": "Appointment created successfully"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, pk, *args, **kwargs):
+        appointments = Appointment.objects.get(pk=pk)
+        return Response(data=AppointmentSerializer(appointments, many=False).data,
+                        status=status.HTTP_200_OK)
 
 
 class MyRelativesView(generics.ListCreateAPIView):
@@ -328,3 +344,15 @@ class MyRelativesRUView(generics.RetrieveUpdateDestroyAPIView):
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
+
+
+class ImagePostTest(generics.ListCreateAPIView):
+    serializer_class = ImagesSimpleSerializer
+    permission_classes = [cp.PatientPermission | cp.SuperAdminPermission | cp.SubAdminPermission]
+    authentication_classes = [JWTAuthentication]
+
+    def get_queryset(self):
+        return RawImage.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save()
