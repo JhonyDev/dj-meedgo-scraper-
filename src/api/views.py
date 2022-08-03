@@ -327,9 +327,11 @@ class CustomerAppointmentRUView(APIView):
             appointment.save()
         id_keys = request.data.get('id_keys')
         insurance_keys = request.data.get('insurance_keys')
-        if id_keys is None and insurance_keys is None:
-            return Response(data={"message": "Appointment updated successfully"},
-                            status=status.HTTP_201_CREATED)
+        if id_keys is None:
+            id_keys = []
+            
+        if insurance_keys is None:
+            insurance_keys = []
 
         for id in id_keys:
             Images.objects.create(appointment=appointment, image=request.data.get(id), image_type="ID")
