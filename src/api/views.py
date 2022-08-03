@@ -324,6 +324,7 @@ class CustomerAppointmentRUView(APIView):
             print("Updating slot and patient")
             appointment.slot = slot
             appointment.patient = patient
+            appointment.save()
         id_keys = request.data.get('id_keys')
         insurance_keys = request.data.get('insurance_keys')
         if id_keys is None and insurance_keys is None:
