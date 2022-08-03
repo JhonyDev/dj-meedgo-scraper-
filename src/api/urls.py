@@ -34,5 +34,6 @@ urlpatterns = [
          name='customer-history-appointment'),
 
     path('my/relatives/', views.MyRelativesView.as_view(), name='user-relatives'),
+    path('my/relatives/<int:pk>/', views.MyRelativesRUView.as_view(), name='update-relative'),
 
 ]

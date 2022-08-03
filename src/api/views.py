@@ -318,3 +318,17 @@ class MyRelativesView(generics.ListCreateAPIView):
         user.related_to = self.request.user
         user.type = 'Patient'
         user.save()
+
+
+class MyRelativesRUView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = UserChildSerializer
+    permission_classes = [cp.PatientPermission | cp.SuperAdminPermission | cp.SubAdminPermission]
+    authentication_classes = [JWTAuthentication]
+    lookup_field = 'pk'
+
+    def get_object(self):
+        pk = self.kwargs["pk"]
+        return get_object_or_404(User, pk=pk, related_to=self.request.user)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
