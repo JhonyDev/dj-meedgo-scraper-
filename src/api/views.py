@@ -251,12 +251,8 @@ class CustomerAppointmentView(viewsets.ModelViewSet):
         return Appointment.objects.filter(Q(patient=self.request.user) | Q(patient__in=relatives))
 
     def perform_create(self, serializer):
-        slot = serializer.validated_data["slot"]
-        total_appointments_in_slot = Appointment.objects.filter(slot=slot).count()
 
-        if total_appointments_in_slot >= slot.number_of_appointments:
-            raise utils.get_api_exception("Slot full, Further appointments cannot be created",
-                                          status.HTTP_406_NOT_ACCEPTABLE)
+        slot = serializer.validated_data["slot"]
 
         if Appointment.objects.filter(patient=self.request.user, slot=slot).exists():
             raise utils.get_api_exception("Appointment already exists", 400)

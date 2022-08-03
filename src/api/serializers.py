@@ -94,7 +94,7 @@ class AppointmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Appointment
-        fields = ['patient', 'slot', 'status', 'id_images', 'insurance_images']
+        fields = ['pk', 'patient', 'slot', 'status', 'id_images', 'insurance_images']
         read_only_fields = [
             'status'
         ]
@@ -104,11 +104,11 @@ class AppointmentCreateSerializer(serializers.ModelSerializer):
     id_images = serializers.ListField(
         child=serializers.FileField(max_length=100000,
                                     allow_empty_file=False,
-                                    use_url=True))
+                                    use_url=True), write_only=True)
     insurance_images = serializers.ListField(
         child=serializers.FileField(max_length=100000,
                                     allow_empty_file=False,
-                                    use_url=True))
+                                    use_url=True), write_only=True)
 
     class Meta:
         model = models.Appointment
@@ -118,17 +118,37 @@ class AppointmentCreateSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        appointment = models.Appointment.objects.create(**validated_data)
-
+        print(validated_data)
         id_images = validated_data.pop('id_images')
         insurance_images = validated_data.pop('insurance_images')
+        print(validated_data)
+
+        appointment = models.Appointment.objects.create(**validated_data)
+
         for img in id_images:
             models.Images.objects.create(image=img, image_type="ID", appointment=appointment)
 
         for img in insurance_images:
             models.Images.objects.create(image=img, image_type="Insurance", appointment=appointment)
-
         return appointment
+
+
+def create(self, **kwargs):
+    validated_data = self.validated_data
+    print(validated_data)
+    id_images = validated_data.pop('id_images')
+    insurance_images = validated_data.pop('insurance_images')
+    print(validated_data)
+
+    appointment = models.Appointment.objects.create(**validated_data)
+
+    for img in id_images:
+        models.Images.objects.create(image=img, image_type="ID", appointment=appointment)
+
+    for img in insurance_images:
+        models.Images.objects.create(image=img, image_type="Insurance", appointment=appointment)
+
+    return super().save(**kwargs)
 
 
 class ManagerAppointmentSerializer(serializers.ModelSerializer):
@@ -149,7 +169,7 @@ class CustomerSlotSerializer(serializers.ModelSerializer):
 class AppointmentCustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Appointment
-        fields = ['slot', 'status']
+        fields = ['slot', 'status', 'patient']
 
 
 class UserChildSerializer(serializers.ModelSerializer):
