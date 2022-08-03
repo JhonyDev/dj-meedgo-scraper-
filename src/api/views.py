@@ -338,7 +338,7 @@ class MyRelativesView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
 
     def get_queryset(self):
-        return User.objects.filter(pk=self.request.user.pk)
+        return User.objects.filter(related_to=self.request.user)
 
     def perform_create(self, serializer):
         user = serializer.save()
