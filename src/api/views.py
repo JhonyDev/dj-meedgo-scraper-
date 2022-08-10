@@ -321,7 +321,6 @@ class CustomerAppointmentRUView(APIView):
         else:
             if Appointment.objects.filter(slot=slot, patient=patient).exists():
                 raise utils.get_api_exception("Appointment already exists", status.HTTP_409_CONFLICT)
-            print("Updating slot and patient")
             appointment.slot = slot
             appointment.patient = patient
             appointment.save()
@@ -336,6 +335,9 @@ class CustomerAppointmentRUView(APIView):
             insurance_keys = []
         else:
             insurance_keys = insurance_keys.split(',')
+
+        print(insurance_keys)
+        print(id_keys)
 
         for id in id_keys:
             Images.objects.create(appointment=appointment, image=request.data.get(id), image_type="ID")

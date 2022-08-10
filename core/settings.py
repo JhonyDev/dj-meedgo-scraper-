@@ -22,15 +22,19 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 ROOT_URLCONF = 'core.urls'
 AUTH_USER_MODEL = 'accounts.User'
 
-SECRET_KEY = 'dkjsahdkashd82ye9w8hdasdknasjkdbak'
+env_file = os.path.join(BASE_DIR, ".env")
+env = environ.Env()
+env.read_env(env_file)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-SERVER = False
-DEBUG = True
+SECRET_KEY = env('SERVER_KEY')
+# SECURITY WARNING: keep the secret key used in production secret!
+SERVER = env('SERVER') == 'True'
+DEBUG = env('DEBUG') == 'True'
 
 if SERVER:
     SITE_ID = 4
-    GOOGLE_CALLBACK_ADDRESS = "https://mateappkenya.com/accounts/google/login/callback/"
+    GOOGLE_CALLBACK_ADDRESS = ""
 else:
     SITE_ID = 1
     GOOGLE_CALLBACK_ADDRESS = "http://127.0.0.1:8000/accounts/google/login/callback/"
