@@ -14,7 +14,6 @@ from datetime import timedelta
 from pathlib import Path
 
 import environ
-from decouple import config
 
 """ VAR ----------------------------------------------------------------------------------------"""
 BASE_DIR = Path(__file__).resolve().parent.parent
