@@ -4,25 +4,15 @@ from django.db import transaction
 from rest_framework import serializers
 
 from src.accounts.models import User
-from src.api.models import Clinic
 
 
 class CustomRegisterAccountSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
-    is_associated_with_clinic = serializers.SerializerMethodField('get_association', read_only=True)
-
-    def get_association(self, user):
-        try:
-            is_associated = Clinic.objects.filter(manager=user).exists()
-        except:
-            is_associated = False
-        return is_associated
 
     class Meta:
         model = User
         fields = [
-            'pk', 'first_name', 'last_name', 'username', 'email', 'password', 'password2', 'type',
-            'is_associated_with_clinic'
+            'pk', 'first_name', 'last_name', 'username', 'email', 'password', 'password2', 'type'
         ]
         read_only_fields = [
             'type'
@@ -69,7 +59,11 @@ class CustomLoginSerializer(serializers.ModelSerializer):
 class RegisterSerializerRestAPI(RegisterSerializer):
     phone_number = serializers.CharField(max_length=30)
 
-    # profile_image = serializers.ImageField(max_length=None, allow_empty_file=False, use_url=True)
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
 
     @transaction.atomic
     def save(self, request):

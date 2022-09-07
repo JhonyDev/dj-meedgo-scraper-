@@ -12,13 +12,13 @@ from django.http import Http404, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
 from django.utils.decorators import method_decorator
-from django.utils.html import escape, format_html
+from django.utils.html import escape
 from django.utils.translation import gettext, gettext_lazy as _
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 
 from .models import (
-    User, UserImage
+    User
 )
 
 csrf_protect_m = method_decorator(csrf_protect)
@@ -201,22 +201,7 @@ class CustomerUserAdmin(admin.ModelAdmin):
         return super().response_add(request, obj, post_url_continue)
 
 
-class UserImageAdmin(admin.ModelAdmin):
-    list_display = [
-        'pk', 'image', 'user_view', 'created_on'
-    ]
-    search_fields = ['pk', 'user__username']
-
-    def user_view(self, obj):
-        return format_html(
-            '<a href="/admin/accounts/user/{}/change/">{}</a>',
-            obj.user.pk, obj.user.username
-        )
-
-
 admin.site.register(User, CustomerUserAdmin)
-admin.site.register(UserImage, UserImageAdmin)
-# admin.site.register(User, UserAdmin)
-admin.site.site_header = "NICHE-CARE - Admin"
-admin.site.site_title = "NICHE-CARE - Admin"
-admin.site.index_title = "NICHE-CARE - Administration"
+admin.site.site_header = "Hotel-Management - Admin"
+admin.site.site_title = "Hotel-Management - Admin"
+admin.site.index_title = "Hotel-Management - Administration"

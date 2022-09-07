@@ -1,141 +1,34 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django_resized import ResizedImageField
 
 from src.accounts.models import User
 
 
-class UserDetail(models.Model):
-    MARITAL_STATUS = (
-        ('Single', 'Single'),
-        ('Married', 'Married'),
-        ('Widowed', 'Widowed'),
-        ('Divorced', 'Divorced'),
-    )
-    SEX = (
-        ('Male', 'Male'),
-        ('Female', 'Female'),
-        ('Other', 'Other'),
-    )
-
-    office_referral = models.TextField(default='')
-    what_brings = models.TextField(default='')
-    date_of_birth = models.DateField()
-    marital_status = models.CharField(max_length=15, choices=MARITAL_STATUS)
-    sex = models.CharField(max_length=15, choices=SEX)
+class Category(models.Model):
     name = models.CharField(max_length=50)
-    ssn = models.CharField(max_length=25)
-    address = models.TextField()
-    zip_code = models.CharField(max_length=15)
-    cell = models.CharField(max_length=19)
-    home_alternate = models.TextField()
-    email_address = models.EmailField()
-    preferred_pharmacy = models.CharField(max_length=100)
-    cross_streets = models.CharField(max_length=100, null=True, blank=True)
-    primary_care_physician = models.CharField(max_length=100)
-    is_agreed = models.BooleanField(default=False)
-
-    emergency_contact_name = models.CharField(max_length=20)
-    emergency_contact_phone_number = models.CharField(max_length=19)
-    emergency_contact_relation = models.CharField(max_length=30)
-
-    insurance_primary = models.CharField(max_length=50)
-    insurance_primary_id = models.CharField(max_length=50)
-    insurance_primary_group = models.CharField(max_length=30)
-
-    insurance_secondary = models.CharField(max_length=50)
-    insurance_secondary_id = models.CharField(max_length=50)
-    insurance_secondary_group = models.CharField(max_length=30)
-
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    created_on = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ['-created_on']
-        verbose_name = "User detail"
-        verbose_name_plural = "User details"
 
     def __str__(self):
-        return str(self.pk)
+        return str(self.name)
 
 
-class Clinic(models.Model):
-    title = models.CharField(default='', max_length=50)
-    address = models.TextField(default='', max_length=50)
-
-    manager = models.OneToOneField(User, on_delete=models.CASCADE, null=False, blank=False)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False, related_name="creator-admin+")
-
-    class Meta:
-        verbose_name = "Clinic"
-        verbose_name_plural = "Clinics"
+class Room(models.Model):
+    name = models.CharField(max_length=50)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     def __str__(self):
-        return str(self.pk)
+        return str(self.name)
 
 
-class Slot(models.Model):
-    date = models.DateField(null=False, blank=False)
-    time = models.TimeField(null=False, blank=False)
-    number_of_appointments = models.PositiveIntegerField()
-    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=False, blank=False)
+class Booking(models.Model):
+    created_on = models.DateTimeField(max_length=50, auto_now_add=True)
+    check_in_date = models.DateField()
+    check_out_date = models.DateField()
+    customer_name = models.CharField(max_length=50)
+    customer_phone = models.CharField(max_length=50)
+    payments_received = models.PositiveIntegerField()
+    rooms = models.ManyToManyField(Room)
+    manager = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=True)
 
-    class Meta:
-        verbose_name = "Appointment Slot"
-        verbose_name_plural = "Appointment Slots"
-
     def __str__(self):
-        return str(self.pk)
-
-
-class Appointment(models.Model):
-    STATUS = (
-        ('Cancelled', 'Cancelled'),
-        ('Waiting', 'Waiting'),
-        ('Complete', 'Complete'),
-    )
-    patient = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
-    slot = models.ForeignKey(Slot, on_delete=models.CASCADE, null=False, blank=False)
-    status = models.CharField(default='Waiting', choices=STATUS, max_length=20)
-
-    class Meta:
-        verbose_name = "Appointment"
-        verbose_name_plural = "Appointments"
-
-    def __str__(self):
-        return str(self.pk)
-
-
-class Images(models.Model):
-    TYPE_IMAGE = (
-        ('Insurance', 'Insurance'),
-        ('ID', 'ID'),
-    )
-    image = ResizedImageField(
-        upload_to='accounts/images/', null=False, blank=False, quality=60, force_format='PNG',
-        help_text='size of logo must be 100*100 and format must be png image file', crop=['middle', 'center']
-    )
-    image_type = models.CharField(default='Insurance', choices=TYPE_IMAGE, max_length=10)
-    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE, null=True, blank=True)
-
-    class Meta:
-        verbose_name = "Appointment Image"
-        verbose_name_plural = "Appointment Images"
-
-    def __str__(self):
-        return str(self.pk)
-
-
-class RawImage(models.Model):
-    image = ResizedImageField(
-        upload_to='accounts/images/', null=True, blank=True, quality=60, force_format='PNG',
-        help_text='size of logo must be 100*100 and format must be png image file', crop=['middle', 'center']
-    )
-
-    class Meta:
-        verbose_name = "Simple Image"
-        verbose_name_plural = "Simple Images"
-
-    def __str__(self):
-        return str(self.pk)
+        return str(self.customer_name)

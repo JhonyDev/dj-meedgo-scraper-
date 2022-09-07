@@ -91,9 +91,8 @@ class JWTAuthentication(BaseAuthentication):
         return 'Basic realm="%s"' % self.www_authenticate_realm
 
 
-def create_access_token(user, is_new_registration):
+def create_access_token(user):
     return jwt.encode({
-        'is_new_registration': is_new_registration,
         'user': user,
         'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=5),
         'iat': datetime.datetime.utcnow()

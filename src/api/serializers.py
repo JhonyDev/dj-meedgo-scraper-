@@ -1,140 +1,39 @@
-import uuid
-
 from rest_framework import serializers
 
 from src.accounts.models import User
 from . import models
 
 
-class UserDetailsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.UserDetail
-        fields = '__all__'
-        read_only_fields = [
-            'user'
-        ]
-
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'pk', 'first_name', 'last_name', 'username', 'email', 'phone_number', 'age', 'address',
-            'is_superuser', 'is_staff', 'type', 'creator'
+            'pk', 'first_name', 'last_name', 'username', 'email',
+            'is_superuser', 'is_staff', 'type'
+
         ]
+
         read_only_fields = [
-            'date_joined', 'creator', 'type', 'is_superuser', 'is_staff'
+            'date_joined', 'type', 'is_superuser', 'is_staff'
         ]
 
 
-class ClinicAdminSerializer(serializers.ModelSerializer):
-    manager_details = serializers.SerializerMethodField('get_manager', read_only=True)
-
-    def get_manager(self, clinic):
-        return UserSerializer(clinic.manager, many=False).data
-
+class RoomSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Clinic
-        fields = '__all__'
-        read_only_fields = [
-            'creator'
-        ]
-
-
-class ClinicManagerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Clinic
-        fields = ['pk', 'title', 'address']
-
-
-class ClinicGenSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Clinic
-        fields = '__all__'
-        read_only_fields = ['title', 'manager', 'creator', 'address']
-
-
-class SlotSerializer(serializers.ModelSerializer):
-    clinic = ClinicManagerSerializer(many=False, read_only=True)
-
-    class Meta:
-        model = models.Slot
-        fields = ['pk', 'date', 'time', 'number_of_appointments',
-                  'clinic']
-        read_only_fields = [
-            'clinic'
-        ]
-
-
-class SlotCustomerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Slot
-        fields = ['pk', 'date', 'time']
-
-
-class ImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Images
+        model = models.Room
         fields = '__all__'
 
 
-class AppointmentSerializer(serializers.ModelSerializer):
-    slot = SlotSerializer(many=False, read_only=True)
-    patient = UserSerializer(many=False, read_only=True)
-    id_images = serializers.SerializerMethodField(read_only=True)
-    insurance_images = serializers.SerializerMethodField(read_only=True)
-
-    def get_id_images(self, obj):
-        images = models.Images.objects.filter(image_type="ID", appointment=obj)
-        return ImageSerializer(images, many=True).data
-
-    def get_insurance_images(self, obj):
-        images = models.Images.objects.filter(image_type="Insurance", appointment=obj)
-        return ImageSerializer(images, many=True).data
-
+class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Appointment
-        fields = ['pk', 'patient', 'slot', 'status', 'id_images', 'insurance_images']
-        read_only_fields = [
-            'status'
-        ]
-
-
-class ManagerAppointmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Appointment
-        fields = ['pk', 'status', 'patient', 'slot']
-        read_only_fields = [
-            'patient', 'slot', 'pk'
-        ]
-
-
-class CustomerSlotSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Slot
-        fields = ['pk', 'date', 'time']
-
-
-class AppointmentCustomerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Appointment
-        fields = ['slot', 'status', 'patient']
-
-
-class ImagesSimpleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.RawImage
+        model = models.Category
         fields = '__all__'
 
 
-class UserChildSerializer(serializers.ModelSerializer):
+class BookingSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = [
-            'pk', 'first_name', 'last_name', 'date_of_birth', 'relation'
+        model = models.Booking
+        fields = '__all__'
+        read_only_fields = [
+            'is_active', 'manager'
         ]
-
-    def create(self, validated_data):
-        email = f"{str(uuid.uuid4())[:5]}@{str(uuid.uuid4())[:4]}.com"
-        username = f"{str(uuid.uuid4())[:5]}"
-        return User.objects.create(email=email, username=username, **validated_data)

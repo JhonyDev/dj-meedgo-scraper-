@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django_resized import ResizedImageField
@@ -18,7 +17,6 @@ Then do next ...
 class User(AbstractUser):
     USER_TYPES = (
         ('Manager', 'Manager'),
-        ('Patient', 'Patient'),
         ('Admin', 'Admin'),
     )
 
@@ -26,16 +24,7 @@ class User(AbstractUser):
         upload_to='accounts/images/profiles/', null=True, blank=True, quality=60, force_format='PNG',
         help_text='size of logo must be 100*100 and format must be png image file', crop=['middle', 'center']
     )
-    creator = models.ForeignKey('User', on_delete=models.SET_NULL, default=None, null=True, blank=True)
-    about = models.TextField(null=True, blank=True)
-    phone_number = models.CharField(max_length=19, null=True, blank=True)
-    age = models.PositiveBigIntegerField(default=25, null=False, blank=False)
     type = models.CharField(max_length=25, null=False, blank=False, default='Patient', choices=USER_TYPES)
-    date_of_birth = models.DateField(default=None, null=True, blank=True)
-    related_to = models.ForeignKey("User", null=True, blank=True, on_delete=models.CASCADE, related_name="+")
-    relation = models.CharField(max_length=25, null=True, blank=True, default=None)
-
-    address = models.CharField(max_length=255, default='not-provided', null=False, blank=False)
 
     class Meta:
         ordering = ['-id']
@@ -44,22 +33,3 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
-
-
-class UserImage(models.Model):
-    image = models.ImageField(upload_to='accounts/images/profiles/', null=False, blank=False)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, related_name='images',
-                             on_delete=models.CASCADE)
-    created_on = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ['-created_on']
-        verbose_name = "User Image"
-        verbose_name_plural = "User Images"
-
-    def __str__(self):
-        return self.image.url
-
-    def delete(self, *args, **kwargs):
-        self.image.delete(save=True)
-        super(UserImage, self).delete(*args, **kwargs)
