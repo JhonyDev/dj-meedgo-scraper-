@@ -9,12 +9,16 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'pk', 'first_name', 'last_name', 'username', 'email',
-            'is_superuser', 'is_staff', 'type'
+            'is_superuser', 'is_staff', 'type', 'password'
         ]
 
         read_only_fields = [
             'date_joined', 'type', 'is_superuser', 'is_staff'
         ]
+
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
 
 
 class RoomSerializer(serializers.ModelSerializer):
