@@ -30,6 +30,8 @@ class UserDetailsView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'pk'
 
     def get_object(self):
+        if not self.request.user.is_superuser:
+            raise utils.get_api_exception("You are not allowed to update users details", status.HTTP_403_FORBIDDEN)
         pk = self.kwargs["pk"]
         return get_object_or_404(User, pk=pk)
 
