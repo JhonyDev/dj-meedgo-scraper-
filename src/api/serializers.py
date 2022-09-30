@@ -10,7 +10,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             'pk', 'first_name', 'last_name', 'username', 'email',
             'is_superuser', 'is_staff', 'type'
-
         ]
 
         read_only_fields = [

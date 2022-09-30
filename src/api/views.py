@@ -168,4 +168,4 @@ class BookingsMonthGeneral(APIView):
         target_start_date, target_end_date = utils.get_target_dates(month, year)
         bookings = Booking.objects.filter(created_on__lte=target_end_date, created_on__gte=target_start_date)
         return Response(data=serializers.BookingSerializer(bookings, many=True).data,
-                        status=status.HTTP_200_OK)
+                        status=status.HTTP_406_NOT_ACCEPTABLE)

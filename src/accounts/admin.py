@@ -201,7 +201,7 @@ class CustomerUserAdmin(admin.ModelAdmin):
         return super().response_add(request, obj, post_url_continue)
 
 
-admin.site.register(User, CustomerUserAdmin)
+admin.site.register(User)
 admin.site.site_header = "Hotel-Management - Admin"
 admin.site.site_title = "Hotel-Management - Admin"
 admin.site.index_title = "Hotel-Management - Administration"

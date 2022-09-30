@@ -24,7 +24,7 @@ class User(AbstractUser):
         upload_to='accounts/images/profiles/', null=True, blank=True, quality=60, force_format='PNG',
         help_text='size of logo must be 100*100 and format must be png image file', crop=['middle', 'center']
     )
-    type = models.CharField(max_length=25, null=False, blank=False, default='Patient', choices=USER_TYPES)
+    type = models.CharField(max_length=25, null=False, blank=False, default='Admin', choices=USER_TYPES)
 
     class Meta:
         ordering = ['-id']
