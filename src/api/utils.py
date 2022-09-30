@@ -15,7 +15,15 @@ def get_availability(date):
         for room in booking.rooms:
             booked_rooms.append(room.pk)
     rooms = Room.objects.all().exclude(pk__in=booked_rooms)
-    return rooms
+    cat_dict = {'Total': rooms.count()}
+    for room in rooms:
+        cat = cat_dict.get(room.category.name)
+        if cat is None:
+            cat_dict[room.category.name] = 0
+        cat = cat_dict.get(room.category.name)
+        cat_dict[room.category.name] = cat + 1
+
+    return cat_dict
 
 
 def get_target_dates(month, year):

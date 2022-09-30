@@ -1,3 +1,5 @@
+from datetime import date
+
 from dateutil import parser
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status
@@ -72,6 +74,17 @@ class CategoryListView(generics.ListCreateAPIView):
         return Category.objects.all()
 
 
+class CategoryCreateView(generics.CreateAPIView):
+    serializer_class = serializers.CategoryPostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def perform_create(self, serializer):
+        category = serializer.save()
+        for x in range(category.number_of_rooms):
+            Room.objects.create(category=category)
+
+
 class BookingRUV(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.BookingSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -130,10 +143,10 @@ class AvailabilityToday(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request, date, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         today = date.today()
         rooms = utils.get_availability(today)
-        return Response(data=serializers.RoomSerializer(rooms, many=True).data,
+        return Response(data=rooms,
                         status=status.HTTP_200_OK)
 
 
@@ -141,10 +154,10 @@ class AvailabilityTargetDate(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request, date, *args, **kwargs):
-        target_date = parser.parse(date)
+    def get(self, request, date_, *args, **kwargs):
+        target_date = parser.parse(date_, day_first=True)
         rooms = utils.get_availability(target_date)
-        return Response(data=serializers.RoomSerializer(rooms, many=True).data,
+        return Response(data=rooms,
                         status=status.HTTP_200_OK)
 
 
@@ -166,6 +179,6 @@ class BookingsMonthGeneral(APIView):
 
     def get(self, request, month, year, *args, **kwargs):
         target_start_date, target_end_date = utils.get_target_dates(month, year)
-        bookings = Booking.objects.filter(created_on__lte=target_end_date, created_on__gte=target_start_date)
+        bookings = Booking.objects.filter(check_in_date__lte=target_end_date, check_in_date__gte=target_start_date)
         return Response(data=serializers.BookingSerializer(bookings, many=True).data,
                         status=status.HTTP_406_NOT_ACCEPTABLE)

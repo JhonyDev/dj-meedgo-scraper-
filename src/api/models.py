@@ -6,13 +6,14 @@ from src.accounts.models import User
 
 class Category(models.Model):
     name = models.CharField(max_length=50)
+    number_of_rooms = models.PositiveIntegerField(null=True, blank=True, default=None)
 
     def __str__(self):
         return str(self.name)
 
 
 class Room(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -25,7 +26,8 @@ class Booking(models.Model):
     check_out_date = models.DateField()
     customer_name = models.CharField(max_length=50)
     customer_phone = models.CharField(max_length=50)
-    payments_received = models.PositiveIntegerField()
+    payment = models.PositiveIntegerField(default=None, null=True, blank=True)
+    payment_date = models.PositiveBigIntegerField(null=True, blank=True, default=None)
     rooms = models.ManyToManyField(Room)
     manager = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=True)

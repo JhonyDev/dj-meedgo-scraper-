@@ -30,6 +30,14 @@ class RoomSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Category
+        fields = ['name']
+
+
+class CategoryPostSerializer(serializers.ModelSerializer):
+    number_of_rooms = serializers.IntegerField()
+
+    class Meta:
+        model = models.Category
         fields = '__all__'
 
 
