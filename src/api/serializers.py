@@ -20,6 +20,19 @@ class UserSerializer(serializers.ModelSerializer):
             'password': {'write_only': True}
         }
 
+    def save(self):
+        user = User(
+            first_name=self.validated_data['first_name'],
+            last_name=self.validated_data['last_name'],
+            email=self.validated_data['email'],
+            username=self.validated_data['username'],
+        )
+        password = self.validated_data['password']
+        print(password)
+        user.set_password(password)
+        user.save()
+        return user
+
 
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:

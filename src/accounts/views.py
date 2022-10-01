@@ -38,10 +38,11 @@ class CustomLoginView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
+        username = request.data['username']
         email = request.data['email']
         password = request.data['password']
 
-        user = User.objects.filter(email=email).first()
+        user = User.objects.filter(username=username).first()
 
         if user is None:
             raise utils.get_api_exception('Invalid credential User invalid', status.HTTP_400_BAD_REQUEST)
