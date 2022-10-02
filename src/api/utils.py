@@ -26,8 +26,10 @@ def get_availability(date, end_date):
         booked_rooms_query = Room.objects.filter(pk__in=booked_rooms)
         cat_dict = {'Total': rooms.count()}
         for room in booked_rooms_query:
-            parent_dict[room.category] -= 1
-            parent_dict['Total'] -= 1
+            print(f"DEDUCTING ROOMS {room.category} - {parent_dict[room.category]}")
+
+            parent_dict[room.category] = parent_dict[room.category] - 1
+            parent_dict['Total'] = parent_dict['Total'] - 1
 
         if parent_dict is None:
             for room in rooms:
