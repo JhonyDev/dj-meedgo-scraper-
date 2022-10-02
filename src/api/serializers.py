@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from src.accounts.models import User
 from . import models
+from .models import Category
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -67,6 +68,17 @@ class CategoryPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Category
         fields = '__all__'
+
+    def create(self, validated_data):
+        name = self.validated_data['name']
+
+        category = Category.objects.filter(name=name)
+        if not category.exists():
+            category = Category(
+                name=self.validated_data['name']
+            )
+            category.save()
+        return category
 
 
 class BookingSerializer(serializers.ModelSerializer):
