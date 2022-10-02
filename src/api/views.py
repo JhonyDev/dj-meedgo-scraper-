@@ -154,6 +154,7 @@ class BookingAPIView(APIView):
     authentication_classes = [JWTAuthentication]
 
     def post(self, request, format=None):
+        print(request.data)
         check_in_date = request.data['check_in_date']
         check_in_date = parser.parse(check_in_date, dayfirst=True)
         check_out_date = request.data['check_out_date']
