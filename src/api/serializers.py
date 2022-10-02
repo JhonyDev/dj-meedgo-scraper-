@@ -20,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
             'date_joined', 'type', 'is_superuser', 'is_staff', 'user_password'
         ]
 
-    def save(self):
+    def create(self, validated_data):
         user = User(
             first_name=self.validated_data['first_name'],
             last_name=self.validated_data['last_name'],
