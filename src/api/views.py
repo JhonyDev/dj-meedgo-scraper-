@@ -20,7 +20,7 @@ class UsersListView(generics.ListCreateAPIView):
     queryset = User.objects.all()
 
     def get_queryset(self):
-        return User.objects.all()
+        return User.objects.filter(type="Manager")
 
 
 class UserDetailsView(generics.RetrieveUpdateDestroyAPIView):
