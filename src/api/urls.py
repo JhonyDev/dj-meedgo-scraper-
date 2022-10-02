@@ -23,8 +23,7 @@ urlpatterns = [
     path('booking/<int:pk>/', views.BookingListView.as_view()),
 
     path('today/availability/', views.AvailabilityToday.as_view()),
-    path('date/availability/<str:date_>/', views.AvailabilityTargetDate.as_view()),
-
+    path('date/availability/<str:date_>/end/<str:end_date_>/', views.AvailabilityTargetDate.as_view()),
     path('admin/bookings/month/<str:month>/year/<str:year>/', views.BookingsMonthGeneral.as_view()),
     path('bookings/month/<str:month>/year/<str:year>/', views.BookingsMonth.as_view()),
 

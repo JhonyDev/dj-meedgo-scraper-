@@ -1,3 +1,4 @@
+import datetime
 from datetime import date
 
 from dateutil import parser
@@ -154,9 +155,9 @@ class BookingAPIView(APIView):
 
     def post(self, request, format=None):
         check_in_date = request.data['check_in_date']
-        check_in_date = parser.parse(check_in_date)
+        check_in_date = parser.parse(check_in_date, dayfirst=True)
         check_out_date = request.data['check_out_date']
-        check_out_date = parser.parse(check_out_date)
+        check_out_date = parser.parse(check_out_date, dayfirst=True)
         customer_name = request.data['customer_name']
         customer_phone = request.data['customer_phone']
         customer_email = request.data['customer_email']
@@ -172,7 +173,7 @@ class BookingAPIView(APIView):
             name = category['name']
             number_of_rooms = category['number_of_rooms']
             room_category = get_object_or_404(Category, name=name)
-            if utils.get_availability(check_in_date)[name] >= number_of_rooms:
+            if utils.get_availability(check_in_date, check_out_date)[name] >= number_of_rooms:
                 rooms = Room.objects.filter(category=room_category)[:number_of_rooms]
                 for room in rooms:
                     rooms_.append(room)
@@ -210,7 +211,8 @@ class AvailabilityToday(APIView):
 
     def get(self, request, *args, **kwargs):
         today = date.today()
-        rooms = utils.get_availability(today)
+        end_date = today + datetime.timedelta(days=1)
+        rooms = utils.get_availability(today, end_date)
         return Response(data=rooms,
                         status=status.HTTP_200_OK)
 
@@ -219,9 +221,10 @@ class AvailabilityTargetDate(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request, date_, *args, **kwargs):
-        target_date = parser.parse(date_)
-        rooms = utils.get_availability(target_date)
+    def get(self, request, date_, end_date_, *args, **kwargs):
+        target_date = parser.parse(date_, dayfirst=True)
+        target_end_date = parser.parse(end_date_, dayfirst=True)
+        rooms = utils.get_availability(target_date, target_end_date)
         return Response(data=rooms,
                         status=status.HTTP_200_OK)
 
