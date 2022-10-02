@@ -23,6 +23,7 @@ def get_availability(date):
         cat = cat_dict.get(room.category.name)
         cat_dict[room.category.name] = cat + 1
 
+    print(cat_dict)
     return cat_dict
 
 

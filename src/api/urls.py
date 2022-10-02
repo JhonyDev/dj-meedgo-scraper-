@@ -18,6 +18,7 @@ urlpatterns = [
 
     path('admin/bookings/', views.BookingListViewGeneral.as_view()),
     path('admin/booking/<int:pk>/', views.BookingListViewGeneral.as_view()),
+    path('create/booking/', views.BookingAPIView.as_view()),
     path('bookings/', views.BookingListView.as_view()),
     path('booking/<int:pk>/', views.BookingListView.as_view()),
 

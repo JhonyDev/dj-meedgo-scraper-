@@ -17,7 +17,7 @@ class Room(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     def __str__(self):
-        return str(self.name)
+        return str(self.category)
 
 
 class Booking(models.Model):
@@ -26,6 +26,8 @@ class Booking(models.Model):
     check_out_date = models.DateField()
     customer_name = models.CharField(max_length=50)
     customer_phone = models.CharField(max_length=50)
+    customer_email = models.EmailField(max_length=50, null=True, blank=True, default=None)
+    customer_cnic = models.CharField(max_length=50, null=True, blank=True, default=None)
     payment = models.PositiveIntegerField(default=None, null=True, blank=True)
     payment_date = models.PositiveBigIntegerField(null=True, blank=True, default=None)
     rooms = models.ManyToManyField(Room)

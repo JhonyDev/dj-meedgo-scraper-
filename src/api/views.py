@@ -148,6 +148,42 @@ class BookingListView(generics.ListCreateAPIView):
             raise ValidationError('Booking cannot be created, check out date conflicts with another booking')
 
 
+class BookingAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def post(self, request, format=None):
+        check_in_date = request.data['check_in_date']
+        check_in_date = parser.parse(check_in_date)
+        check_out_date = request.data['check_out_date']
+        check_out_date = parser.parse(check_out_date)
+        customer_name = request.data['customer_name']
+        customer_phone = request.data['customer_phone']
+        customer_email = request.data['customer_email']
+        customer_cnic = request.data['customer_cnic']
+        categories = request.data['categories']
+        booking = Booking.objects.create(check_out_date=check_out_date, check_in_date=check_in_date,
+                                         customer_name=customer_name, customer_phone=customer_phone,
+                                         customer_email=customer_email, customer_cnic=customer_cnic)
+
+        rooms_ = []
+        warnings = []
+        for category in categories:
+            name = category['name']
+            number_of_rooms = category['number_of_rooms']
+            room_category = get_object_or_404(Category, name=name)
+            if utils.get_availability(check_in_date)[name] >= number_of_rooms:
+                rooms = Room.objects.filter(category=room_category)[:number_of_rooms]
+                for room in rooms:
+                    rooms_.append(room)
+            else:
+                warnings.append(f"{name} exceeds availability, cannot create booking")
+        booking.rooms.set(rooms_)
+        booking.save()
+        return Response(data={'message': 'Success!', 'warnings': warnings},
+                        status=status.HTTP_200_OK)
+
+
 class BookingRUVGeneral(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.BookingSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -211,3 +247,29 @@ class BookingsMonthGeneral(APIView):
         bookings = Booking.objects.filter(check_in_date__lte=target_end_date, check_in_date__gte=target_start_date)
         return Response(data=serializers.BookingSerializer(bookings, many=True).data,
                         status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+"""
+{
+   "check_in_date":"2022-10-02",
+   "check_out_date":"2022-10-02",
+   "customer_name":"Junaid Khan",
+   "customer_phone":"03345529803",
+   "customer_email":"junaid@gmail.com",
+   "customer_cnic":"7584854785858",
+   "categories":[
+      {
+         "name":"Delux",
+         "number_of_rooms":5
+      },
+      {
+         "name":"PentHouse",
+         "number_of_rooms":7
+      },
+      {
+         "name":"Another",
+         "number_of_rooms":10
+      }
+   ]
+}
+"""

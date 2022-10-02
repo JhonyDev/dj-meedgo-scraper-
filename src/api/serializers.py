@@ -105,6 +105,8 @@ class CategoryPostSerializer(serializers.ModelSerializer):
                 name=self.validated_data['name']
             )
             category.save()
+        else:
+            category = category.first()
         category.number_of_rooms = self.validated_data['number_of_rooms']
         return category
 
