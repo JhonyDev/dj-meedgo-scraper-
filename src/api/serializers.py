@@ -36,6 +36,18 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+    def update(self, instance, validated_data):
+        instance.first_name = validated_data['first_name']
+        instance.last_name = validated_data['last_name']
+        instance.email = validated_data['email']
+        instance.username = validated_data['username']
+        instance.user_password = validated_data['password']
+        password = validated_data['password']
+
+        instance.set_password(password)
+        instance.save()
+        return instance
+
 
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
