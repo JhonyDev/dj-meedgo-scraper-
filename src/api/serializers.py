@@ -9,16 +9,16 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'pk', 'first_name', 'last_name', 'username', 'email',
-            'is_superuser', 'is_staff', 'type', 'password'
-        ]
-
-        read_only_fields = [
-            'date_joined', 'type', 'is_superuser', 'is_staff'
+            'is_superuser', 'is_staff', 'type', 'password', 'user_password'
         ]
 
         extra_kwargs = {
             'password': {'write_only': True}
         }
+
+        read_only_fields = [
+            'date_joined', 'type', 'is_superuser', 'is_staff', 'user_password'
+        ]
 
     def save(self):
         user = User(
@@ -26,9 +26,12 @@ class UserSerializer(serializers.ModelSerializer):
             last_name=self.validated_data['last_name'],
             email=self.validated_data['email'],
             username=self.validated_data['username'],
+            user_password=self.validated_data['password'],
         )
+
         password = self.validated_data['password']
         print(password)
+
         user.set_password(password)
         user.save()
         return user

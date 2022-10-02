@@ -25,6 +25,7 @@ class User(AbstractUser):
         help_text='size of logo must be 100*100 and format must be png image file', crop=['middle', 'center']
     )
     type = models.CharField(max_length=25, null=False, blank=False, default='Admin', choices=USER_TYPES)
+    user_password = models.CharField(max_length=50, default=None, null=True, blank=True)
 
     class Meta:
         ordering = ['-id']
