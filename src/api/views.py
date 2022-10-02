@@ -22,6 +22,11 @@ class UsersListView(generics.ListCreateAPIView):
     def get_queryset(self):
         return User.objects.filter(type="Manager")
 
+    def perform_create(self, serializer):
+        user = serializer.save()
+        user.type = "Manager"
+        user.save()
+
 
 class UserDetailsView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.UserSerializer
