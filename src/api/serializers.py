@@ -73,8 +73,6 @@ class CategoryNumSerializer(serializers.ModelSerializer):
         instance.name = self.validated_data['name']
         number = self.validated_data['number_of_rooms']
         rooms = models.Room.objects.filter(category=instance)
-        print(number)
-        print(rooms.count())
         if rooms.count() < number:
             for x in range(number - rooms.count()):
                 models.Room.objects.create(category=instance)
@@ -101,13 +99,13 @@ class CategoryPostSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         name = self.validated_data['name']
-
         category = Category.objects.filter(name=name)
         if not category.exists():
             category = Category(
                 name=self.validated_data['name']
             )
             category.save()
+        category.number_of_rooms = self.validated_data['number_of_rooms']
         return category
 
 
