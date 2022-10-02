@@ -184,7 +184,7 @@ class AvailabilityTargetDate(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, date_, *args, **kwargs):
-        target_date = parser.parse(date_, day_first=True)
+        target_date = parser.parse(date_)
         rooms = utils.get_availability(target_date)
         return Response(data=rooms,
                         status=status.HTTP_200_OK)
