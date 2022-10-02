@@ -13,6 +13,7 @@ urlpatterns = [
 
     path('categories/', views.CategoryListView.as_view()),
     path('num/categories/', views.CategoryCreateView.as_view()),
+    path('num/categories/<int:pk>/', views.CategoryNumRUV.as_view()),
     path('category/<int:pk>/', views.CategoryRUV.as_view()),
 
     path('admin/bookings/', views.BookingListViewGeneral.as_view()),

@@ -99,6 +99,21 @@ class CategoryCreateView(generics.ListCreateAPIView):
             Room.objects.create(category=category)
 
 
+class CategoryNumRUV(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.CategoryNumSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    lookup_field = 'pk'
+
+    def get_object(self):
+        pk = self.kwargs["pk"]
+        category = get_object_or_404(Category, pk=pk)
+        rooms = Room.objects.filter(category=category).count()
+        category.number_of_rooms = rooms
+
+        return category
+
+
 class BookingRUV(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.BookingSerializer
     permission_classes = [permissions.IsAuthenticated]

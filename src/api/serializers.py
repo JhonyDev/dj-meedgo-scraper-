@@ -62,6 +62,36 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ['name']
 
 
+class CategoryNumSerializer(serializers.ModelSerializer):
+    number_of_rooms = serializers.IntegerField()
+
+    class Meta:
+        model = models.Category
+        fields = ['name', 'number_of_rooms']
+
+    def update(self, instance, validated_data):
+        instance.name = self.validated_data['name']
+        number = self.validated_data['number_of_rooms']
+        rooms = models.Room.objects.filter(category=instance)
+        print(number)
+        print(rooms.count())
+        if rooms.count() < number:
+            for x in range(number - rooms.count()):
+                models.Room.objects.create(category=instance)
+        elif rooms.count() > number:
+            difference = rooms.count() - number
+            removed = 0
+            for x in rooms:
+                if removed > difference:
+                    pass
+                else:
+                    x.delete()
+                    removed += 1
+        rooms = models.Room.objects.filter(category=instance).count()
+        instance.number_of_rooms = rooms
+        return instance
+
+
 class CategoryPostSerializer(serializers.ModelSerializer):
     number_of_rooms = serializers.IntegerField()
 
