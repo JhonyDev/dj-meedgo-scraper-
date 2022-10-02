@@ -81,10 +81,17 @@ class CategoryListView(generics.ListCreateAPIView):
         return Category.objects.all()
 
 
-class CategoryCreateView(generics.CreateAPIView):
+class CategoryCreateView(generics.ListCreateAPIView):
     serializer_class = serializers.CategoryPostSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
+
+    def get_queryset(self):
+        categories = Category.objects.all()
+        for category in categories:
+            rooms = Room.objects.filter(category=category).count()
+            category.number_of_rooms = rooms
+        return categories
 
     def perform_create(self, serializer):
         category = serializer.save()
