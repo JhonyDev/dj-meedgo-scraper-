@@ -24,17 +24,17 @@ def days_between(d1, d2):
 
 
 def get_availability(date, end_date):
-    from .models import Booking, Room
-    parent_dict = None
-    # for single_date in (date + datetime.timedelta(n) for n in range(days_between(date, end_date))):
-    print(date)
-    print(end_date)
+    from .models import Booking, Room, Category
+    parent_dict = {"Total": 0}
+
+    category = Category.objects.all()
+    for cat in category:
+        parent_dict[cat.name] = 0
+
     bookings = Booking.objects.filter(
         Q(check_in_date__range=[date, end_date]) | Q(check_out_date__range=[date, end_date]) |
         (Q(check_in_date__lt=date) & Q(check_out_date__gt=end_date))
     )
-    # bookings = bookings.filter(check_in_date__gt=date, check_out_date__lt=end_date)
-
     booked_rooms = []
     for booking in bookings:
         for room in booking.rooms.all():
@@ -44,20 +44,18 @@ def get_availability(date, end_date):
 
     rooms = Room.objects.all().exclude(pk__in=booked_rooms)
     booked_rooms_query = Room.objects.filter(pk__in=booked_rooms)
-    cat_dict = {'Total': rooms.count()}
+    parent_dict["Total"] = rooms.count()
 
-    if parent_dict is None:
-        for room in rooms:
-            cat = cat_dict.get(room.category.name)
-            if cat is None:
-                cat_dict[room.category.name] = 0
-            cat = cat_dict.get(room.category.name)
-            cat_dict[room.category.name] = cat + 1
-        parent_dict = cat_dict
-    else:
-        for room in booked_rooms_query:
-            parent_dict[room.category] = parent_dict[room.category] - 1
-            parent_dict['Total'] = parent_dict['Total'] - 1
+    for room in rooms:
+        cat = parent_dict.get(room.category.name)
+        if cat is None:
+            parent_dict[room.category.name] = 0
+        cat = parent_dict.get(room.category.name)
+        parent_dict[room.category.name] = cat + 1
+
+    for room in booked_rooms_query:
+        parent_dict[room.category.name] = parent_dict[room.category.name] - 1
+        parent_dict["Total"] = parent_dict['Total'] - 1
 
     print(parent_dict)
     return parent_dict

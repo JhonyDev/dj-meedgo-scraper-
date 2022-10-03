@@ -181,8 +181,87 @@ class BookingAPIView(APIView):
                 warnings.append(f"{name} exceeds availability, cannot create booking")
         booking.rooms.set(rooms_)
         booking.save()
-        print(warnings)
         return Response(data={'message': 'Success!', 'warnings': warnings},
+                        status=status.HTTP_200_OK)
+
+
+class UpdateBookingAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def put(self, request, pk, format=None):
+        booking = get_object_or_404(Booking, pk=pk)
+        check_in_date = request.data['check_in_date']
+        booking.check_in_date = parser.parse(check_in_date, dayfirst=True)
+        check_out_date = request.data['check_out_date']
+        booking.check_out_date = parser.parse(check_out_date, dayfirst=True)
+        booking.customer_name = request.data['customer_name']
+        booking.customer_phone = request.data['customer_phone']
+        booking.customer_email = request.data['customer_email']
+        booking.customer_cnic = request.data['customer_cnic']
+        categories = request.data['categories']
+        rooms_ = []
+        warnings = []
+        for category in categories:
+            name = category['name']
+            number_of_rooms = category['number_of_rooms']
+            room_category = get_object_or_404(Category, name=name)
+            x = utils.get_availability(booking.check_in_date, booking.check_out_date)
+            if x[name] >= number_of_rooms:
+                rooms = Room.objects.filter(category=room_category)[:number_of_rooms]
+                for room in rooms:
+                    rooms_.append(room)
+            else:
+                warnings.append(f"{name} exceeds availability, cannot create booking")
+        booking.rooms.set(rooms_)
+        booking.save()
+
+        categories = Category.objects.all()
+        dict_ = {}
+        for category in categories:
+            dict_[category.name] = booking.rooms.filter(category=category).count()
+        booking_dict = {
+            'pk': booking.pk,
+            'check_in_date': booking.check_in_date,
+            'check_out_date': booking.check_out_date,
+            'customer_name': booking.customer_name,
+            'customer_phone': booking.customer_phone,
+            'customer_email': booking.customer_email,
+            'customer_cnic': booking.customer_cnic,
+            'bookings': dict_,
+        }
+
+        return Response(data=booking_dict,
+                        status=status.HTTP_200_OK)
+
+
+class BookingGetAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request, date_, format=None):
+        date_ = parser.parse(date_, dayfirst=True)
+        bookings = Booking.objects.filter(check_in_date=date_)
+        booking_array = []
+
+        for booking in bookings:
+            categories = Category.objects.all()
+            dict_ = {}
+            for category in categories:
+                dict_[category.name] = booking.rooms.filter(category=category).count()
+            booking_dict = {
+                'pk': booking.pk,
+                'check_in_date': booking.check_in_date,
+                'check_out_date': booking.check_out_date,
+                'customer_name': booking.customer_name,
+                'customer_phone': booking.customer_phone,
+                'customer_email': booking.customer_email,
+                'customer_cnic': booking.customer_cnic,
+                'bookings': dict_,
+            }
+            booking_array.append(booking_dict)
+
+        return Response(data=booking_array,
                         status=status.HTTP_200_OK)
 
 
@@ -250,7 +329,7 @@ class BookingsMonthGeneral(APIView):
         target_start_date, target_end_date = utils.get_target_dates(month, year)
         bookings = Booking.objects.filter(check_in_date__lte=target_end_date, check_in_date__gte=target_start_date)
         return Response(data=serializers.BookingSerializer(bookings, many=True).data,
-                        status=status.HTTP_406_NOT_ACCEPTABLE)
+                        status=status.HTTP_200_OK)
 
 
 """
