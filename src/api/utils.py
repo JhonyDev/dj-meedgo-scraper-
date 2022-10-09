@@ -37,6 +37,8 @@ def get_availability(date, end_date):
     )
     booked_rooms = []
     for booking in bookings:
+        if booking.check_in_date == booking.check_out_date:
+            continue
         for room in booking.rooms.all():
             if room is not None:
                 if room.pk not in booked_rooms:
