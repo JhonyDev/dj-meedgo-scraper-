@@ -32,6 +32,7 @@ class Booking(models.Model):
     created_on = models.DateTimeField(max_length=50, auto_now_add=True)
     check_in_date = models.DateField()
     check_out_date = models.DateField()
+    total_rooms = models.PositiveIntegerField(default=None, null=True, blank=True)
     customer_name = models.CharField(max_length=50)
     customer_phone = models.CharField(max_length=50)
     customer_email = models.EmailField(max_length=50, null=True, blank=True, default=None)
