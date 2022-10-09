@@ -29,7 +29,6 @@ def get_availability(date, end_date):
     from .models import Booking, Room, Category
     parent_dict = {"Total": 0}
     date = date + datetime.timedelta(days=1)
-    print(end_date)
     category = Category.objects.all()
     for cat in category:
         parent_dict[cat.name] = 0
@@ -38,6 +37,7 @@ def get_availability(date, end_date):
         Q(check_in_date__range=[date, end_date]) | Q(check_out_date__range=[date, end_date]) |
         (Q(check_in_date__lt=date) & Q(check_out_date__gt=end_date))
     )
+
     booked_rooms = []
     for booking in bookings:
         for room in booking.rooms.all():
@@ -46,16 +46,14 @@ def get_availability(date, end_date):
                     booked_rooms.append(room.pk)
 
     rooms = Room.objects.all().exclude(pk__in=booked_rooms)
-    booked_rooms_query = Room.objects.filter(pk__in=booked_rooms)
     parent_dict["Total"] = rooms.count()
-
     for room in rooms:
         cat = parent_dict.get(room.category.name)
         if cat is None:
             parent_dict[room.category.name] = 0
         cat = parent_dict.get(room.category.name)
         parent_dict[room.category.name] = cat + 1
-    #
+
     # for room in booked_rooms_query:
     #     parent_dict[room.category.name] = parent_dict[room.category.name] - 1
     #     parent_dict["Total"] = parent_dict['Total'] - 1

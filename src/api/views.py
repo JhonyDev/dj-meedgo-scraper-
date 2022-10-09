@@ -175,7 +175,24 @@ class BookingAPIView(APIView):
             number_of_rooms = category['number_of_rooms']
             room_category = get_object_or_404(Category, name=name)
             if utils.get_availability(check_in_date, check_out_date)[name] >= number_of_rooms:
-                rooms = Room.objects.filter(category=room_category)[:number_of_rooms]
+                # TODO:
+                bookings = Booking.objects.filter(check_in_date__lte=check_in_date,
+                                                  check_in_date__gte=check_out_date)
+                context_bookings = []
+                already_booked_rooms = []
+
+                for booking in bookings:
+                    context_bookings.append(booking)
+                    temp_booking = copy(booking)
+                    initial_date = booking.check_in_date
+                    days_between = utils.days_between(initial_date, booking.check_out_date)
+                    for x in range(days_between):
+                        temp_booking.check_in_date = temp_booking.check_in_date + datetime.timedelta(days=1)
+                        new_temp = copy(temp_booking)
+                        already_booked_rooms += new_temp.rooms.values_list('pk', flat=True)
+
+                rooms = Room.objects.filter(category=room_category).exclude(pk__in=already_booked_rooms)[
+                        :number_of_rooms]
                 for room in rooms:
                     rooms_.append(room)
             else:
