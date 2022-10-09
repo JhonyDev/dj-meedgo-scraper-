@@ -330,7 +330,6 @@ class BookingsMonthGeneral(APIView):
         target_start_date, target_end_date = utils.get_target_dates(month, year)
         bookings = Booking.objects.filter(check_in_date__lte=target_end_date, check_in_date__gte=target_start_date)
         context_bookings = []
-        initial_date = None
         for booking in bookings:
             context_bookings.append(booking)
             temp_booking = copy(booking)
@@ -339,12 +338,8 @@ class BookingsMonthGeneral(APIView):
             for x in range(days_between):
                 temp_booking.check_in_date = temp_booking.check_in_date + datetime.timedelta(days=1)
                 new_temp = copy(temp_booking)
-                # if new_temp.check_in_date == new_temp.check_out_date:
-                #     continue
                 context_bookings.append(new_temp)
-        print("==========================")
-        for booking in context_bookings:
-            print(booking.check_in_date)
+
         return Response(data=serializers.BookingSerializer(context_bookings, many=True).data,
                         status=status.HTTP_200_OK)
 
