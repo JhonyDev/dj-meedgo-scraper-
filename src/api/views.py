@@ -339,8 +339,8 @@ class BookingsMonthGeneral(APIView):
             for x in range(days_between):
                 temp_booking.check_in_date = temp_booking.check_in_date + datetime.timedelta(days=1)
                 new_temp = copy(temp_booking)
-                if new_temp.check_in_date == new_temp.check_out_date:
-                    continue
+                # if new_temp.check_in_date == new_temp.check_out_date:
+                #     continue
                 context_bookings.append(new_temp)
         print("==========================")
         for booking in context_bookings:
