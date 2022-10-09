@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from . import serializers, utils
-from .models import Room, Category, Booking
+from .models import Room, Category, Booking, BookingPayment
 from ..accounts.authentication import JWTAuthentication
 from ..accounts.models import User
 
@@ -52,6 +52,30 @@ class RoomRUV(generics.RetrieveUpdateDestroyAPIView):
     def get_object(self):
         pk = self.kwargs["pk"]
         return get_object_or_404(Room, pk=pk)
+
+
+class BookingPaymentListView(generics.ListCreateAPIView):
+    serializer_class = serializers.BookingPaymentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    lookup_field = 'pk'
+
+    def get_queryset(self):
+        pk = self.kwargs["pk"]
+        booking = get_object_or_404(Booking, pk=pk)
+        return BookingPayment.objects.filter(booking=booking)
+
+
+class BookingPaymentUpdateView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.BookingPaymentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    lookup_field = 'pk'
+
+    def get_object(self):
+        pk = self.kwargs["pk"]
+        booking = get_object_or_404(BookingPayment, pk=pk)
+        return booking
 
 
 class RoomsListView(generics.ListCreateAPIView):
@@ -175,24 +199,7 @@ class BookingAPIView(APIView):
             number_of_rooms = category['number_of_rooms']
             room_category = get_object_or_404(Category, name=name)
             if utils.get_availability(check_in_date, check_out_date)[name] >= number_of_rooms:
-                # TODO:
-                bookings = Booking.objects.filter(check_in_date__lte=check_in_date,
-                                                  check_in_date__gte=check_out_date)
-                context_bookings = []
-                already_booked_rooms = []
-
-                for booking in bookings:
-                    context_bookings.append(booking)
-                    temp_booking = copy(booking)
-                    initial_date = booking.check_in_date
-                    days_between = utils.days_between(initial_date, booking.check_out_date)
-                    for x in range(days_between):
-                        temp_booking.check_in_date = temp_booking.check_in_date + datetime.timedelta(days=1)
-                        new_temp = copy(temp_booking)
-                        already_booked_rooms += new_temp.rooms.values_list('pk', flat=True)
-
-                rooms = Room.objects.filter(category=room_category).exclude(pk__in=already_booked_rooms)[
-                        :number_of_rooms]
+                rooms = Room.objects.filter(category=room_category)[:number_of_rooms]
                 for room in rooms:
                     rooms_.append(room)
             else:
@@ -259,7 +266,7 @@ class BookingGetAPIView(APIView):
 
     def get(self, request, date_, format=None):
         date_ = parser.parse(date_, dayfirst=True)
-        bookings = Booking.objects.filter(check_in_date=date_)
+        bookings = Booking.objects.filter(check_in_date__lte=date_, check_out_date__gt=date_)
         booking_array = []
 
         for booking in bookings:

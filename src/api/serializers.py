@@ -118,3 +118,9 @@ class BookingSerializer(serializers.ModelSerializer):
         read_only_fields = [
             'is_active', 'manager'
         ]
+
+
+class BookingPaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.BookingPayment
+        fields = '__all__'

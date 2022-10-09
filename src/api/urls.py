@@ -11,6 +11,9 @@ urlpatterns = [
     path('rooms/', views.RoomsListView.as_view()),
     path('room/<int:pk>/', views.RoomRUV.as_view()),
 
+    path('booking/<int:pk>/payment/', views.BookingPaymentListView.as_view()),
+    path('booking/payment/<int:pk>/', views.BookingPaymentUpdateView.as_view()),
+
     path('categories/', views.CategoryListView.as_view()),
     path('num/categories/', views.CategoryCreateView.as_view()),
     path('num/categories/<int:pk>/', views.CategoryNumRUV.as_view()),
