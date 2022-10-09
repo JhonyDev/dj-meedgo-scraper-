@@ -1,4 +1,5 @@
 import datetime
+from copy import copy
 from datetime import date
 
 from dateutil import parser
@@ -328,7 +329,23 @@ class BookingsMonthGeneral(APIView):
     def get(self, request, month, year, *args, **kwargs):
         target_start_date, target_end_date = utils.get_target_dates(month, year)
         bookings = Booking.objects.filter(check_in_date__lte=target_end_date, check_in_date__gte=target_start_date)
-        return Response(data=serializers.BookingSerializer(bookings, many=True).data,
+        context_bookings = []
+        initial_date = None
+        for booking in bookings:
+            context_bookings.append(booking)
+            temp_booking = copy(booking)
+            initial_date = booking.check_in_date
+            days_between = utils.days_between(initial_date, booking.check_out_date)
+            for x in range(days_between):
+                temp_booking.check_in_date = temp_booking.check_in_date + datetime.timedelta(days=1)
+                new_temp = copy(temp_booking)
+                if new_temp.check_in_date == new_temp.check_out_date:
+                    continue
+                context_bookings.append(new_temp)
+        print("==========================")
+        for booking in context_bookings:
+            print(booking.check_in_date)
+        return Response(data=serializers.BookingSerializer(context_bookings, many=True).data,
                         status=status.HTTP_200_OK)
 
 
