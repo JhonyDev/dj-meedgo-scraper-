@@ -28,7 +28,7 @@ def days_between(d1, d2):
 def get_availability(date, end_date):
     from .models import Booking, Room, Category
     parent_dict = {"Total": 0}
-    end_date = end_date - datetime.timedelta(days=1)
+    end_date = end_date - datetime.timedelta(days=2)
     category = Category.objects.all()
     for cat in category:
         parent_dict[cat.name] = 0
