@@ -1,3 +1,5 @@
+import datetime
+
 from django.db.models import Q
 
 
@@ -26,7 +28,7 @@ def days_between(d1, d2):
 def get_availability(date, end_date):
     from .models import Booking, Room, Category
     parent_dict = {"Total": 0}
-
+    end_date = end_date - datetime.timedelta(days=1)
     category = Category.objects.all()
     for cat in category:
         parent_dict[cat.name] = 0
@@ -52,10 +54,10 @@ def get_availability(date, end_date):
             parent_dict[room.category.name] = 0
         cat = parent_dict.get(room.category.name)
         parent_dict[room.category.name] = cat + 1
-
-    for room in booked_rooms_query:
-        parent_dict[room.category.name] = parent_dict[room.category.name] - 1
-        parent_dict["Total"] = parent_dict['Total'] - 1
+    #
+    # for room in booked_rooms_query:
+    #     parent_dict[room.category.name] = parent_dict[room.category.name] - 1
+    #     parent_dict["Total"] = parent_dict['Total'] - 1
 
     return parent_dict
 
