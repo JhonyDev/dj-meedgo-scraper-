@@ -41,7 +41,7 @@ class Booking(models.Model):
     options = models.CharField(max_length=50, choices=OPTIONS, default='Option-1')
     rooms = models.ManyToManyField(Room)
     manager = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.customer_name)
