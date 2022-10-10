@@ -66,3 +66,27 @@ def get_target_dates(month, year):
     target_end_date = parser.parse(target_end_date)
     target_start_date = parser.parse(target_start_date)
     return target_start_date, target_end_date
+
+
+def generate_pdf_get_path(url):
+    import pdfkit
+
+    path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
+    config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+    import uuid
+    id_ = uuid.uuid4().hex
+    try:
+        pdfkit.from_url(url, f'media/{id_}.pdf', configuration=config)
+    except Exception as e:
+        print(str(e))
+    return f'media/{id_}.pdf'
+
+
+def encode_base_64(url):
+    with open(f"{url}", "rb") as pdf_file:
+        import base64
+        encoded_string = str(base64.b64encode(pdf_file.read()))
+        encoded_string = encoded_string.replace(encoded_string[0], "", 1)
+        encoded_string = encoded_string.replace(encoded_string[0], "", 1)
+        encoded_string = encoded_string.replace(encoded_string[-1], "", 1)
+        return encoded_string

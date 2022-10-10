@@ -1,0 +1,207 @@
+{% load static %}
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+    <title></title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <br/>
+    <link rel="shortcut icon" href="{% static 'core/images/logo.png' %}">
+
+    {# GLOBAL CSS #}
+    <link href="{% static 'core/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'core/css/icons.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'core/css/metismenu.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'core/css/style.css' %}" rel="stylesheet" type="text/css">
+
+    <style type="text/css">
+        <!--
+        p {
+            margin: 0;
+            padding: 0;
+        }
+
+        .ft10 {
+            font-size: 10px;
+            font-family: Times;
+            color: #000000;
+        }
+
+        .ft11 {
+            font-size: 11px;
+            font-family: Times;
+            color: #000000;
+        }
+
+        .ft12 {
+            font-size: 11px;
+            font-family: Times;
+            color: #000000;
+        }
+
+        .ft13 {
+            font-size: 11px;
+            line-height: 19px;
+            font-family: Times;
+            color: #000000;
+        }
+
+        .ft14 {
+            font-size: 11px;
+            line-height: 19px;
+            font-family: Times;
+            color: #000000;
+        }
+
+        .ft15 {
+            font-size: 11px;
+            line-height: 20px;
+            font-family: Times;
+            color: #000000;
+        }
+
+        -->
+    </style>
+</head>
+<body class="bg-white w-100">
+<div class="w-100 d-flex justify-content-center align-items-center align-center container">
+    <div id="page1-div" class="bg-white" style="position:relative;width:100%;height:1188px;">
+        <img width="918" height="1188" src="{% static 'website/images/target001.png' %}" alt="background image"/>
+        <p style="position:absolute;top:22px;left:420px;white-space:nowrap" class="ft10">FX Voucher</p>
+
+        <p style="position:absolute;top:478px;left:56px;white-space:nowrap" class="ft11">No of Rooms</p>
+        <p style="position:absolute;top:478px;left:220px;white-space:nowrap" class="ft11">
+            :&#160;<b>{{ booking.total_rooms }}</b>
+        </p>
+
+        <p style="position:absolute;top:508px;left:56px;white-space:nowrap" class="ft11">
+            Advance Payment
+        </p>
+        <p style="position:absolute;top:508px;left:226px;white-space:nowrap" class="ft11"><b></b>
+            <b>{{ advance }} PKR</b>
+        </p>
+
+        {% for room in rooms %}
+            <p style="position:absolute;top:{{ room.margin_top }}px;left:56px;white-space:nowrap" class="ft11">
+                {{ room.name }}
+            </p>
+            <p style="position:absolute;top:{{ room.margin_top }}px;left:226px;white-space:nowrap" class="ft11"><b></b>
+                <b>x{{ room.rooms }}</b>
+            </p>
+        {% endfor %}
+
+        {% if booking.is_active %}
+            <p style="position:absolute;top:130px;left:383px;white-space:nowrap" class="ft12"><b
+                    class="" style="color: #009900">BOOKING CONFIRMED</b>
+            </p>
+        {% else %}
+            <p style="position:absolute;top:130px;left:383px;white-space:nowrap" class="ft12"><b style="color: red">BOOKING
+                NOT CONFIRMED</b></p>
+        {% endif %}
+
+
+        <p style="position:absolute;top:217px;left:56px;white-space:nowrap" class="ft11">
+            Dear&#160;<b>{{ booking.customer_name }}</b></p>
+        <p style="position:absolute;top:247px;left:56px;white-space:nowrap" class="ft11">Greeting from&#160;<b>Hotel
+            Elites
+            Nathiagali</b></p>
+        <p style="position:absolute;top:278px;left:56px;white-space:nowrap" class="ft11">We are pleased to confirm the
+            following information</p>
+        <p style="position:absolute;top:324px;left:56px;white-space:nowrap" class="ft11">Guest Name</p>
+        <p style="position:absolute;top:324px;left:220px;white-space:nowrap" class="ft11">
+            :&#160;<b>{{ booking.customer_name }}</b>
+        </p>
+        <p style="position:absolute;top:354px;left:56px;white-space:nowrap" class="ft11">Company Name</p>
+        <p style="position:absolute;top:354px;left:220px;white-space:nowrap" class="ft11">
+            :&#160;<b>{{ booking.customer_name }}</b></p>
+        <p style="position:absolute;top:385px;left:56px;white-space:nowrap" class="ft11">Mobile</p>
+        <p style="position:absolute;top:385px;left:220px;white-space:nowrap" class="ft11">
+            :&#160;<b>{{ booking.customer_phone }}</b></p>
+        <p style="position:absolute;top:415px;left:56px;white-space:nowrap" class="ft11">Email</p>
+        <p style="position:absolute;top:415px;left:220px;white-space:nowrap" class="ft11">
+            :&#160;<b>{{ booking.customer_email }}</b></p>
+        <p style="position:absolute;top:444px;left:56px;white-space:nowrap" class="ft11">Check-in Date</p>
+        <p style="position:absolute;top:444px;left:220px;white-space:nowrap" class="ft11">
+            :&#160;<b>{{ booking.check_in_date }}</b>
+        </p>
+        <p style="position:absolute;top:444px;left:465px;white-space:nowrap" class="ft11">Check-out Date</p>
+        <p style="position:absolute;top:444px;left:653px;white-space:nowrap" class="ft11">
+            :&#160;<b>{{ booking.check_out_date }}</b>
+        </p>
+        <p style="position:absolute;top:773px;left:56px;white-space:nowrap" class="ft12"><b>Instructions</b></p>
+        <p style="position:absolute;top:805px;left:87px;white-space:nowrap" class="ft14">1.&#160;Above room rates are
+            subject to applicable Government Tax.<br/>2.&#160;The quoted USD rates shall be charged in Pakistani Rupee.
+            The
+            exchange rate shall be the SBP Interbank Exchange. Rate as published on</p>
+        <p style="position:absolute;top:844px;left:101px;white-space:nowrap" class="ft11">the SBP official web site on
+            daily
+            basis. (www.sbp.org.pk).</p>
+        <p style="position:absolute;top:863px;left:87px;white-space:nowrap" class="ft15">3.&#160;Our check-in time is
+            14:00
+            hours. Arrival before 14:00 hours is subject to availability unless guaranteed and paid from the previous
+            night.<br/>4.&#160;All
+            non guaranteed reservations will be held on a tentative basis till 1600Hrs after that room will be subject
+            to
+            availability.<br/>5.&#160;Confirmed Reservations must be cancelled / amended at least 48hrs prior to arrival
+            to
+            avoid one night NO-SHOW or cancellation charges.</p>
+        <p style="position:absolute;top:921px;left:101px;white-space:nowrap" class="ft11">Cancellation should be
+            forwarded
+            in writing to our office during general office hours.</p>
+        <p style="position:absolute;top:940px;left:87px;white-space:nowrap" class="ft11">6.&#160;Our Check-out time is
+            12:00
+            hours and please note that 50% of room rent will be charged in the event of late check-out from 12:00 hours
+            to</p>
+        <p style="position:absolute;top:960px;left:101px;white-space:nowrap" class="ft11">18:00 hours and after 18:00
+            hours
+            full night room rent will be charged.</p>
+        <p style="position:absolute;top:979px;left:87px;white-space:nowrap" class="ft14">7.&#160;In case of early
+            departure,
+            we will charge one night room rent + taxes if occupant has not advised us 24hrs prior to departure.<br/>8.&#160;<b>Guest
+                will be asked for proof of vaccination in the event they would like to dine in at any of our Restaurants
+                or
+                use the Gym, Spa,</b></p>
+        <p style="position:absolute;top:1017px;left:101px;white-space:nowrap" class="ft12"><b>and Swimming Pool. Entry
+            in
+            these areas will only be permitted if valid proof of vaccination is presented.</b></p>
+        <p style="position:absolute;top:1069px;padding-left: 35%; width: 82%; white-space:nowrap" class="ft12"><b>Hotel
+            Elites
+            Nathiagali</b>&#160;
+        </p>
+
+
+    </div>
+</div>
+</body>
+</html>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+    <title></title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <br/>
+    <style type="text/css">
+        <!--
+        p {
+            margin: 0;
+            padding: 0;
+        }
+
+        .ft20 {
+            font-size: 10px;
+            font-family: Times;
+            color: #000000;
+        }
+
+        .ft21 {
+            font-size: 11px;
+            font-family: Times;
+            color: #000000;
+        }
+
+        -->
+    </style>
+</head>
+
+</html>

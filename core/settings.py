@@ -31,6 +31,8 @@ SECRET_KEY = env('SERVER_KEY')
 SERVER = env('SERVER') == 'True'
 DEBUG = env('DEBUG') == 'True'
 
+BASE_URL = "http://127.0.0.1:8000/"
+
 if SERVER:
     SITE_ID = 4
     GOOGLE_CALLBACK_ADDRESS = ""

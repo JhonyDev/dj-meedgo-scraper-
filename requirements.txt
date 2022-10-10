@@ -1,3 +1,4 @@
+pdfkit
 PyJWT
 django-rest-auth
 django_allauth==0.45.0

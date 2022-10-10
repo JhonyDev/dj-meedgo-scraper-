@@ -42,6 +42,7 @@ class Booking(models.Model):
     rooms = models.ManyToManyField(Room)
     manager = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=False)
+    booking_base_64 = models.TextField(default=None, null=True, blank=True)
 
     def __str__(self):
         return str(self.customer_name)

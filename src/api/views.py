@@ -3,7 +3,8 @@ from copy import copy
 from datetime import date
 
 from dateutil import parser
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
+from django.views import View
 from rest_framework import generics, permissions, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
@@ -205,6 +206,9 @@ class BookingAPIView(APIView):
             else:
                 warnings.append(f"{name} exceeds availability, cannot create booking")
         booking.rooms.set(rooms_)
+        from core.settings import BASE_URL
+        pdf = utils.generate_pdf_get_path(f"{BASE_URL}api/invoice/booking/{booking.pk}/")
+        booking.booking_base_64 = utils.encode_base_64(pdf)
         booking.save()
         return Response(data={'message': 'Success!', 'warnings': warnings},
                         status=status.HTTP_200_OK)
@@ -216,6 +220,9 @@ class UpdateBookingAPIView(APIView):
 
     def put(self, request, pk, format=None):
         booking = get_object_or_404(Booking, pk=pk)
+
+        is_already_booked = copy(booking.is_active)
+
         check_in_date = request.data['check_in_date']
         booking.check_in_date = parser.parse(check_in_date, dayfirst=True)
         check_out_date = request.data['check_out_date']
@@ -224,6 +231,7 @@ class UpdateBookingAPIView(APIView):
         booking.customer_phone = request.data['customer_phone']
         booking.customer_email = request.data['customer_email']
         booking.customer_cnic = request.data['customer_cnic']
+        booking.is_active = request.data['is_active']
         categories = request.data['categories']
         rooms_ = []
         warnings = []
@@ -240,6 +248,10 @@ class UpdateBookingAPIView(APIView):
                 warnings.append(f"{name} exceeds availability, cannot create booking")
         booking.rooms.set(rooms_)
         booking.save()
+        if not is_already_booked:
+            if booking.is_active:
+                # TODO: GENERATE BOOKING PDF
+                pass
 
         categories = Category.objects.all()
         dict_ = {}
@@ -366,6 +378,44 @@ class BookingsMonthGeneral(APIView):
 
         return Response(data=serializers.BookingSerializer(context_bookings, many=True).data,
                         status=status.HTTP_200_OK)
+
+
+class BookingInvoice(View):
+
+    def get(self, request, pk):
+        print(f"INSIDE VIEW {pk}")
+        booking = Booking.objects.get(pk=pk)
+        rooms = []
+        iteration = 0
+        parent_dict = {}
+        category = Category.objects.all()
+        for cat in category:
+            parent_dict[cat.name] = 0
+        # parent_dict['Total'] = 0
+
+        for room in booking.rooms.all():
+            parent_dict[room.category.name] += 1
+            # parent_dict['Total'] += 1
+
+        advance = 0
+        for key in parent_dict:
+            if parent_dict[key] <= 0:
+                # del parent_dict[key]
+                continue
+            advance += parent_dict[key] * 10000
+            rooms.append({
+                'name': key,
+                'rooms': parent_dict[key],
+                'margin_top': 528 + (iteration * 20),
+            })
+            iteration += 1
+
+        context = {
+            'booking': booking,
+            'rooms': rooms,
+            'advance': advance
+        }
+        return render(request, template_name='api/pdf_invoice.html', context=context)
 
 
 """

@@ -116,7 +116,7 @@ class BookingSerializer(serializers.ModelSerializer):
         model = models.Booking
         fields = '__all__'
         read_only_fields = [
-            'is_active', 'manager'
+            'manager'
         ]
 
 
