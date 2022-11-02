@@ -43,7 +43,9 @@ def get_availability(date, end_date):
     parent_dict["Total"] = rooms.count()
 
     for room in rooms:
-        parent_dict[room.category.name] = Room.objects.filter(category__name=room.category.name).count()
+        parent_dict[room.category.name] = {}
+        parent_dict[room.category.name]["count"] = Room.objects.filter(category__name=room.category.name).count()
+        parent_dict[room.category.name]["cost_per_night"] = room.category.cost_per_night
 
     for booking in bookings:
         for room in booking.rooms.all():

@@ -10,6 +10,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from core.settings import BASE_URL
 from . import serializers, utils
 from .models import Room, Category, Booking, BookingPayment
 from ..accounts.authentication import JWTAuthentication
@@ -188,10 +189,23 @@ class BookingAPIView(APIView):
         customer_phone = request.data['customer_phone']
         customer_email = request.data['customer_email']
         customer_cnic = request.data['customer_cnic']
+        category = request.data['category']
+        options = request.data['options']
         categories = request.data['categories']
+        total_rooms = request.data['total_rooms']
+
+        company_name = request.data['company_name']
+        expected_number_of_people = request.data['expected_number_of_people']
+        total_cost_of_bookings = request.data['total_cost_of_bookings']
+
+        total_rooms = int(total_rooms)
         booking = Booking.objects.create(check_out_date=check_out_date, check_in_date=check_in_date,
-                                         customer_name=customer_name, customer_phone=customer_phone,
-                                         customer_email=customer_email, customer_cnic=customer_cnic)
+                                         company_name=company_name, category=category,
+                                         expected_number_of_people=expected_number_of_people,
+                                         customer_name=customer_name, customer_phone=customer_phone, options=options,
+                                         total_rooms=total_rooms, customer_email=customer_email,
+                                         total_cost_of_bookings=total_cost_of_bookings,
+                                         customer_cnic=customer_cnic)
 
         rooms_ = []
         warnings = []
@@ -199,18 +213,39 @@ class BookingAPIView(APIView):
             name = category['name']
             number_of_rooms = category['number_of_rooms']
             room_category = get_object_or_404(Category, name=name)
-            if utils.get_availability(check_in_date, check_out_date)[name] >= number_of_rooms:
+            if utils.get_availability(check_in_date, check_out_date)[name]["count"] >= number_of_rooms:
                 rooms = Room.objects.filter(category=room_category)[:number_of_rooms]
                 for room in rooms:
                     rooms_.append(room)
             else:
                 warnings.append(f"{name} exceeds availability, cannot create booking")
         booking.rooms.set(rooms_)
-        from core.settings import BASE_URL
         pdf = utils.generate_pdf_get_path(f"{BASE_URL}api/invoice/booking/{booking.pk}/")
         booking.booking_base_64 = utils.encode_base_64(pdf)
         booking.save()
-        return Response(data={'message': 'Success!', 'warnings': warnings},
+
+        rooms = []
+        for room in booking.rooms.all():
+            rooms.append(room.pk)
+
+        context = {
+            'created_on': booking.created_on,
+            'check_in_date': booking.check_in_date,
+            'check_out_date': booking.check_out_date,
+            'total_rooms': booking.total_rooms,
+            'customer_name': booking.customer_name,
+            'customer_phone': booking.customer_phone,
+            'customer_email': booking.customer_email,
+            'customer_cnic': booking.customer_cnic,
+            'category': booking.category,
+            'options': booking.options,
+            'rooms': rooms,
+            'manager': booking.manager,
+            'is_active': booking.is_active,
+            'booking_base_64': booking.booking_base_64
+        }
+
+        return Response(data=context,
                         status=status.HTTP_200_OK)
 
 
@@ -221,8 +256,6 @@ class UpdateBookingAPIView(APIView):
     def put(self, request, pk, format=None):
         booking = get_object_or_404(Booking, pk=pk)
 
-        is_already_booked = copy(booking.is_active)
-
         check_in_date = request.data['check_in_date']
         booking.check_in_date = parser.parse(check_in_date, dayfirst=True)
         check_out_date = request.data['check_out_date']
@@ -232,26 +265,11 @@ class UpdateBookingAPIView(APIView):
         booking.customer_email = request.data['customer_email']
         booking.customer_cnic = request.data['customer_cnic']
         booking.is_active = request.data['is_active']
-        categories = request.data['categories']
-        rooms_ = []
-        warnings = []
-        for category in categories:
-            name = category['name']
-            number_of_rooms = category['number_of_rooms']
-            room_category = get_object_or_404(Category, name=name)
-            x = utils.get_availability(booking.check_in_date, booking.check_out_date)
-            if x[name] >= number_of_rooms:
-                rooms = Room.objects.filter(category=room_category)[:number_of_rooms]
-                for room in rooms:
-                    rooms_.append(room)
-            else:
-                warnings.append(f"{name} exceeds availability, cannot create booking")
-        booking.rooms.set(rooms_)
+
         booking.save()
-        if not is_already_booked:
-            if booking.is_active:
-                # TODO: GENERATE BOOKING PDF
-                pass
+        pdf = utils.generate_pdf_get_path(f"{BASE_URL}api/invoice/booking/{booking.pk}/")
+        booking.booking_base_64 = utils.encode_base_64(pdf)
+        booking.save()
 
         categories = Category.objects.all()
         dict_ = {}
@@ -265,7 +283,12 @@ class UpdateBookingAPIView(APIView):
             'customer_phone': booking.customer_phone,
             'customer_email': booking.customer_email,
             'customer_cnic': booking.customer_cnic,
+            'total_rooms': booking.total_rooms,
+            'options': booking.options,
+            'categories': booking.category,
+            'is_active': booking.is_active,
             'bookings': dict_,
+            'booking_base_64': booking.booking_base_64,
         }
 
         return Response(data=booking_dict,
@@ -294,10 +317,14 @@ class BookingGetAPIView(APIView):
                 'customer_phone': booking.customer_phone,
                 'customer_email': booking.customer_email,
                 'customer_cnic': booking.customer_cnic,
+                'total_rooms': booking.total_rooms,
+                'booking_base_64': booking.booking_base_64,
+                'options': booking.options,
+                'category': booking.category,
+                'is_active': booking.is_active,
                 'bookings': dict_,
             }
             booking_array.append(booking_dict)
-
         return Response(data=booking_array,
                         status=status.HTTP_200_OK)
 
@@ -364,7 +391,7 @@ class BookingsMonthGeneral(APIView):
 
     def get(self, request, month, year, *args, **kwargs):
         target_start_date, target_end_date = utils.get_target_dates(month, year)
-        bookings = Booking.objects.filter(check_in_date__lte=target_end_date, check_in_date__gte=target_start_date)
+        bookings = Booking.objects.filter(check_in_date__lt=target_end_date, check_in_date__gte=target_start_date)
         context_bookings = []
         for booking in bookings:
             context_bookings.append(booking)
@@ -406,39 +433,40 @@ class BookingInvoice(View):
             rooms.append({
                 'name': key,
                 'rooms': parent_dict[key],
-                'margin_top': 528 + (iteration * 20),
+                'margin_top': 600 + (iteration * 20),
             })
             iteration += 1
+        nights = utils.days_between(booking.check_in_date, booking.check_out_date)
 
+        booking_payments = BookingPayment.objects.filter(booking=booking)
+        context_payments = []
+        for booking_payment in booking_payments:
+            import datetime
+            date_time = datetime.datetime.fromtimestamp(booking_payment.payment_date_time // 1000)
+            context_payments.append(
+                {
+                    "amount": booking_payment.payment,
+                    "payment_date_time": date_time,
+                }
+            )
         context = {
             'booking': booking,
+            'booking_payments': context_payments,
             'rooms': rooms,
-            'advance': advance
+            'advance': advance,
+            'cost_per_night': booking.total_cost_of_bookings,
+            'nights': nights,
+            'total_cost': booking.total_cost_of_bookings * nights,
         }
         return render(request, template_name='api/pdf_invoice.html', context=context)
 
 
 """
-{
-   "check_in_date":"2022-10-02",
-   "check_out_date":"2022-10-02",
-   "customer_name":"Junaid Khan",
-   "customer_phone":"03345529803",
-   "customer_email":"junaid@gmail.com",
-   "customer_cnic":"7584854785858",
-   "categories":[
-      {
-         "name":"Delux",
-         "number_of_rooms":5
-      },
-      {
-         "name":"PentHouse",
-         "number_of_rooms":7
-      },
-      {
-         "name":"Another",
-         "number_of_rooms":10
-      }
-   ]
-}
+TODO:
+
+Total cost per night
+x Number of days
+
+= Total 
+
 """

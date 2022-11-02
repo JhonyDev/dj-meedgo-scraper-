@@ -59,7 +59,7 @@ class RoomSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Category
-        fields = ['name']
+        fields = ['name', 'cost_per_night']
 
 
 class CategoryNumSerializer(serializers.ModelSerializer):
