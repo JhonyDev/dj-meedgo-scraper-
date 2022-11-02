@@ -75,10 +75,12 @@ def generate_pdf_get_path(url):
 
     path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
     config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+
     import uuid
     id_ = uuid.uuid4().hex
     try:
-        pdfkit.from_url(url, f'media/{id_}.pdf', configuration=config)
+        # pdfkit.from_url(url, f'media/{id_}.pdf', configuration=config)
+        pdfkit.from_url(url, f'media/{id_}.pdf')
     except Exception as e:
         print(str(e))
     return f'media/{id_}.pdf'
