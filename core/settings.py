@@ -31,7 +31,7 @@ SECRET_KEY = env('SERVER_KEY')
 SERVER = env('SERVER') == 'True'
 DEBUG = env('DEBUG') == 'True'
 
-BASE_URL = "http://127.0.0.1:8000/"
+BASE_URL = "https://hotelelites.jhonydev.com/"
 
 if SERVER:
     SITE_ID = 4
