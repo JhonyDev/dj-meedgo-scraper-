@@ -138,7 +138,6 @@ class CategoryNumRUV(generics.RetrieveUpdateDestroyAPIView):
         category = get_object_or_404(Category, pk=pk)
         rooms = Room.objects.filter(category=category).count()
         category.number_of_rooms = rooms
-
         return category
 
 

@@ -67,11 +67,12 @@ class CategoryNumSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Category
-        fields = ['name', 'number_of_rooms']
+        fields = ['name', 'number_of_rooms', 'cost_per_night']
 
     def update(self, instance, validated_data):
         instance.name = self.validated_data['name']
         number = self.validated_data['number_of_rooms']
+        cost_per_night = self.validated_data['cost_per_night']
         rooms = models.Room.objects.filter(category=instance)
         if rooms.count() < number:
             for x in range(number - rooms.count()):
@@ -87,6 +88,7 @@ class CategoryNumSerializer(serializers.ModelSerializer):
                     removed += 1
         rooms = models.Room.objects.filter(category=instance).count()
         instance.number_of_rooms = rooms
+        instance.cost_per_night = cost_per_night
         return instance
 
 
@@ -99,6 +101,7 @@ class CategoryPostSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         name = self.validated_data['name']
+        cost_per_night = self.validated_data['cost_per_night']
         category = Category.objects.filter(name=name)
         if not category.exists():
             category = Category(
@@ -108,6 +111,7 @@ class CategoryPostSerializer(serializers.ModelSerializer):
         else:
             category = category.first()
         category.number_of_rooms = self.validated_data['number_of_rooms']
+        category.cost_per_night = cost_per_night
         return category
 
 
