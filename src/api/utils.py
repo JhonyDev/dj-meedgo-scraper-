@@ -79,6 +79,7 @@ def generate_pdf_get_path(url):
     import uuid
     id_ = uuid.uuid4().hex
     # pdfkit.from_url(url, f'media/{id_}.pdf', configuration=config)
+    print(url)
     pdfkit.from_url(url, f'media/{id_}.pdf')
     return f'media/{id_}.pdf'
 
