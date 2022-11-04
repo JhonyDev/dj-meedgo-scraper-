@@ -393,7 +393,7 @@ class BookingsMonthGeneral(APIView):
 
     def get(self, request, month, year, *args, **kwargs):
         target_start_date, target_end_date = utils.get_target_dates(month, year)
-        bookings = Booking.objects.filter(check_in_date__lt=target_end_date, check_in_date__gt=target_start_date)
+        bookings = Booking.objects.filter(check_in_date__lt=target_end_date, check_in_date__gte=target_start_date)
         context_bookings = []
         for booking in bookings:
             context_bookings.append(booking)
