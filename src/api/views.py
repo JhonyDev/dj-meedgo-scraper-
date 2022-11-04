@@ -334,6 +334,7 @@ class BookingGetAPIView(APIView):
                 'total_cost_of_bookings': booking.total_cost_of_bookings,
                 'nights': nights,
                 'total_cost': booking.total_cost_of_bookings * nights,
+                'bookings': dict_,
             }
             booking_array.append(booking_dict)
         return Response(data=booking_array,
