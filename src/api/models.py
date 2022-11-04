@@ -56,5 +56,6 @@ class Booking(models.Model):
 
 class BookingPayment(models.Model):
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE, null=True, blank=True)
+    entry_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     payment = models.PositiveIntegerField(default=None, null=True, blank=True)
     payment_date_time = models.PositiveBigIntegerField(null=True, blank=True, default=None)

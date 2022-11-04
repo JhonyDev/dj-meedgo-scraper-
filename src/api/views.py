@@ -67,6 +67,9 @@ class BookingPaymentListView(generics.ListCreateAPIView):
         booking = get_object_or_404(Booking, pk=pk)
         return BookingPayment.objects.filter(booking=booking)
 
+    def perform_create(self, serializer):
+        serializer.save(entry_by=self.request.user)
+
 
 class BookingPaymentUpdateView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.BookingPaymentSerializer

@@ -125,7 +125,25 @@ class BookingSerializer(serializers.ModelSerializer):
         ]
 
 
+class NestUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'first_name', 'last_name', 'username'
+        ]
+
+
 class BookingPaymentSerializer(serializers.ModelSerializer):
+    entry_by = NestUserSerializer(read_only=True)
+
     class Meta:
         model = models.BookingPayment
-        fields = '__all__'
+        fields = [
+            'entry_by',
+            'booking',
+            'payment',
+            'payment_date_time'
+        ]
+        read_only_fields = [
+            'entry_by'
+        ]
