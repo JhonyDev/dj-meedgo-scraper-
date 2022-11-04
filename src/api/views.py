@@ -315,6 +315,7 @@ class BookingGetAPIView(APIView):
             dict_ = {}
             for category in categories:
                 dict_[category.name] = booking.rooms.filter(category=category).count()
+            nights = utils.days_between(booking.check_in_date, booking.check_out_date)
             booking_dict = {
                 'pk': booking.pk,
                 'check_in_date': booking.check_in_date,
@@ -331,6 +332,8 @@ class BookingGetAPIView(APIView):
                 'is_active': booking.is_active,
                 'expected_number_of_people': booking.expected_number_of_people,
                 'total_cost_of_bookings': booking.total_cost_of_bookings,
+                'nights': nights,
+                'total_cost': booking.total_cost_of_bookings * nights,
             }
             booking_array.append(booking_dict)
         return Response(data=booking_array,
@@ -464,6 +467,7 @@ class BookingInvoice(View):
             'cost_per_night': booking.total_cost_of_bookings,
             'nights': nights,
             'total_cost': booking.total_cost_of_bookings * nights,
+
         }
         return render(request, template_name='api/pdf_invoice.html', context=context)
 
