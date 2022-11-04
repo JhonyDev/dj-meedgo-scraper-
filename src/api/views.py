@@ -195,17 +195,21 @@ class BookingAPIView(APIView):
         options = request.data['options']
         categories = request.data['categories']
         total_rooms = request.data['total_rooms']
-
         company_name = request.data['company_name']
         expected_number_of_people = request.data['expected_number_of_people']
         total_cost_of_bookings = request.data['total_cost_of_bookings']
 
         total_rooms = int(total_rooms)
-        booking = Booking.objects.create(check_out_date=check_out_date, check_in_date=check_in_date,
-                                         company_name=company_name, category=category,
+        booking = Booking.objects.create(check_out_date=check_out_date,
+                                         check_in_date=check_in_date,
+                                         company_name=company_name,
+                                         category=category,
                                          expected_number_of_people=expected_number_of_people,
-                                         customer_name=customer_name, customer_phone=customer_phone, options=options,
-                                         total_rooms=total_rooms, customer_email=customer_email,
+                                         customer_name=customer_name,
+                                         customer_phone=customer_phone,
+                                         options=options,
+                                         total_rooms=total_rooms,
+                                         customer_email=customer_email,
                                          total_cost_of_bookings=total_cost_of_bookings,
                                          customer_cnic=customer_cnic)
 
@@ -320,11 +324,13 @@ class BookingGetAPIView(APIView):
                 'customer_email': booking.customer_email,
                 'customer_cnic': booking.customer_cnic,
                 'total_rooms': booking.total_rooms,
+                'company_name': booking.total_rooms,
                 'booking_base_64': booking.booking_base_64,
                 'options': booking.options,
                 'category': booking.category,
                 'is_active': booking.is_active,
-                'bookings': dict_,
+                'expected_number_of_people': booking.expected_number_of_people,
+                'total_cost_of_bookings': booking.total_cost_of_bookings,
             }
             booking_array.append(booking_dict)
         return Response(data=booking_array,
@@ -404,7 +410,6 @@ class BookingsMonthGeneral(APIView):
                 temp_booking.check_in_date = temp_booking.check_in_date + datetime.timedelta(days=1)
                 new_temp = copy(temp_booking)
                 context_bookings.append(new_temp)
-
         return Response(data=serializers.BookingSerializer(context_bookings, many=True).data,
                         status=status.HTTP_200_OK)
 

@@ -34,11 +34,9 @@ class Booking(models.Model):
     total_rooms = models.PositiveIntegerField(default=None, null=True, blank=True)
     customer_name = models.CharField(max_length=50, null=True, blank=True)
     company_name = models.CharField(max_length=50, null=True, blank=True, default=None)
-
     expected_number_of_people = models.PositiveIntegerField(default=0)
     total_cost_of_bookings = models.PositiveIntegerField(default=0)
     payment_type = models.CharField(default=None, max_length=50, null=True, blank=True)
-
     customer_phone = models.CharField(max_length=50)
     customer_email = models.EmailField(max_length=50, null=True, blank=True, default=None)
     customer_cnic = models.CharField(max_length=50, null=True, blank=True, default=None)
