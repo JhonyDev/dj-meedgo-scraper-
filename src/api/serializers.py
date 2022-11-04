@@ -89,6 +89,7 @@ class CategoryNumSerializer(serializers.ModelSerializer):
         rooms = models.Room.objects.filter(category=instance).count()
         instance.number_of_rooms = rooms
         instance.cost_per_night = cost_per_night
+        instance.save()
         return instance
 
 
@@ -105,13 +106,13 @@ class CategoryPostSerializer(serializers.ModelSerializer):
         category = Category.objects.filter(name=name)
         if not category.exists():
             category = Category(
-                name=self.validated_data['name']
+                name=self.validated_data['name'],
+                cost_per_night=cost_per_night
             )
             category.save()
         else:
             category = category.first()
         category.number_of_rooms = self.validated_data['number_of_rooms']
-        category.cost_per_night = cost_per_night
         return category
 
 
