@@ -399,9 +399,9 @@ class BookingsMonthGeneral(APIView):
             context_bookings.append(booking)
             temp_booking = copy(booking)
             initial_date = booking.check_in_date
-            days_between = utils.days_between(initial_date, booking.check_out_date)
+            days_between = utils.days_between(initial_date, booking.check_out_date - datetime.timedelta(days=1))
             for x in range(days_between):
-                # temp_booking.check_in_date = temp_booking.check_in_date + datetime.timedelta(days=1)
+                temp_booking.check_in_date = temp_booking.check_in_date + datetime.timedelta(days=1)
                 new_temp = copy(temp_booking)
                 context_bookings.append(new_temp)
 
