@@ -49,7 +49,7 @@ def get_availability(date, end_date):
 
     for booking in bookings:
         for room in booking.rooms.all():
-            parent_dict[room.category.name] = parent_dict[room.category.name] - 1
+            parent_dict[room.category.name]["count"] = parent_dict[room.category.name]["count"] - 1
             parent_dict["Total"] = parent_dict['Total'] - 1
 
     return parent_dict
