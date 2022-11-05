@@ -72,7 +72,7 @@ def get_target_dates(month, year):
 
 def generate_pdf_get_path(url):
     import pdfkit
-
+    print(url)
     # path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
     # config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
 
