@@ -141,7 +141,6 @@ class BookingPaymentSerializer(serializers.ModelSerializer):
         fields = [
             'entry_by',
             'pk',
-            'booking',
             'payment',
             'payment_date_time'
         ]

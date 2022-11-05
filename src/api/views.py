@@ -65,10 +65,13 @@ class BookingPaymentListView(generics.ListCreateAPIView):
     def get_queryset(self):
         pk = self.kwargs["pk"]
         booking = get_object_or_404(Booking, pk=pk)
+
         return BookingPayment.objects.filter(booking=booking)
 
     def perform_create(self, serializer):
-        serializer.save(entry_by=self.request.user)
+        pk = self.kwargs["pk"]
+        booking = get_object_or_404(Booking, pk=pk)
+        serializer.save(entry_by=self.request.user, booking=booking)
 
 
 class BookingPaymentUpdateView(generics.RetrieveUpdateDestroyAPIView):
