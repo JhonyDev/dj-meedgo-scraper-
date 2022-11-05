@@ -322,6 +322,7 @@ class BookingGetAPIView(APIView):
                 'total_rooms': booking.total_rooms,
                 'company_name': booking.company_name,
                 'booking_base_64': booking.booking_base_64,
+                'payment_type': booking.payment_type,
                 'options': booking.options,
                 'category': booking.category,
                 'is_active': booking.is_active,
