@@ -140,6 +140,7 @@ class BookingPaymentSerializer(serializers.ModelSerializer):
         model = models.BookingPayment
         fields = [
             'entry_by',
+            'pk',
             'booking',
             'payment',
             'payment_date_time'
