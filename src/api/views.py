@@ -184,7 +184,7 @@ class BookingAPIView(APIView):
 
     def post(self, request, format=None):
         check_in_date = request.data['check_in_date']
-        check_in_date = parser.parse(check_in_date, dayfirst=True)
+        check_in_date = parser.parse(check_in_date, dayfizrst=True)
         check_out_date = request.data['check_out_date']
         check_out_date = parser.parse(check_out_date, dayfirst=True)
         customer_name = request.data['customer_name']
@@ -261,11 +261,6 @@ class UpdateBookingAPIView(APIView):
 
     def put(self, request, pk, format=None):
         booking = get_object_or_404(Booking, pk=pk)
-
-        check_in_date = request.data['check_in_date']
-        booking.check_in_date = parser.parse(check_in_date, dayfirst=True)
-        check_out_date = request.data['check_out_date']
-        booking.check_out_date = parser.parse(check_out_date, dayfirst=True)
         booking.customer_name = request.data['customer_name']
         booking.customer_phone = request.data['customer_phone']
         booking.customer_email = request.data['customer_email']
