@@ -184,7 +184,7 @@ class BookingAPIView(APIView):
 
     def post(self, request, format=None):
         check_in_date = request.data['check_in_date']
-        check_in_date = parser.parse(check_in_date, dayfizrst=True)
+        check_in_date = parser.parse(check_in_date, dayfirst=True)
         check_out_date = request.data['check_out_date']
         check_out_date = parser.parse(check_out_date, dayfirst=True)
         customer_name = request.data['customer_name']
