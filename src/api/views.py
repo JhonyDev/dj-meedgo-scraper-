@@ -192,6 +192,7 @@ class BookingAPIView(APIView):
         customer_email = request.data['customer_email']
         customer_cnic = request.data['customer_cnic']
         category = request.data['category']
+        payment_type = request.data['payment_type']
         options = request.data['options']
         categories = request.data['categories']
         total_rooms = request.data['total_rooms']
@@ -204,6 +205,7 @@ class BookingAPIView(APIView):
                                          check_in_date=check_in_date,
                                          company_name=company_name,
                                          category=category,
+                                         payment_type=payment_type,
                                          expected_number_of_people=expected_number_of_people,
                                          customer_name=customer_name,
                                          customer_phone=customer_phone,
@@ -265,6 +267,7 @@ class UpdateBookingAPIView(APIView):
         booking.customer_phone = request.data['customer_phone']
         booking.customer_email = request.data['customer_email']
         booking.customer_cnic = request.data['customer_cnic']
+        booking.payment_type = request.data.get('payment_type')
         booking.is_active = request.data['is_active']
 
         booking.save()
