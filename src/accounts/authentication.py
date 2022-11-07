@@ -29,15 +29,6 @@ class JWTAuthentication(BaseAuthentication):
                 id = decode_access_token(token)
                 try:
                     user = User.objects.get(pk=id)
-                    print(user.type)
-                    if user.type == "Manager":
-                        from src.api.models import Clinic
-                        try:
-                            Clinic.objects.get(manager=user)
-                        except Clinic.DoesNotExist:
-                            msg = _('Login forbidden! You are not associated with any clinic, Please contact your '
-                                    'admin.')
-                            raise exceptions.AuthenticationFailed(msg)
                     return user, None
                 except User.DoesNotExist:
                     pass
