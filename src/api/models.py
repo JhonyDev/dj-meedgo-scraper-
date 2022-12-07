@@ -37,6 +37,17 @@ class Booking(models.Model):
     expected_number_of_people = models.PositiveIntegerField(default=0)
     total_cost_of_bookings = models.PositiveIntegerField(default=0)
     payment_type = models.CharField(default=None, max_length=50, null=True, blank=True)
+
+    executive_per_night_cost = models.PositiveIntegerField(default=0)
+    deluxe_per_night_cost = models.PositiveIntegerField(default=0)
+
+    single = models.PositiveIntegerField(default=0)
+    double = models.PositiveIntegerField(default=0)
+    triple = models.PositiveIntegerField(default=0)
+    quad = models.PositiveIntegerField(default=0)
+
+    note = models.TextField(default="")
+
     customer_phone = models.CharField(max_length=50)
     customer_email = models.EmailField(max_length=50, null=True, blank=True, default=None)
     customer_cnic = models.CharField(max_length=50, null=True, blank=True, default=None)
@@ -46,6 +57,7 @@ class Booking(models.Model):
     per_night_cost = models.PositiveIntegerField(default=0)  # TODO: multiply by Total number of days
     manager = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=False)
+    is_cancelled = models.BooleanField(default=False)
     booking_base_64 = models.TextField(default=None, null=True, blank=True)
 
     def __str__(self):

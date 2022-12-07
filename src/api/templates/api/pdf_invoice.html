@@ -189,11 +189,11 @@
 
         {% if booking.is_active %}
             <p style="position:absolute;top:130px;left:383px;white-space:nowrap" class="ft12"><b
-                    class="" style="color: #009900">BOOKING CONFIRMED</b>
+                    class="" style="color: #009900">CONFIRMED BOOKING VOUCHER</b>
             </p>
         {% else %}
-            <p style="position:absolute;top:130px;left:383px;white-space:nowrap" class="ft12"><b style="color: red">BOOKING
-                NOT CONFIRMED</b></p>
+            <p style="position:absolute;top:130px;left:383px;white-space:nowrap" class="ft12"><b style="color: red">
+                BOOKING VOUCHER</b></p>
         {% endif %}
 
 
@@ -230,6 +230,11 @@
         <p style="position:absolute;top:385px;left:56px;white-space:nowrap" class="ft11">Mobile</p>
         <p style="position:absolute;top:385px;left:220px;white-space:nowrap" class="ft11">
             :&#160;<b>{{ booking.customer_phone }}</b></p>
+        <p style="position:absolute;top:385px;left:465px;white-space:nowrap" class="ft11">Payment Type</p>
+        <p style="position:absolute;top:385px;left:653px;white-space:nowrap" class="ft11">
+            :&#160;<b>{{ booking.payment_type }}</b>
+        </p>
+
         <p style="position:absolute;top:415px;left:56px;white-space:nowrap" class="ft11">Email</p>
         <p style="position:absolute;top:415px;left:220px;white-space:nowrap" class="ft11">
             :&#160;<b>{{ booking.customer_email }}</b></p>
@@ -241,6 +246,7 @@
         <p style="position:absolute;top:415px;left:653px;white-space:nowrap" class="ft11">
             :&#160;<b>{{ booking.expected_number_of_people }}</b>
         </p>
+
         <p style="position:absolute;top:444px;left:465px;white-space:nowrap" class="ft11">Check-out Date</p>
         <p style="position:absolute;top:444px;left:653px;white-space:nowrap" class="ft11">
             :&#160;<b>{{ booking.check_out_date }}</b>

@@ -272,6 +272,28 @@ class UpdateBookingAPIView(APIView):
         booking.customer_cnic = request.data['customer_cnic']
         booking.payment_type = request.data.get('payment_type')
         booking.is_active = request.data['is_active']
+        booking.is_cancelled = request.data['is_cancelled']
+
+        booking.note = request.data.get('note') if request.data.get('note') is not None else booking.note
+        booking.executive_per_night_cost = request.data.get("executive_per_night_cost") if request.data.get(
+            "executive_per_night_cost") is not None else booking.executive_per_night_cost
+        booking.deluxe_per_night_cost = request.data.get("deluxe_per_night_cost") if request.data.get(
+            "deluxe_per_night_cost") is not None else booking.deluxe_per_night_cost
+        booking.single = request.data.get("single") if request.data.get("single") is not None else booking.single
+        booking.double = request.data.get("double") if request.data.get("double") is not None else booking.double
+        booking.triple = request.data.get("triple") if request.data.get("triple") is not None else booking.triple
+        booking.quad = request.data.get("quad") if request.data.get("quad") is not None else booking.quad
+
+        if request.data.get('check_in_date') is not None:
+            check_in_date = request.data['check_in_date']
+            check_in_date = parser.parse(check_in_date, dayfirst=True)
+            booking.note = f"{booking.note} ### Check-In date changed from {booking.check_in_date} to {check_in_date}"
+            booking.check_in_date = check_in_date
+        if request.data.get('check_out_date') is not None:
+            check_out_date = request.data['check_out_date']
+            check_out_date = parser.parse(check_out_date, dayfirst=True)
+            booking.note = f"{booking.note} ### Check-Out date changed from {booking.check_out_date} to {check_out_date}"
+            booking.check_out_date = check_out_date
 
         booking.save()
         pdf = utils.generate_pdf_get_path(f"{BASE_URL}api/invoice/booking/{booking.pk}/")
@@ -294,6 +316,7 @@ class UpdateBookingAPIView(APIView):
             'options': booking.options,
             'categories': booking.category,
             'is_active': booking.is_active,
+            'is_cancelled': booking.is_cancelled,
             'bookings': dict_,
             'booking_base_64': booking.booking_base_64,
         }
@@ -405,7 +428,8 @@ class BookingsMonthGeneral(APIView):
 
     def get(self, request, month, year, *args, **kwargs):
         target_start_date, target_end_date = utils.get_target_dates(month, year)
-        bookings = Booking.objects.filter(check_in_date__lt=target_end_date, check_in_date__gte=target_start_date)
+        bookings = Booking.objects.filter(check_in_date__lt=target_end_date,
+                                          check_in_date__gte=target_start_date).exclude(is_cancelled=True)
         context_bookings = []
         for booking in bookings:
             context_bookings.append(booking)
