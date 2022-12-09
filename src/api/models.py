@@ -46,7 +46,7 @@ class Booking(models.Model):
     triple = models.PositiveIntegerField(default=0)
     quad = models.PositiveIntegerField(default=0)
 
-    note = models.TextField(default="")
+    note = models.TextField(default="", blank=True, null=True)
 
     customer_phone = models.CharField(max_length=50)
     customer_email = models.EmailField(max_length=50, null=True, blank=True, default=None)

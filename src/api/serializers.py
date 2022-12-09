@@ -44,7 +44,6 @@ class UserSerializer(serializers.ModelSerializer):
         instance.username = validated_data['username']
         instance.user_password = validated_data['password']
         password = validated_data['password']
-
         instance.set_password(password)
         instance.save()
         return instance
