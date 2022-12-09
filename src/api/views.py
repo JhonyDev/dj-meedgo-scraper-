@@ -340,6 +340,9 @@ class BookingGetAPIView(APIView):
             for category in categories:
                 dict_[category.name] = booking.rooms.filter(category=category).count()
             nights = utils.days_between(booking.check_in_date, booking.check_out_date)
+            pdf = utils.generate_pdf_get_path(f"{BASE_URL}api/invoice/booking/{booking.pk}/")
+            booking.booking_base_64 = utils.encode_base_64(pdf)
+            booking.save()
             booking_dict = {
                 'pk': booking.pk,
                 'check_in_date': booking.check_in_date,
