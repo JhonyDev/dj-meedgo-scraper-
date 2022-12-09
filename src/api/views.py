@@ -295,7 +295,6 @@ class UpdateBookingAPIView(APIView):
             booking.note = f"{booking.note} ### Check-Out date changed from {booking.check_out_date} to {check_out_date}"
             booking.check_out_date = check_out_date
 
-        booking.save()
         pdf = utils.generate_pdf_get_path(f"{BASE_URL}api/invoice/booking/{booking.pk}/")
         booking.booking_base_64 = utils.encode_base_64(pdf)
         booking.save()
