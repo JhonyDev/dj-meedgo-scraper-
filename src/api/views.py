@@ -288,7 +288,6 @@ class UpdateBookingAPIView(APIView):
         booking.customer_cnic = request.data['customer_cnic']
         booking.payment_type = request.data.get('payment_type')
         booking.is_active = request.data['is_active']
-
         booking.note = request.data.get('note') if request.data.get('note') is not None else booking.note
         booking.executive_per_night_cost = request.data.get("executive_per_night_cost") if request.data.get(
             "executive_per_night_cost") is not None else booking.executive_per_night_cost
@@ -304,7 +303,8 @@ class UpdateBookingAPIView(APIView):
         if request.data.get('check_in_date') is not None:
             check_in_date = request.data['check_in_date']
             check_in_date = parser.parse(check_in_date, dayfirst=True)
-            booking.note = f"Check-In date changed from {booking.check_in_date} to {check_in_date} ### {booking.note}"
+            booking.note = f"Check-In date changed from {booking.check_in_date} to {check_in_date}###{booking.note}".replace(
+                "00:00:00", "")
             booking.check_in_date = check_in_date
 
         if request.data.get('check_out_date') is not None:
