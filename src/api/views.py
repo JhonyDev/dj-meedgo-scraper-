@@ -229,6 +229,8 @@ class BookingAPIView(APIView):
         booking.quad = request.data.get("quad") if request.data.get("quad") is not None else booking.quad
         booking.is_cancelled = request.data.get("is_cancelled") if request.data.get(
             "is_cancelled") is not None else booking.is_cancelled
+        booking.is_deleted = request.data.get("is_deleted") if request.data.get(
+            "is_deleted") is not None else booking.is_deleted
         booking.save()
         rooms_ = []
         warnings = []
@@ -265,6 +267,8 @@ class BookingAPIView(APIView):
             'rooms': rooms,
             'manager': booking.manager,
             'is_active': booking.is_active,
+            'is_cancelled': booking.is_cancelled,
+            'is_deleted': booking.is_deleted,
             'booking_base_64': booking.booking_base_64
         }
 
@@ -351,7 +355,7 @@ class BookingGetAPIView(APIView):
     def get(self, request, date_, format=None):
         date_ = parser.parse(date_, dayfirst=True)
 
-        bookings = Booking.objects.filter(check_in_date__lte=date_, check_out_date__gt=date_)
+        bookings = Booking.objects.filter(check_in_date__lte=date_, check_out_date__gt=date_, is_deleted=False)
         booking_array = []
 
         for booking in bookings:
@@ -459,7 +463,8 @@ class BookingsMonthGeneral(APIView):
     def get(self, request, month, year, *args, **kwargs):
         target_start_date, target_end_date = utils.get_target_dates(month, year)
         bookings = Booking.objects.filter(check_in_date__lt=target_end_date,
-                                          check_in_date__gte=target_start_date).exclude(is_cancelled=True)
+                                          check_in_date__gte=target_start_date).exclude(is_cancelled=True,
+                                                                                        is_deleted=True)
         context_bookings = []
         for booking in bookings:
             context_bookings.append(booking)

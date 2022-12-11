@@ -37,7 +37,7 @@ def get_availability(date, end_date):
     bookings = Booking.objects.filter(
         Q(check_in_date__range=[date, end_date]) | Q(check_out_date__range=[date, end_date]) |
         (Q(check_in_date__lt=date) & Q(check_out_date__gt=end_date))
-    ).exclude(is_cancelled=True)
+    ).exclude(is_cancelled=True, is_deleted=True)
 
     rooms = Room.objects.all()
     parent_dict["Total"] = rooms.count()
