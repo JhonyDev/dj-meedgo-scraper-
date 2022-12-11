@@ -282,12 +282,18 @@ class UpdateBookingAPIView(APIView):
 
     def put(self, request, pk, format=None):
         booking = get_object_or_404(Booking, pk=pk)
-        booking.customer_name = request.data['customer_name']
-        booking.customer_phone = request.data['customer_phone']
-        booking.customer_email = request.data['customer_email']
-        booking.customer_cnic = request.data['customer_cnic']
-        booking.payment_type = request.data.get('payment_type')
-        booking.is_active = request.data['is_active']
+        booking.customer_name = request.data.get("customer_name") if request.data.get(
+            "customer_name") is not None else booking.customer_name
+        booking.customer_phone = request.data.get("customer_phone") if request.data.get(
+            "customer_phone") is not None else booking.customer_phone
+        booking.customer_email = request.data.get("customer_email") if request.data.get(
+            "customer_email") is not None else booking.customer_email
+        booking.customer_cnic = request.data.get("customer_cnic") if request.data.get(
+            "customer_cnic") is not None else booking.customer_cnic
+        booking.payment_type = request.data.get("payment_type") if request.data.get(
+            "payment_type") is not None else booking.payment_type
+        booking.is_active = request.data.get("is_active") if request.data.get(
+            "is_active") is not None else booking.is_active
         booking.note = request.data.get('note') if request.data.get('note') is not None else booking.note
         booking.executive_per_night_cost = request.data.get("executive_per_night_cost") if request.data.get(
             "executive_per_night_cost") is not None else booking.executive_per_night_cost
