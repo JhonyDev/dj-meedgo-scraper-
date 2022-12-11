@@ -274,10 +274,8 @@ class UpdateBookingAPIView(APIView):
         booking.is_active = request.data['is_active']
 
         booking.note = request.data.get('note') if request.data.get('note') is not None else booking.note
-        booking.executive_per_night_cost = request.data.get("executive_per_night_cost") if request.data.get(
-            "executive_per_night_cost") is not None else booking.executive_per_night_cost
-        booking.deluxe_per_night_cost = request.data.get("deluxe_per_night_cost") if request.data.get(
-            "deluxe_per_night_cost") is not None else booking.deluxe_per_night_cost
+        booking.executive_per_night_cost = request.data.get("executive_per_night_cost") if request.data.get(    "executive_per_night_cost") is not None else booking.executive_per_night_cost
+        booking.deluxe_per_night_cost = request.data.get("deluxe_per_night_cost") if request.data.get("deluxe_per_night_cost") is not None else booking.deluxe_per_night_cost
         booking.single = request.data.get("single") if request.data.get("single") is not None else booking.single
         booking.double = request.data.get("double") if request.data.get("double") is not None else booking.double
         booking.triple = request.data.get("triple") if request.data.get("triple") is not None else booking.triple
@@ -317,6 +315,13 @@ class UpdateBookingAPIView(APIView):
             'categories': booking.category,
             'is_active': booking.is_active,
             'is_cancelled': booking.is_cancelled,
+            'note': booking.note,
+            'executive_per_night_cost': booking.executive_per_night_cost,
+            'deluxe_per_night_cost': booking.deluxe_per_night_cost,
+            'single': booking.single,
+            'double': booking.double,
+            'triple': booking.triple,
+            'quad': booking.quad,
             'bookings': dict_,
             'booking_base_64': booking.booking_base_64,
         }
@@ -361,6 +366,15 @@ class BookingGetAPIView(APIView):
                 'expected_number_of_people': booking.expected_number_of_people,
                 'total_cost_of_bookings': booking.total_cost_of_bookings,
                 'nights': nights,
+
+                'note': booking.note,
+                'executive_per_night_cost': booking.executive_per_night_cost,
+                'deluxe_per_night_cost': booking.deluxe_per_night_cost,
+                'single': booking.single,
+                'double': booking.double,
+                'triple': booking.triple,
+                'quad': booking.quad,
+
                 'total_cost': booking.total_cost_of_bookings * nights,
                 'bookings': dict_,
             }
