@@ -118,8 +118,34 @@ class CategoryPostSerializer(serializers.ModelSerializer):
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Booking
-        fields = '__all__'
-        exclude = ('booking_base_64',)
+        fields = [
+            'created_on',
+            'check_in_date',
+            'check_out_date',
+            'total_rooms',
+            'customer_name',
+            'company_name',
+            'expected_number_of_people',
+            'total_cost_of_bookings',
+            'payment_type',
+            'executive_per_night_cost',
+            'deluxe_per_night_cost',
+            'single',
+            'double',
+            'triple',
+            'quad',
+            'note',
+            'customer_phone',
+            'customer_email',
+            'customer_cnic',
+            'category',
+            'options',
+            'rooms',
+            'per_night_cost',
+            'manager',
+            'is_active',
+            'is_cancelled'
+        ]
         read_only_fields = [
             'manager'
         ]
