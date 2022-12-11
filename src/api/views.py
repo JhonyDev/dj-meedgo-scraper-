@@ -373,7 +373,7 @@ class BookingGetAPIView(APIView):
                 'customer_cnic': booking.customer_cnic,
                 'total_rooms': booking.total_rooms,
                 'company_name': booking.company_name,
-                'booking_base_64': booking.booking_base_64,
+                # 'booking_base_64': booking.booking_base_64,
                 'payment_type': booking.payment_type,
                 'options': booking.options,
                 'category': booking.category,
@@ -381,7 +381,6 @@ class BookingGetAPIView(APIView):
                 'expected_number_of_people': booking.expected_number_of_people,
                 'total_cost_of_bookings': booking.total_cost_of_bookings,
                 'nights': nights,
-
                 'note': booking.note,
                 'executive_per_night_cost': booking.executive_per_night_cost,
                 'deluxe_per_night_cost': booking.deluxe_per_night_cost,
@@ -389,7 +388,6 @@ class BookingGetAPIView(APIView):
                 'double': booking.double,
                 'triple': booking.triple,
                 'quad': booking.quad,
-
                 'total_cost': booking.total_cost_of_bookings * nights,
                 'bookings': dict_,
             }
@@ -518,6 +516,7 @@ class BookingInvoice(View):
                     "payment_date_time": date_time,
                 }
             )
+
         context = {
             'booking': booking,
             'booking_payments': context_payments,
@@ -526,17 +525,5 @@ class BookingInvoice(View):
             'cost_per_night': booking.total_cost_of_bookings,
             'nights': nights,
             'total_cost': booking.total_cost_of_bookings * nights,
-
         }
         return render(request, template_name='api/pdf_invoice.html', context=context)
-
-
-"""
-TODO:
-
-Total cost per night
-x Number of days
-
-= Total 
-
-"""
