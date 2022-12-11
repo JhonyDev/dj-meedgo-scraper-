@@ -119,6 +119,7 @@ class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Booking
         fields = '__all__'
+        exclude = ('booking_base_64',)
         read_only_fields = [
             'manager'
         ]
