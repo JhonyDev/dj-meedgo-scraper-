@@ -218,6 +218,18 @@ class BookingAPIView(APIView):
                                          total_cost_of_bookings=total_cost_of_bookings,
                                          customer_cnic=customer_cnic)
 
+        booking.note = request.data.get('note') if request.data.get('note') is not None else booking.note
+        booking.executive_per_night_cost = request.data.get("executive_per_night_cost") if request.data.get(
+            "executive_per_night_cost") is not None else booking.executive_per_night_cost
+        booking.deluxe_per_night_cost = request.data.get("deluxe_per_night_cost") if request.data.get(
+            "deluxe_per_night_cost") is not None else booking.deluxe_per_night_cost
+        booking.single = request.data.get("single") if request.data.get("single") is not None else booking.single
+        booking.double = request.data.get("double") if request.data.get("double") is not None else booking.double
+        booking.triple = request.data.get("triple") if request.data.get("triple") is not None else booking.triple
+        booking.quad = request.data.get("quad") if request.data.get("quad") is not None else booking.quad
+        booking.quad = request.data.get("is_cancelled") if request.data.get(
+            "is_cancelled") is not None else booking.is_cancelled
+        booking.save()
         rooms_ = []
         warnings = []
         for category in categories:
@@ -274,8 +286,10 @@ class UpdateBookingAPIView(APIView):
         booking.is_active = request.data['is_active']
 
         booking.note = request.data.get('note') if request.data.get('note') is not None else booking.note
-        booking.executive_per_night_cost = request.data.get("executive_per_night_cost") if request.data.get(    "executive_per_night_cost") is not None else booking.executive_per_night_cost
-        booking.deluxe_per_night_cost = request.data.get("deluxe_per_night_cost") if request.data.get("deluxe_per_night_cost") is not None else booking.deluxe_per_night_cost
+        booking.executive_per_night_cost = request.data.get("executive_per_night_cost") if request.data.get(
+            "executive_per_night_cost") is not None else booking.executive_per_night_cost
+        booking.deluxe_per_night_cost = request.data.get("deluxe_per_night_cost") if request.data.get(
+            "deluxe_per_night_cost") is not None else booking.deluxe_per_night_cost
         booking.single = request.data.get("single") if request.data.get("single") is not None else booking.single
         booking.double = request.data.get("double") if request.data.get("double") is not None else booking.double
         booking.triple = request.data.get("triple") if request.data.get("triple") is not None else booking.triple
