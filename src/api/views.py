@@ -304,12 +304,13 @@ class UpdateBookingAPIView(APIView):
         if request.data.get('check_in_date') is not None:
             check_in_date = request.data['check_in_date']
             check_in_date = parser.parse(check_in_date, dayfirst=True)
-            booking.note = f"{booking.note} ### Check-In date changed from {booking.check_in_date} to {check_in_date}"
+            booking.note = f"Check-In date changed from {booking.check_in_date} to {check_in_date} ### {booking.note}"
             booking.check_in_date = check_in_date
+
         if request.data.get('check_out_date') is not None:
             check_out_date = request.data['check_out_date']
             check_out_date = parser.parse(check_out_date, dayfirst=True)
-            booking.note = f"{booking.note} ### Check-Out date changed from {booking.check_out_date} to {check_out_date}"
+            # booking.note = f"Check-Out date changed from {booking.check_out_date} to {check_out_date} ### {booking.note}"
             booking.check_out_date = check_out_date
 
         pdf = utils.generate_pdf_get_path(f"{BASE_URL}api/invoice/booking/{booking.pk}/")
@@ -333,6 +334,7 @@ class UpdateBookingAPIView(APIView):
             'categories': booking.category,
             'is_active': booking.is_active,
             'is_cancelled': booking.is_cancelled,
+            'is_deleted': booking.is_deleted,
             'note': booking.note,
             'executive_per_night_cost': booking.executive_per_night_cost,
             'deluxe_per_night_cost': booking.deluxe_per_night_cost,
@@ -382,6 +384,8 @@ class BookingGetAPIView(APIView):
                 'options': booking.options,
                 'category': booking.category,
                 'is_active': booking.is_active,
+                'is_cancelled': booking.is_cancelled,
+                'is_deleted': booking.is_deleted,
                 'expected_number_of_people': booking.expected_number_of_people,
                 'total_cost_of_bookings': booking.total_cost_of_bookings,
                 'nights': nights,
