@@ -227,7 +227,7 @@ class BookingAPIView(APIView):
         booking.double = request.data.get("double") if request.data.get("double") is not None else booking.double
         booking.triple = request.data.get("triple") if request.data.get("triple") is not None else booking.triple
         booking.quad = request.data.get("quad") if request.data.get("quad") is not None else booking.quad
-        booking.quad = request.data.get("is_cancelled") if request.data.get(
+        booking.is_cancelled = request.data.get("is_cancelled") if request.data.get(
             "is_cancelled") is not None else booking.is_cancelled
         booking.save()
         rooms_ = []
@@ -294,7 +294,7 @@ class UpdateBookingAPIView(APIView):
         booking.double = request.data.get("double") if request.data.get("double") is not None else booking.double
         booking.triple = request.data.get("triple") if request.data.get("triple") is not None else booking.triple
         booking.quad = request.data.get("quad") if request.data.get("quad") is not None else booking.quad
-        booking.quad = request.data.get("is_cancelled") if request.data.get(
+        booking.is_cancelled = request.data.get("is_cancelled") if request.data.get(
             "is_cancelled") is not None else booking.is_cancelled
 
         if request.data.get('check_in_date') is not None:
