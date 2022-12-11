@@ -303,7 +303,7 @@ class UpdateBookingAPIView(APIView):
         if request.data.get('check_in_date') is not None:
             check_in_date = request.data['check_in_date']
             check_in_date = parser.parse(check_in_date, dayfirst=True)
-            booking.note = f"Check-In date changed from {booking.check_in_date} to {check_in_date}###{booking.note}".replace(
+            booking.note = f"Date changed from {booking.check_in_date} to {check_in_date}###{booking.note}".replace(
                 "00:00:00", "")
             booking.check_in_date = check_in_date
 
