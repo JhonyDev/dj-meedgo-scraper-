@@ -48,6 +48,8 @@ def get_availability(date, end_date):
         parent_dict[room.category.name]["cost_per_night"] = room.category.cost_per_night
 
     for booking in bookings:
+        print(f"Cancel Status = {booking.is_cancelled}")
+        print(f"Cancel Status = {booking.is_deleted}")
         for room in booking.rooms.all():
             parent_dict[room.category.name]["count"] = parent_dict[room.category.name]["count"] - 1
             parent_dict["Total"] = parent_dict['Total'] - 1
