@@ -227,6 +227,9 @@ class BookingAPIView(APIView):
         booking.double = request.data.get("double") if request.data.get("double") is not None else booking.double
         booking.triple = request.data.get("triple") if request.data.get("triple") is not None else booking.triple
         booking.quad = request.data.get("quad") if request.data.get("quad") is not None else booking.quad
+        booking.expected_number_of_people = request.data.get("expected_number_of_people") if request.data.get(
+            "expected_number_of_people") is not None else booking.expected_number_of_people
+
         booking.is_cancelled = request.data.get("is_cancelled") if request.data.get(
             "is_cancelled") is not None else booking.is_cancelled
         booking.is_deleted = request.data.get("is_deleted") if request.data.get(
