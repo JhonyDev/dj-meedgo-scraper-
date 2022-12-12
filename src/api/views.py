@@ -219,6 +219,7 @@ class BookingAPIView(APIView):
                                          customer_cnic=customer_cnic)
 
         booking.note = request.data.get('note') if request.data.get('note') is not None else booking.note
+
         booking.executive_per_night_cost = request.data.get("executive_per_night_cost") if request.data.get(
             "executive_per_night_cost") is not None else booking.executive_per_night_cost
         booking.deluxe_per_night_cost = request.data.get("deluxe_per_night_cost") if request.data.get(
@@ -287,6 +288,9 @@ class UpdateBookingAPIView(APIView):
         booking = get_object_or_404(Booking, pk=pk)
         booking.customer_name = request.data.get("customer_name") if request.data.get(
             "customer_name") is not None else booking.customer_name
+        booking.company_name = request.data.get("company_name") if request.data.get(
+            "company_name") is not None else booking.company_name
+
         booking.options = request.data.get("options") if request.data.get(
             "options") is not None else booking.options
 
