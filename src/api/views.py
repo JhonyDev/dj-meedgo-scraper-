@@ -287,6 +287,9 @@ class UpdateBookingAPIView(APIView):
         booking.options = request.data.get("options") if request.data.get(
             "options") is not None else booking.options
 
+        booking.expected_number_of_people = request.data.get("expected_number_of_people") if request.data.get(
+            "expected_number_of_people") is not None else booking.expected_number_of_people
+
         booking.customer_phone = request.data.get("customer_phone") if request.data.get(
             "customer_phone") is not None else booking.customer_phone
         booking.customer_email = request.data.get("customer_email") if request.data.get(
