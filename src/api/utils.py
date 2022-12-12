@@ -37,7 +37,7 @@ def get_availability(date, end_date):
     bookings = Booking.objects.filter(
         Q(check_in_date__range=[date, end_date]) | Q(check_out_date__range=[date, end_date]) |
         (Q(check_in_date__lt=date) & Q(check_out_date__gt=end_date))
-    ).exclude(is_cancelled=False, is_deleted=False)
+    )
 
     rooms = Room.objects.all()
     parent_dict["Total"] = rooms.count()
@@ -48,6 +48,11 @@ def get_availability(date, end_date):
         parent_dict[room.category.name]["cost_per_night"] = room.category.cost_per_night
 
     for booking in bookings:
+        if booking.is_cancelled:
+            continue
+        if booking.is_deleted:
+            continue
+
         print(f"Cancel Status = {booking.is_cancelled}")
         print(f"Delete Status = {booking.is_deleted}")
         for room in booking.rooms.all():
