@@ -308,6 +308,8 @@ class UpdateBookingAPIView(APIView):
         booking.quad = request.data.get("quad") if request.data.get("quad") is not None else booking.quad
         booking.is_cancelled = request.data.get("is_cancelled") if request.data.get(
             "is_cancelled") is not None else booking.is_cancelled
+        booking.is_deleted = request.data.get("is_deleted") if request.data.get(
+            "is_deleted") is not None else booking.is_deleted
 
         if request.data.get('check_in_date') is not None:
             check_in_date = request.data['check_in_date']
