@@ -51,7 +51,9 @@ class Booking(models.Model):
     options = models.CharField(max_length=50, choices=OPTIONS, default=None, null=True, blank=True)
     rooms = models.ManyToManyField(Room)
     per_night_cost = models.PositiveIntegerField(default=0)  # TODO: multiply by Total number of days
-    manager = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    manager = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="manager+")
+    deleted_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name="deleted_by_user+")
     is_active = models.BooleanField(default=False)
     is_cancelled = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
@@ -66,3 +68,4 @@ class BookingPayment(models.Model):
     entry_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     payment = models.PositiveIntegerField(default=None, null=True, blank=True)
     payment_date_time = models.PositiveBigIntegerField(null=True, blank=True, default=None)
+    is_deleted = models.BooleanField(default=False)

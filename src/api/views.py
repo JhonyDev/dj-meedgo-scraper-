@@ -65,7 +65,6 @@ class BookingPaymentListView(generics.ListCreateAPIView):
     def get_queryset(self):
         pk = self.kwargs["pk"]
         booking = get_object_or_404(Booking, pk=pk)
-
         return BookingPayment.objects.filter(booking=booking)
 
     def perform_create(self, serializer):
@@ -82,8 +81,9 @@ class BookingPaymentUpdateView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         pk = self.kwargs["pk"]
-        booking = get_object_or_404(BookingPayment, pk=pk)
-        return booking
+        booking_payment = get_object_or_404(BookingPayment, pk=pk)
+        booking_payment.entry_by = self.request.user
+        return booking_payment
 
 
 class RoomsListView(generics.ListCreateAPIView):
@@ -219,7 +219,6 @@ class BookingAPIView(APIView):
                                          customer_cnic=customer_cnic)
 
         booking.note = request.data.get('note') if request.data.get('note') is not None else booking.note
-
         booking.executive_per_night_cost = request.data.get("executive_per_night_cost") if request.data.get(
             "executive_per_night_cost") is not None else booking.executive_per_night_cost
         booking.deluxe_per_night_cost = request.data.get("deluxe_per_night_cost") if request.data.get(
@@ -318,6 +317,7 @@ class UpdateBookingAPIView(APIView):
         booking.quad = request.data.get("quad") if request.data.get("quad") is not None else booking.quad
         booking.is_cancelled = request.data.get("is_cancelled") if request.data.get(
             "is_cancelled") is not None else booking.is_cancelled
+
         booking.is_deleted = request.data.get("is_deleted") if request.data.get(
             "is_deleted") is not None else booking.is_deleted
 
@@ -378,7 +378,7 @@ class BookingGetAPIView(APIView):
     def get(self, request, date_, format=None):
         date_ = parser.parse(date_, dayfirst=True)
 
-        bookings = Booking.objects.filter(check_in_date__lte=date_, check_out_date__gt=date_, is_deleted=False)
+        bookings = Booking.objects.filter(check_in_date__lte=date_, check_out_date__gt=date_)
         booking_array = []
 
         for booking in bookings:
