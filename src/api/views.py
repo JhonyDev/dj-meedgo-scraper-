@@ -237,6 +237,7 @@ class BookingAPIView(APIView):
         booking.save()
         rooms_ = []
         warnings = []
+
         for category in categories:
             name = category['name']
             number_of_rooms = category['number_of_rooms']
@@ -247,6 +248,7 @@ class BookingAPIView(APIView):
                     rooms_.append(room)
             else:
                 warnings.append(f"{name} exceeds availability, cannot create booking")
+
         booking.rooms.set(rooms_)
         pdf = utils.generate_pdf_get_path(f"{BASE_URL}api/invoice/booking/{booking.pk}/")
         booking.booking_base_64 = utils.encode_base_64(pdf)
@@ -334,6 +336,23 @@ class UpdateBookingAPIView(APIView):
             # booking.note = f"Check-Out date changed from {booking.check_out_date} to {check_out_date} ### {booking.note}"
             booking.check_out_date = check_out_date
 
+        rooms = []
+        for room in booking.rooms.all():
+            rooms.append(room.pk)
+        rooms_ = []
+        warnings = []
+        categories = request.data['categories']
+        for category in categories:
+            name = category['name']
+            number_of_rooms = category['number_of_rooms']
+            room_category = get_object_or_404(Category, name=name)
+            if utils.get_availability(booking.check_in_date, booking.check_out_date)[name]["count"] >= number_of_rooms:
+                rooms = Room.objects.filter(category=room_category)[:number_of_rooms]
+                for room in rooms:
+                    rooms_.append(room)
+            else:
+                warnings.append(f"{name} exceeds availability, cannot create booking")
+
         pdf = utils.generate_pdf_get_path(f"{BASE_URL}api/invoice/booking/{booking.pk}/")
         booking.booking_base_64 = utils.encode_base_64(pdf)
         booking.save()
@@ -344,27 +363,27 @@ class UpdateBookingAPIView(APIView):
             dict_[category.name] = booking.rooms.filter(category=category).count()
         booking_dict = {
             'pk': booking.pk,
-            'check_in_date': booking.check_in_date,
-            'check_out_date': booking.check_out_date,
-            'customer_name': booking.customer_name,
-            'customer_phone': booking.customer_phone,
-            'customer_email': booking.customer_email,
-            'customer_cnic': booking.customer_cnic,
-            'total_rooms': booking.total_rooms,
-            'options': booking.options,
-            'categories': booking.category,
-            'is_active': booking.is_active,
-            'is_cancelled': booking.is_cancelled,
-            'is_deleted': booking.is_deleted,
-            'note': booking.note,
-            'executive_per_night_cost': booking.executive_per_night_cost,
-            'deluxe_per_night_cost': booking.deluxe_per_night_cost,
-            'single': booking.single,
-            'double': booking.double,
-            'triple': booking.triple,
-            'quad': booking.quad,
+            'check_in_date': booking.check_in_date if booking.check_in_date is not None else "",
+            'check_out_date': booking.check_out_date if booking.check_out_date is not None else "",
+            'customer_name': booking.customer_name if booking.customer_name is not None else "",
+            'customer_phone': booking.customer_phone if booking.customer_phone is not None else "",
+            'customer_email': booking.customer_email if booking.customer_email is not None else "",
+            'customer_cnic': booking.customer_cnic if booking.customer_cnic is not None else "",
+            'total_rooms': booking.total_rooms if booking.total_rooms is not None else "",
+            'options': booking.options if booking.options is not None else "",
+            'categories': booking.category if booking.category is not None else "",
+            'is_active': booking.is_active if booking.is_active is not None else "",
+            'is_cancelled': booking.is_cancelled if booking.is_cancelled is not None else "",
+            'is_deleted': booking.is_deleted if booking.is_deleted is not None else "",
+            'note': booking.note if booking.note is not None else "",
+            'executive_per_night_cost': booking.executive_per_night_cost if booking.executive_per_night_cost is not None else "",
+            'deluxe_per_night_cost': booking.deluxe_per_night_cost if booking.deluxe_per_night_cost is not None else "",
+            'single': booking.single if booking.single is not None else "",
+            'double': booking.double if booking.double is not None else "",
+            'triple': booking.triple if booking.triple is not None else "",
+            'quad': booking.quad if booking.quad is not None else "",
             'bookings': dict_,
-            'booking_base_64': booking.booking_base_64,
+            'booking_base_64': booking.booking_base_64 if booking.booking_base_64 is not None else "",
         }
 
         return Response(data=booking_dict,
