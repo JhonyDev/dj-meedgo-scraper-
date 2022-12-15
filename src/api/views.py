@@ -341,17 +341,20 @@ class UpdateBookingAPIView(APIView):
             rooms.append(room.pk)
         rooms_ = []
         warnings = []
-        categories = request.data['categories']
-        for category in categories:
-            name = category['name']
-            number_of_rooms = category['number_of_rooms']
-            room_category = get_object_or_404(Category, name=name)
-            if utils.get_availability(booking.check_in_date, booking.check_out_date)[name]["count"] >= number_of_rooms:
-                rooms = Room.objects.filter(category=room_category)[:number_of_rooms]
-                for room in rooms:
-                    rooms_.append(room)
-            else:
-                warnings.append(f"{name} exceeds availability, cannot create booking")
+
+        categories = request.data.get('categories')
+        if categories is not None:
+
+            for category in categories:
+                name = category['name']
+                number_of_rooms = category['number_of_rooms']
+                room_category = get_object_or_404(Category, name=name)
+                if utils.get_availability(booking.check_in_date, booking.check_out_date)[name]["count"] >= number_of_rooms:
+                    rooms = Room.objects.filter(category=room_category)[:number_of_rooms]
+                    for room in rooms:
+                        rooms_.append(room)
+                else:
+                    warnings.append(f"{name} exceeds availability, cannot create booking")
 
         pdf = utils.generate_pdf_get_path(f"{BASE_URL}api/invoice/booking/{booking.pk}/")
         booking.booking_base_64 = utils.encode_base_64(pdf)
