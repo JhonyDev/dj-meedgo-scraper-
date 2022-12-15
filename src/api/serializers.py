@@ -168,6 +168,7 @@ class BookingPaymentSerializer(serializers.ModelSerializer):
             'entry_by',
             'pk',
             'payment',
+            'is_deleted',
             'payment_date_time'
         ]
         read_only_fields = [
