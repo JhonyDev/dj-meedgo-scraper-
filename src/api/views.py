@@ -202,7 +202,6 @@ class BookingAPIView(APIView):
         company_name = request.data['company_name']
         expected_number_of_people = request.data['expected_number_of_people']
         total_cost_of_bookings = request.data['total_cost_of_bookings']
-
         total_rooms = int(total_rooms)
         booking = Booking.objects.create(check_out_date=check_out_date,
                                          check_in_date=check_in_date,
@@ -291,6 +290,10 @@ class UpdateBookingAPIView(APIView):
             "customer_name") is not None else booking.customer_name
         booking.company_name = request.data.get("company_name") if request.data.get(
             "company_name") is not None else booking.company_name
+        booking.category = request.data.get("category") if request.data.get(
+            "category") is not None else booking.category
+        booking.total_cost_of_bookings = request.data.get("total_cost_of_bookings") if request.data.get(
+            "total_cost_of_bookings") is not None else booking.total_cost_of_bookings
 
         booking.options = request.data.get("options") if request.data.get(
             "options") is not None else booking.options
@@ -349,7 +352,8 @@ class UpdateBookingAPIView(APIView):
                 name = category['name']
                 number_of_rooms = category['number_of_rooms']
                 room_category = get_object_or_404(Category, name=name)
-                if utils.get_availability(booking.check_in_date, booking.check_out_date)[name]["count"] >= number_of_rooms:
+                if utils.get_availability(booking.check_in_date, booking.check_out_date)[name][
+                    "count"] >= number_of_rooms:
                     rooms = Room.objects.filter(category=room_category)[:number_of_rooms]
                     for room in rooms:
                         rooms_.append(room)
