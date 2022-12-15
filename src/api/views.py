@@ -385,6 +385,10 @@ class UpdateBookingAPIView(APIView):
             'double': booking.double if booking.double is not None else "",
             'triple': booking.triple if booking.triple is not None else "",
             'quad': booking.quad if booking.quad is not None else "",
+            'per_night_cost': booking.per_night_cost if booking.per_night_cost is not None else "",
+            'expected_number_of_people': booking.expected_number_of_people if booking.expected_number_of_people is not None else "",
+            'payment_type': booking.payment_type if booking.payment_type is not None else "",
+            'total_cost_of_bookings': booking.total_cost_of_bookings if booking.total_cost_of_bookings is not None else "",
             'bookings': dict_,
             'booking_base_64': booking.booking_base_64 if booking.booking_base_64 is not None else "",
         }
