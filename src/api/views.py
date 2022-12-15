@@ -355,6 +355,7 @@ class UpdateBookingAPIView(APIView):
                         rooms_.append(room)
                 else:
                     warnings.append(f"{name} exceeds availability, cannot create booking")
+        booking.rooms.set(rooms_)
 
         pdf = utils.generate_pdf_get_path(f"{BASE_URL}api/invoice/booking/{booking.pk}/")
         booking.booking_base_64 = utils.encode_base_64(pdf)
