@@ -364,6 +364,7 @@ class UpdateBookingAPIView(APIView):
         dict_ = {}
         for category in categories:
             dict_[category.name] = booking.rooms.filter(category=category).count()
+        nights = utils.days_between(booking.check_in_date, booking.check_out_date)
         booking_dict = {
             'pk': booking.pk,
             'check_in_date': booking.check_in_date if booking.check_in_date is not None else "",
@@ -379,6 +380,7 @@ class UpdateBookingAPIView(APIView):
             'is_cancelled': booking.is_cancelled if booking.is_cancelled is not None else "",
             'is_deleted': booking.is_deleted if booking.is_deleted is not None else "",
             'note': booking.note if booking.note is not None else "",
+            'nights': nights,
             'executive_per_night_cost': booking.executive_per_night_cost if booking.executive_per_night_cost is not None else "",
             'deluxe_per_night_cost': booking.deluxe_per_night_cost if booking.deluxe_per_night_cost is not None else "",
             'single': booking.single if booking.single is not None else "",
@@ -387,10 +389,14 @@ class UpdateBookingAPIView(APIView):
             'quad': booking.quad if booking.quad is not None else "",
             'per_night_cost': booking.per_night_cost if booking.per_night_cost is not None else "",
             'expected_number_of_people': booking.expected_number_of_people if booking.expected_number_of_people is not None else "",
+            'category': booking.category if booking.category is not None else "",
             'payment_type': booking.payment_type if booking.payment_type is not None else "",
             'total_cost_of_bookings': booking.total_cost_of_bookings if booking.total_cost_of_bookings is not None else "",
             'bookings': dict_,
             'booking_base_64': booking.booking_base_64 if booking.booking_base_64 is not None else "",
+            'company_name': booking.company_name,
+            # 'booking_base_64': booking.booking_base_64,
+            'total_cost': booking.total_cost_of_bookings * nights,
         }
 
         return Response(data=booking_dict,
