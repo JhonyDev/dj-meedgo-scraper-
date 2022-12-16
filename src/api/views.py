@@ -228,6 +228,8 @@ class BookingAPIView(APIView):
         booking.quad = request.data.get("quad") if request.data.get("quad") is not None else booking.quad
         booking.expected_number_of_people = request.data.get("expected_number_of_people") if request.data.get(
             "expected_number_of_people") is not None else booking.expected_number_of_people
+        booking.room_number = request.data.get("room_number") if request.data.get(
+            "room_number") is not None else booking.room_number
 
         booking.is_cancelled = request.data.get("is_cancelled") if request.data.get(
             "is_cancelled") is not None else booking.is_cancelled
@@ -268,6 +270,7 @@ class BookingAPIView(APIView):
             'customer_cnic': booking.customer_cnic,
             'category': booking.category,
             'options': booking.options,
+            'room_number': booking.room_number,
             'rooms': rooms,
             'manager': booking.manager,
             'is_active': booking.is_active,
@@ -326,6 +329,9 @@ class UpdateBookingAPIView(APIView):
         booking.is_deleted = request.data.get("is_deleted") if request.data.get(
             "is_deleted") is not None else booking.is_deleted
 
+        booking.room_number = request.data.get("room_number") if request.data.get(
+            "room_number") is not None else booking.room_number
+
         if request.data.get('check_in_date') is not None:
             check_in_date = request.data['check_in_date']
             check_in_date = parser.parse(check_in_date, dayfirst=True)
@@ -339,15 +345,10 @@ class UpdateBookingAPIView(APIView):
             # booking.note = f"Check-Out date changed from {booking.check_out_date} to {check_out_date} ### {booking.note}"
             booking.check_out_date = check_out_date
 
-        rooms = []
-        for room in booking.rooms.all():
-            rooms.append(room.pk)
         rooms_ = []
         warnings = []
-
         categories = request.data.get('categories')
-        if categories is not None:
-
+        if categories:
             for category in categories:
                 name = category['name']
                 number_of_rooms = category['number_of_rooms']
@@ -359,7 +360,7 @@ class UpdateBookingAPIView(APIView):
                         rooms_.append(room)
                 else:
                     warnings.append(f"{name} exceeds availability, cannot create booking")
-        booking.rooms.set(rooms_)
+            booking.rooms.set(rooms_)
 
         pdf = utils.generate_pdf_get_path(f"{BASE_URL}api/invoice/booking/{booking.pk}/")
         booking.booking_base_64 = utils.encode_base_64(pdf)
@@ -386,6 +387,7 @@ class UpdateBookingAPIView(APIView):
             'is_deleted': booking.is_deleted if booking.is_deleted is not None else "",
             'note': booking.note if booking.note is not None else "",
             'nights': nights,
+            'room_number': booking.room_number if booking.room_number is not None else "",
             'executive_per_night_cost': booking.executive_per_night_cost if booking.executive_per_night_cost is not None else "",
             'deluxe_per_night_cost': booking.deluxe_per_night_cost if booking.deluxe_per_night_cost is not None else "",
             'single': booking.single if booking.single is not None else "",

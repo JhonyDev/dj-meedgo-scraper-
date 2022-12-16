@@ -27,7 +27,6 @@ class Booking(models.Model):
         ('Company', 'Company'),
         ('Walking', 'Walking'),
     )
-
     created_on = models.DateTimeField(max_length=50, auto_now_add=True)
     check_in_date = models.DateField()
     check_out_date = models.DateField()
@@ -43,6 +42,7 @@ class Booking(models.Model):
     double = models.PositiveIntegerField(default=0)
     triple = models.PositiveIntegerField(default=0)
     quad = models.PositiveIntegerField(default=0)
+    room_number = models.CharField(default=None, max_length=100, null=True, blank=True)
     note = models.TextField(default="", blank=True, null=True)
     customer_phone = models.CharField(max_length=50)
     customer_email = models.EmailField(max_length=50, null=True, blank=True, default=None)
@@ -50,7 +50,7 @@ class Booking(models.Model):
     category = models.CharField(max_length=50, choices=CATEGORIES, default=None, null=True, blank=True)
     options = models.CharField(max_length=50, choices=OPTIONS, default=None, null=True, blank=True)
     rooms = models.ManyToManyField(Room)
-    per_night_cost = models.PositiveIntegerField(default=0)  # TODO: multiply by Total number of days
+    per_night_cost = models.PositiveIntegerField(default=0)
     manager = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="manager+")
     deleted_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,
                                    related_name="deleted_by_user+")
