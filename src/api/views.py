@@ -440,6 +440,7 @@ class BookingGetAPIView(APIView):
                 'customer_email': booking.customer_email,
                 'customer_cnic': booking.customer_cnic,
                 'total_rooms': booking.total_rooms,
+                'company_name': booking.room_number,
                 'company_name': booking.company_name,
                 # 'booking_base_64': booking.booking_base_64,
                 'payment_type': booking.payment_type,
