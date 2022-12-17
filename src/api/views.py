@@ -312,8 +312,10 @@ class UpdateBookingAPIView(APIView):
             "customer_cnic") is not None else booking.customer_cnic
         booking.payment_type = request.data.get("payment_type") if request.data.get(
             "payment_type") is not None else booking.payment_type
-        booking.is_active = request.data.get("is_active") if request.data.get(
-            "is_active") is not None else booking.is_active
+
+        if request.data.get("is_active"):
+            booking.is_active = request.data.get("is_active")
+
         booking.note = request.data.get('note') if request.data.get('note') is not None else booking.note
         booking.executive_per_night_cost = request.data.get("executive_per_night_cost") if request.data.get(
             "executive_per_night_cost") is not None else booking.executive_per_night_cost
@@ -578,7 +580,7 @@ class BookingInvoice(View):
             iteration += 1
         nights = utils.days_between(booking.check_in_date, booking.check_out_date)
 
-        booking_payments = BookingPayment.objects.filter(booking=booking)
+        booking_payments = BookingPayment.objects.filter(booking=booking, is_deleted=False)
         context_payments = []
         for booking_payment in booking_payments:
             import datetime
