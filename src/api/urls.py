@@ -33,5 +33,6 @@ urlpatterns = [
     path('bookings/month/<str:month>/year/<str:year>/', views.BookingsMonth.as_view()),
 
     path('invoice/booking/<int:pk>/', views.BookingInvoice.as_view()),
+    path('list/services/', views.ServicesListView.as_view()),
 
 ]

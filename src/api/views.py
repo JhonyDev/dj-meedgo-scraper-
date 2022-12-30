@@ -12,9 +12,22 @@ from rest_framework.views import APIView
 
 from core.settings import BASE_URL
 from . import serializers, utils
-from .models import Room, Category, Booking, BookingPayment
+from .models import Room, Category, Booking, BookingPayment, Service
 from ..accounts.authentication import JWTAuthentication
 from ..accounts.models import User
+
+
+class ServicesListView(generics.ListCreateAPIView):
+    serializer_class = serializers.ServicesSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def get_queryset(self):
+        date_get = self.request.GET('date')
+        if date_get:
+            date_ = parser.parse(date_get, dayfirst=True)
+            return Service.objects.filter(reservation_date=date_)
+        return Service.objects.all()[:50]
 
 
 class UsersListView(generics.ListCreateAPIView):
@@ -418,10 +431,8 @@ class BookingGetAPIView(APIView):
 
     def get(self, request, date_, format=None):
         date_ = parser.parse(date_, dayfirst=True)
-
         bookings = Booking.objects.filter(check_in_date__lte=date_, check_out_date__gt=date_)
         booking_array = []
-
         for booking in bookings:
             categories = Category.objects.all()
             dict_ = {}

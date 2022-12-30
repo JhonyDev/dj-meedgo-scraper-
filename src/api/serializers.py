@@ -49,6 +49,12 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
 
+class ServicesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Service
+        fields = '__all__'
+
+
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Room
