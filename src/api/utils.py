@@ -79,14 +79,11 @@ def get_target_dates(month, year):
                 target_end_date = parser.parse(target_end_date)
 
     target_start_date = parser.parse(target_start_date)
-    print(target_start_date)
-    print(target_end_date)
     return target_start_date, target_end_date
 
 
 def generate_pdf_get_path(url):
     import pdfkit
-    print(url)
     # path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
     # config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
 

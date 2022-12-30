@@ -53,6 +53,7 @@ class ServicesSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Service
         fields = '__all__'
+        read_only_fields = ('service_base_64',)
 
 
 class RoomSerializer(serializers.ModelSerializer):

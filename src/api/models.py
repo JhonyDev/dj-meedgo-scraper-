@@ -89,3 +89,4 @@ class Service(models.Model):
     advance_payment = models.CharField(max_length=500, default=None, null=True, blank=True)
     conference_room_name = models.CharField(max_length=500, default=None, null=True, blank=True)
     conference_room_rate = models.CharField(max_length=500, default=None, null=True, blank=True)
+    service_base_64 = models.TextField(default=None, null=True, blank=True)

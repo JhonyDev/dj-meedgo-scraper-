@@ -27,7 +27,13 @@ class ServicesListView(generics.ListCreateAPIView):
         if date_get:
             date_ = parser.parse(date_get, dayfirst=True)
             return Service.objects.filter(reservation_date=date_)
-        return Service.objects.all()[:50]
+        return Service.objects.all()[:10]
+
+    def perform_create(self, serializer):
+        service = serializer.save()
+        pdf = utils.generate_pdf_get_path(f"{BASE_URL}api/invoice/service/{service.pk}/")
+        service.service_base_64 = utils.encode_base_64(pdf)
+        service.save()
 
 
 class UsersListView(generics.ListCreateAPIView):
@@ -439,9 +445,9 @@ class BookingGetAPIView(APIView):
             for category in categories:
                 dict_[category.name] = booking.rooms.filter(category=category).count()
             nights = utils.days_between(booking.check_in_date, booking.check_out_date)
-            pdf = utils.generate_pdf_get_path(f"{BASE_URL}api/invoice/booking/{booking.pk}/")
-            booking.booking_base_64 = utils.encode_base_64(pdf)
-            booking.save()
+            # pdf = utils.generate_pdf_get_path(f"{BASE_URL}api/invoice/booking/{booking.pk}/")
+            # booking.booking_base_64 = utils.encode_base_64(pdf)
+            # booking.save()
             booking_dict = {
                 'pk': booking.pk,
                 'check_in_date': booking.check_in_date,
@@ -614,3 +620,13 @@ class BookingInvoice(View):
             'total_cost': booking.total_cost_of_bookings * nights,
         }
         return render(request, template_name='api/pdf_invoice.html', context=context)
+
+
+class ServiceInvoice(View):
+
+    def get(self, request, pk):
+        service = Service.objects.get(pk=pk)
+        context = {
+            'booking': service,
+        }
+        return render(request, template_name='api/pdf_invoice_service.html', context=context)

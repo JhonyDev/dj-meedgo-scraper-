@@ -116,75 +116,32 @@
             </div>
 
         </div>
-
-        <p style="position:absolute;top:478px;left:56px;white-space:nowrap" class="ft11">No of Rooms</p>
-        <p style="position:absolute;top:478px;left:220px;white-space:nowrap" class="ft11">
-            :&#160;<b>{{ booking.total_rooms }}</b>
+        <p style="position:absolute;top:472px;left:56px;white-space:nowrap" class="ft11">
+            Expected number of people
+        </p>
+        <p style="position:absolute;top:472px;left:220px;white-space:nowrap" class="ft11"><b></b>
+            <b>: {{ booking.number_of_persons }}</b>
         </p>
 
-        <p style="position:absolute;top:508px;left:56px;white-space:nowrap" class="ft11">
-            Number of nights
-        </p>
-        <p style="position:absolute;top:508px;left:220px;white-space:nowrap" class="ft11"><b></b>
-            <b>: {{ nights }}</b>
-        </p>
-
-        {% if booking.category != "Company" %}
-            <p style="position:absolute;top:528px;left:56px;white-space:nowrap" class="ft11">
-                Total cost per night
+        {% if booking.conference_room_name %}
+            <p style="position:absolute;top:502px;left:56px;white-space:nowrap" class="ft11">
+                Conference Room Name
             </p>
-            <p style="position:absolute;top:528px;left:220px;white-space:nowrap" class="ft11"><b></b>
-                <b>: {{ cost_per_night }} PKR</b>
+            <p style="position:absolute;top:502px;left:220px;white-space:nowrap" class="ft11"><b></b>
+                <b>: {{ booking.conference_room_name }}</b>
             </p>
+        {% endif %}
 
-            <p style="position:absolute;top:548px;left:56px;white-space:nowrap" class="ft11">
-                Total cost
+        {% if booking.conference_room_rate %}
+            <p style="position:absolute;top:532px;left:56px;white-space:nowrap" class="ft11">
+                Conference Room Rate
             </p>
 
-            <p style="position:absolute;top:548px;left:220px;white-space:nowrap" class="ft11"><b></b>
-                <b>: {{ total_cost }} PKR</b>
+            <p style="position:absolute;top:532px;left:220px;white-space:nowrap" class="ft11"><b></b>
+                <b>: {{ booking.conference_room_rate }} + 15% Tax</b>
             </p>
 
         {% endif %}
-
-        <p style="position:absolute;top:580px;left:56px;white-space:nowrap" class="ft11">
-            <b>Room details</b>
-        </p>
-
-        {% for room in rooms %}
-            <p style="position:absolute;top:{{ room.margin_top }}px;left:56px;white-space:nowrap" class="ft11">
-                {{ room.name }}
-            </p>
-            <p style="position:absolute;top:{{ room.margin_top }}px;left:220px;white-space:nowrap" class="ft11"><b></b>
-                <b>: {{ room.rooms }}</b>
-            </p>
-        {% endfor %}
-
-
-        <div style="transform: scale(.8);position:absolute;white-space:nowrap; top:460px; left:460px">
-            <table class="table table-bordered">
-                <thead>
-                <tr>
-                    <th scope="col" colspan="2">Payment Details</th>
-                </tr>
-                <tr>
-                    <th scope="col">Amount</th>
-                    <th scope="col">Date Time</th>
-                </tr>
-
-                </thead>
-                <tbody>
-                {% for obj in booking_payments %}
-                    <tr>
-                        <td>{{ obj.amount }}</td>
-                        <td>{{ obj.payment_date_time }}</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-
-        </div>
-
 
 
         {% if booking.is_active %}
@@ -192,17 +149,11 @@
                     class="" style="color: #009900">BOOKING CONFIRMATION VOUCHER</b>
             </p>
         {% else %}
-            <p style="position:absolute;top:130px;left:383px;white-space:nowrap" class="ft12"><b style="color: red">
-                BOOKING VOUCHER</b></p>
+            <p style="position:absolute;top:130px;left:383px;white-space:nowrap" class="ft12"><b style="color: green">
+                BOOKING CONFIRMATION VOUCHER</b></p>
         {% endif %}
 
 
-        {% if booking.customer_name %}
-            {% if booking.customer_name != "-" %}
-                <p style="position:absolute;top:217px;left:56px;white-space:nowrap" class="ft11">
-                    Dear &#160;<b>Mr./Mrs. {{ booking.customer_name }}</b></p>
-            {% endif %}
-        {% endif %}
 
         <p style="position:absolute;top:247px;left:56px;white-space:nowrap" class="ft11">Greeting from&#160;<b>Hotel
             Elites
@@ -216,37 +167,26 @@
         </p>
         <p style="position:absolute;top:278px;left:56px;white-space:nowrap" class="ft11">We are pleased to confirm the
             following information</p>
-        <p style="position:absolute;top:324px;left:56px;white-space:nowrap" class="ft11">Guest Name</p>
+        <p style="position:absolute;top:324px;left:56px;white-space:nowrap" class="ft11">Company Name</p>
         <p style="position:absolute;top:324px;left:220px;white-space:nowrap" class="ft11">
-            :&#160;<b>{{ booking.customer_name }}</b>
+            :&#160;<b>{{ booking.company_name }}</b>
         </p>
-        <p style="position:absolute;top:354px;left:56px;white-space:nowrap" class="ft11">Company Name</p>
+
+        <p style="position:absolute;top:354px;left:56px;white-space:nowrap" class="ft11">Service Type</p>
         <p style="position:absolute;top:354px;left:220px;white-space:nowrap" class="ft11">
-            :&#160;<b>{{ booking.company_name }}</b></p>
-        <p style="position:absolute;top:385px;left:56px;white-space:nowrap" class="ft11">Mobile</p>
+            :&#160;<b>{{ booking.service_type }}</b></p>
+        <p style="position:absolute;top:385px;left:56px;white-space:nowrap" class="ft11">Reservation Date</p>
         <p style="position:absolute;top:385px;left:220px;white-space:nowrap" class="ft11">
-            :&#160;<b>{{ booking.customer_phone }}</b></p>
-        <p style="position:absolute;top:385px;left:465px;white-space:nowrap" class="ft11">Payment Type</p>
-        <p style="position:absolute;top:385px;left:653px;white-space:nowrap" class="ft11">
-            :&#160;<b>{{ booking.payment_type }}</b>
-        </p>
+            :&#160;<b>{{ booking.reservation_date }}</b></p>
 
-        <p style="position:absolute;top:415px;left:56px;white-space:nowrap" class="ft11">Email</p>
+        <p style="position:absolute;top:415px;left:56px;white-space:nowrap" class="ft11">Reservation Time</p>
         <p style="position:absolute;top:415px;left:220px;white-space:nowrap" class="ft11">
-            :&#160;<b>{{ booking.customer_email }}</b></p>
-        <p style="position:absolute;top:444px;left:56px;white-space:nowrap" class="ft11">Check-in Date</p>
+            :&#160;<b>{{ booking.reservation_time }}</b></p>
+        <p style="position:absolute;top:444px;left:56px;white-space:nowrap" class="ft11">Rate Per Head</p>
         <p style="position:absolute;top:444px;left:220px;white-space:nowrap" class="ft11">
-            :&#160;<b>{{ booking.check_in_date }}</b>
-        </p>
-        <p style="position:absolute;top:415px;left:465px;white-space:nowrap" class="ft11">Expected Number of people</p>
-        <p style="position:absolute;top:415px;left:653px;white-space:nowrap" class="ft11">
-            :&#160;<b>{{ booking.expected_number_of_people }}</b>
+            :&#160;<b>{{ booking.rate_per_head }} + 15% Tax</b>
         </p>
 
-        <p style="position:absolute;top:444px;left:465px;white-space:nowrap" class="ft11">Check-out Date</p>
-        <p style="position:absolute;top:444px;left:653px;white-space:nowrap" class="ft11">
-            :&#160;<b>{{ booking.check_out_date }}</b>
-        </p>
 
         <p style="position:absolute;top:767px;left:56px;white-space:nowrap" class="ft12"><b style="font-size: 15px">Instructions</b>
         </p>
