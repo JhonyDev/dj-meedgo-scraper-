@@ -551,7 +551,7 @@ class BookingsMonthGeneral(APIView):
         additional_bookings = Booking.objects.filter(check_out_date__lt=target_start_date,
                                                      check_out_date__gte=target_end_date, is_deleted=False,
                                                      is_cancelled=False)
-        bookings = bookings + additional_bookings
+        bookings = bookings.union(additional_bookings)
         context_bookings = []
         for booking in bookings:
             context_bookings.append(booking)
@@ -562,10 +562,6 @@ class BookingsMonthGeneral(APIView):
                 temp_booking.check_in_date = temp_booking.check_in_date + datetime.timedelta(days=1)
                 new_temp = copy(temp_booking)
                 context_bookings.append(new_temp)
-        for booking in context_bookings:
-            print(booking.check_in_date)
-            print(booking.customer_name)
-            print("---------------")
 
         return Response(data=serializers.BookingSerializer(context_bookings, many=True).data,
                         status=status.HTTP_200_OK)
