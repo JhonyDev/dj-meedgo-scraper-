@@ -558,6 +558,7 @@ class BookingsMonthGeneral(APIView):
                 temp_booking.check_in_date = temp_booking.check_in_date + datetime.timedelta(days=1)
                 new_temp = copy(temp_booking)
                 context_bookings.append(new_temp)
+                print(new_temp.customer_name)
         return Response(data=serializers.BookingSerializer(context_bookings, many=True).data,
                         status=status.HTTP_200_OK)
 
