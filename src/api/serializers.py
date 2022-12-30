@@ -151,6 +151,7 @@ class BookingSerializer(serializers.ModelSerializer):
             'manager',
             'is_active',
             'is_cancelled'
+            'is_deleted'
         ]
         read_only_fields = [
             'manager'
