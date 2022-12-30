@@ -150,7 +150,7 @@ class BookingSerializer(serializers.ModelSerializer):
             'per_night_cost',
             'manager',
             'is_active',
-            'is_cancelled'
+            'is_cancelled',
             'is_deleted'
         ]
         read_only_fields = [
