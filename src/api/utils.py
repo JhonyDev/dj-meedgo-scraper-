@@ -64,15 +64,19 @@ def get_target_dates(month, year):
     from dateutil import parser
     target_start_date = f'{year}-{month}-01'
     try:
-        target_end_date = f'{year}-{month}-30'
+        target_end_date = f'{year}-{month}-31'
         target_end_date = parser.parse(target_end_date)
     except:
         try:
-            target_end_date = f'{year}-{month}-29'
+            target_end_date = f'{year}-{month}-30'
             target_end_date = parser.parse(target_end_date)
         except:
-            target_end_date = f'{year}-{month}-28'
-            target_end_date = parser.parse(target_end_date)
+            try:
+                target_end_date = f'{year}-{month}-29'
+                target_end_date = parser.parse(target_end_date)
+            except:
+                target_end_date = f'{year}-{month}-28'
+                target_end_date = parser.parse(target_end_date)
 
     target_start_date = parser.parse(target_start_date)
     return target_start_date, target_end_date
