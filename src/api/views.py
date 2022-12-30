@@ -23,7 +23,7 @@ class ServicesListView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
 
     def get_queryset(self):
-        date_get = self.request.GET('date')
+        date_get = self.request.GET.get('date')
         if date_get:
             date_ = parser.parse(date_get, dayfirst=True)
             return Service.objects.filter(reservation_date=date_)
