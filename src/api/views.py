@@ -548,9 +548,11 @@ class BookingsMonthGeneral(APIView):
         target_start_date, target_end_date = utils.get_target_dates(month, year)
         bookings = Booking.objects.filter(check_in_date__lt=target_end_date,
                                           check_in_date__gte=target_start_date, is_deleted=False, is_cancelled=False)
-        additional_bookings = Booking.objects.filter(check_out_date__lt=target_start_date,
-                                                     check_out_date__gte=target_end_date, is_deleted=False,
+
+        additional_bookings = Booking.objects.filter(check_out_date__lt=target_end_date,
+                                                     check_out_date__gt=target_start_date, is_deleted=False,
                                                      is_cancelled=False)
+
         bookings = bookings.union(additional_bookings)
         context_bookings = []
         for booking in bookings:
