@@ -547,14 +547,9 @@ class BookingsMonthGeneral(APIView):
     def get(self, request, month, year, *args, **kwargs):
         target_start_date, target_end_date = utils.get_target_dates(month, year)
         bookings = Booking.objects.filter(check_in_date__lt=target_end_date,
-                                          check_in_date__gte=target_start_date)
+                                          check_in_date__gte=target_start_date, is_deleted=False, is_cancelled=False)
         context_bookings = []
         for booking in bookings:
-            if booking.is_cancelled:
-                continue
-            if booking.is_deleted:
-                continue
-
             context_bookings.append(booking)
             temp_booking = copy(booking)
             initial_date = booking.check_in_date
