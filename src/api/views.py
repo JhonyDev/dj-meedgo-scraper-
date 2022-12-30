@@ -431,7 +431,7 @@ class BookingGetAPIView(APIView):
 
     def get(self, request, date_, format=None):
         date_ = parser.parse(date_, dayfirst=True)
-        bookings = Booking.objects.filter(check_in_date__lte=date_, check_out_date__gt=date_)
+        bookings = Booking.objects.filter(check_in_date__lte=date_, check_out_date__gt=date_, is_deleted=False)
         booking_array = []
         for booking in bookings:
             categories = Category.objects.all()
