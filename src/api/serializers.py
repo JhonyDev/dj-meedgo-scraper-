@@ -52,8 +52,13 @@ class UserSerializer(serializers.ModelSerializer):
 class ServicesSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Service
-        fields = '__all__'
-        read_only_fields = ('service_base_64',)
+        exclude = ('service_base_64',)
+
+
+class ServicesAllSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Service
+        fields = '__all_'
 
 
 class RoomSerializer(serializers.ModelSerializer):

@@ -37,7 +37,7 @@ class ServicesListView(generics.ListCreateAPIView):
 
 
 class ServicesDeleteView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = serializers.ServicesSerializer
+    serializer_class = serializers.ServicesAllSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     lookup_field = 'pk'
@@ -575,10 +575,6 @@ class BookingsMonthGeneral(APIView):
                 temp_booking.check_in_date = temp_booking.check_in_date + datetime.timedelta(days=1)
                 new_temp = copy(temp_booking)
                 context_bookings.append(new_temp)
-        for booking in context_bookings:
-            print(booking.check_in_date)
-            print(booking.customer_name)
-            print("---------------")
 
         return Response(data=serializers.BookingSerializer(context_bookings, many=True).data,
                         status=status.HTTP_200_OK)
