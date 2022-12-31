@@ -58,7 +58,7 @@ class ServicesSerializer(serializers.ModelSerializer):
 class ServicesAllSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Service
-        fields = '__all_'
+        fields = '__all__'
 
 
 class RoomSerializer(serializers.ModelSerializer):
