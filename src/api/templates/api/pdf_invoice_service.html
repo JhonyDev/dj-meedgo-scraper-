@@ -175,13 +175,31 @@
         <p style="position:absolute;top:354px;left:56px;white-space:nowrap" class="ft11">Service Type</p>
         <p style="position:absolute;top:354px;left:220px;white-space:nowrap" class="ft11">
             :&#160;<b>{{ booking.service_type }}</b></p>
+        {% if booking.meal %}
+            <p style="position:absolute;top:354px;left:400px;white-space:nowrap" class="ft11">Meal</p>
+            <p style="position:absolute;top:354px;left:550px;white-space:nowrap" class="ft11">
+                :&#160;<b>{{ booking.meal }}</b></p>
+        {% endif %}
+
+
+
         <p style="position:absolute;top:385px;left:56px;white-space:nowrap" class="ft11">Reservation Date</p>
         <p style="position:absolute;top:385px;left:220px;white-space:nowrap" class="ft11">
             :&#160;<b>{{ booking.reservation_date }}</b></p>
+        {% if booking.menu_option %}
+            <p style="position:absolute;top:385px;left:400px;white-space:nowrap" class="ft11">Menu Options</p>
+            <p style="position:absolute;top:385px;left:550px;white-space:nowrap" class="ft11">
+                :&#160;<b>{{ booking.menu_option }}</b></p>
+        {% endif %}
 
         <p style="position:absolute;top:415px;left:56px;white-space:nowrap" class="ft11">Reservation Time</p>
         <p style="position:absolute;top:415px;left:220px;white-space:nowrap" class="ft11">
             :&#160;<b>{{ booking.reservation_time }}</b></p>
+        <p style="position:absolute;top:415px;left:400px;white-space:nowrap" class="ft11">Advance Payments</p>
+        <p style="position:absolute;top:415px;left:550px;white-space:nowrap" class="ft11">
+            :&#160;<b>{{ booking.advance_payment }}</b></p>
+
+
         <p style="position:absolute;top:444px;left:56px;white-space:nowrap" class="ft11">Rate Per Head</p>
         <p style="position:absolute;top:444px;left:220px;white-space:nowrap" class="ft11">
             :&#160;<b>{{ booking.rate_per_head }} + 15% Tax</b>
