@@ -36,6 +36,17 @@ class ServicesListView(generics.ListCreateAPIView):
         service.save()
 
 
+class ServicesDeleteView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.ServicesSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    lookup_field = 'pk'
+
+    def get_object(self):
+        pk = self.kwargs["pk"]
+        return get_object_or_404(Service, pk=pk)
+
+
 class UsersListView(generics.ListCreateAPIView):
     serializer_class = serializers.UserSerializer
     permission_classes = [permissions.IsAuthenticated]

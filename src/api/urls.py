@@ -35,6 +35,7 @@ urlpatterns = [
     path('invoice/booking/<int:pk>/', views.BookingInvoice.as_view()),
 
     path('list/services/', views.ServicesListView.as_view()),
+    path('list/services/<int:pk>/', views.ServicesDeleteView.as_view()),
     path('invoice/service/<int:pk>/', views.ServiceInvoice.as_view()),
 
 ]
