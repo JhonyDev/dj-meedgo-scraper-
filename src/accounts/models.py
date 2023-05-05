@@ -2,17 +2,6 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django_resized import ResizedImageField
 
-"""
-At the start please be careful to start migrations
---------------------------------------------------
-
-STEP: 1 comment current_subscription [FIELD] in model [USER]
-STEP: 1 py manage.py make migrations accounts
-STEP: 2 py manage.py migrate
-Then do next ...
-
-"""
-
 
 class User(AbstractUser):
     USER_TYPES = (
@@ -25,7 +14,8 @@ class User(AbstractUser):
         help_text='size of logo must be 100*100 and format must be png image file', crop=['middle', 'center']
     )
     type = models.CharField(max_length=25, null=False, blank=False, default='Admin', choices=USER_TYPES)
-    user_password = models.CharField(max_length=50, default=None, null=True, blank=True)
+    phone_number = models.CharField(max_length=50, default=None, null=True, blank=True)
+    # user_password = models.CharField(max_length=50, default=None, null=True, blank=True)
 
     class Meta:
         ordering = ['-id']

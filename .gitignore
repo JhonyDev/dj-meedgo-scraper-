@@ -13,8 +13,10 @@ develop-eggs/
 dist/
 downloads/
 eggs/
+db.sqlite3
 .eggs/
 lib/
+core/tests.py
 lib64/
 parts/
 sdist/

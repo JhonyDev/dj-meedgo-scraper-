@@ -30,16 +30,16 @@ class CustomerUserAdmin(admin.ModelAdmin):
     change_user_password_template = None
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'age', 'profile_image')}),
+        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'profile_image')}),
         (_('Bio'), {
             'fields': (
-                'about',
+
             )
         }),
         (_('Important dates'), {'fields': ('last_login', 'date_joined',)}),
         (_('Permissions'), {
             'fields': (
-                'is_active', 'is_staff', 'is_superuser', 'type', 'creator',
+                'is_active', 'is_staff', 'is_superuser', 'type',
                 'groups', 'user_permissions'
             ),
         }),
@@ -201,7 +201,7 @@ class CustomerUserAdmin(admin.ModelAdmin):
         return super().response_add(request, obj, post_url_continue)
 
 
-admin.site.register(User)
-admin.site.site_header = "Hotel-Management - Admin"
-admin.site.site_title = "Hotel-Management - Admin"
-admin.site.index_title = "Hotel-Management - Administration"
+admin.site.register(User, CustomerUserAdmin)
+admin.site.site_header = "Meedgo - Admin"
+admin.site.site_title = "Meedgo - Admin"
+admin.site.index_title = "Meedgo - Administration"

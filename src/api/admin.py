@@ -2,8 +2,14 @@ from django.contrib import admin
 
 from . import models
 
-admin.site.register(models.Service)
-admin.site.register(models.Category)
-admin.site.register(models.Room)
-admin.site.register(models.Booking)
-admin.site.register(models.BookingPayment)
+
+class MedicineView(admin.ModelAdmin):
+    list_display = ['pk', 'name', 'price', 'med_image', 'platform', 'dosage']
+
+
+class MedicineCartView(admin.ModelAdmin):
+    list_display = ['pk', 'user']
+
+
+admin.site.register(models.Medicine, MedicineView)
+admin.site.register(models.MedicineCart, MedicineCartView)
