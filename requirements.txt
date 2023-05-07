@@ -4,7 +4,7 @@ django-rest-auth
 django_allauth==0.45.0
 django_filter==21.1
 six==1.16.0
-Django==3.2
+Django==3.2.18
 django_resized==0.3.11
 dj_rest_auth==2.1.11
 django_environ==0.4.5
@@ -18,3 +18,7 @@ django-ckeditor
 django-cors-headers
 pillow
 django-seed
+celery
+django_celery_results
+celery_progress
+redis

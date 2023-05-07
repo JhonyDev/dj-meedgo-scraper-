@@ -61,6 +61,9 @@ INSTALLED_APPS = [
     'crispy_forms',
     'ckeditor',
     'django_filters',
+    'celery',
+    'django_celery_results',
+    'celery_progress',
 
     'rest_framework',
     'rest_framework.authtoken',
@@ -249,3 +252,10 @@ OLD_PASSWORD_FIELD_ENABLED = True
 LOGOUT_ON_PASSWORD_CHANGE = False
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 DATE_INPUT_FORMATS = ('%d-%m-%Y', '%Y-%m-%d')
+
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
+accept_content = ['application/json']
+task_serializer = 'json'
+result_serializer = 'json'
+timezone = 'Asia/Karachi'

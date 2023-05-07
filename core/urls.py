@@ -17,7 +17,6 @@ Including another URLconf
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework_simplejwt import views as jwt_views
 
 from src.accounts.views import CustomRegisterAccountView, CustomLoginView
 from .settings import DEBUG, MEDIA_ROOT, MEDIA_URL

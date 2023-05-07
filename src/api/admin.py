@@ -4,7 +4,7 @@ from . import models
 
 
 class MedicineView(admin.ModelAdmin):
-    list_display = ['pk', 'name', 'price', 'med_image', 'platform', 'dosage']
+    list_display = ['pk', 'name', 'salt_name', 'price', 'platform', 'last_updated']
 
 
 class MedicineCartView(admin.ModelAdmin):

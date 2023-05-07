@@ -48,7 +48,7 @@ class MedicineSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Medicine
-        fields = ['pk', 'name', 'salt_name', 'price', 'med_image', 'platform', 'dosage']
+        fields = ['pk', 'name', 'salt_name', 'price', 'med_image', 'med_url', 'platform', 'is_available']
 
     def get_platform(self, obj):
         return obj.get_platform()
