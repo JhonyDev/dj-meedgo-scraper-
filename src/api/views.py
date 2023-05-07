@@ -24,11 +24,11 @@ class MedicineSearchView(generics.ListAPIView):
         param = self.request.query_params.get('search')
         if param:
             queryset = queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
-        if not queryset.exists():
-            scrape_netmeds(param)
-            queryset = queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
-        else:
-            scrape_netmeds.delay(param)
+            if not queryset.exists():
+                scrape_netmeds(param)
+                queryset = queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
+            else:
+                scrape_netmeds.delay(param)
 
         for med in queryset:
             if not med.name and not med.salt_name and not med.price and med.med_url:
