@@ -33,7 +33,7 @@ jobs:
         remote-user: ${{ secrets.REMOTE_USER }}
         remote-host: ${{ secrets.REMOTE_HOST }}
         local-folder: .
-        remote-folder: /var/www/your-project-name/
+        remote-folder: /home/admin22/dj-meedgo/
         args: --exclude=.git*
 
     - name: Update code and restart Gunicorn
