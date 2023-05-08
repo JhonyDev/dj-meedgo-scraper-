@@ -46,3 +46,4 @@ jobs:
           cd /home/admin22/dj-meedgo/
           git pull origin main
           sudo systemctl restart gunicorn.service
+
