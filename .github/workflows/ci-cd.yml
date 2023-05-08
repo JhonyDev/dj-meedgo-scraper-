@@ -16,6 +16,6 @@ jobs:
             git pull origin main
             sudo systemctl restart gunicorn.service
           host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USER }}
-          password: ${{ secrets.SSH_PASSWORD }}
+          user: ${{ secrets.REMOTE_USER }}
+          pass: ${{ secrets.SSH_PASSWORD }}
           args: "-tt"
