@@ -66,6 +66,10 @@ class MedicineToCartSerializer(serializers.Serializer):
     medicine_id = serializers.IntegerField(required=False)
     cart_id = serializers.IntegerField(required=False)
 
+
+class AlternateMedicineSerializer(serializers.Serializer):
+    medicine_id = serializers.IntegerField(required=False)
+
 # class ServicesSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = models.Service

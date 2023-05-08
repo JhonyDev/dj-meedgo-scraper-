@@ -1,6 +1,7 @@
 from django.db.models import Q
 from rest_framework import generics, permissions, status
 from rest_framework.filters import SearchFilter
+from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
@@ -48,3 +49,14 @@ class MedicineToCartView(generics.GenericAPIView):
 
     def post(self, request):
         return add_medicine_to_card(self, request)
+
+
+class AlternateMedicineView(generics.ListAPIView):
+    serializer_class = MedicineSerializer
+    queryset = Medicine.objects.all()
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        target_medicine = get_object_or_404(Medicine, pk=self.kwargs.get('medicine_pk'))
+        return Medicine.objects.filter(
+            salt_name=target_medicine.salt_name).exclude(pk=target_medicine.pk).order_by('price')[:1]
