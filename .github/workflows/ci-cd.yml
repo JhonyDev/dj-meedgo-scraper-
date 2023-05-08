@@ -1,0 +1,48 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run tests
+      run: |
+        python manage.py test
+
+    - name: Deploy
+      uses: easingthemes/ssh-deploy@v2.0.0
+      with:
+        ssh-private-key: ''
+        remote-user: ${{ secrets.REMOTE_USER }}
+        remote-host: ${{ secrets.REMOTE_HOST }}
+        local-folder: .
+        remote-folder: /var/www/your-project-name/
+        args: --exclude=.git*
+
+    - name: Update code and restart Gunicorn
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USER }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        script: |
+          cd /home/admin22/dj-meedgo/
+          git pull origin main
+          sudo systemctl restart gunicorn.service
