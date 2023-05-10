@@ -15,6 +15,7 @@ jobs:
             cd /home/admin22/dj-meedgo/
             git pull origin main
             sudo systemctl restart gunicorn.service
+            sudo systemctl restart celery.service
           host: ${{ secrets.REMOTE_HOST }}
           user: ${{ secrets.REMOTE_USER }}
           pass: ${{ secrets.SSH_PASSWORD }}
