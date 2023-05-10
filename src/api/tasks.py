@@ -70,25 +70,25 @@ def scrape_netmeds(self, param):
 def update_medicine(self, med_pk):
     print("UPDATING MEDICINE IN NETMEDS")
     medicine = Medicine.objects.get(id=med_pk)
-    if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
-        return "Medicine already updated today!"
+    # if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
+    #     return "Medicine already updated today!"
 
     response = requests.get(medicine.med_url)
     soup = BeautifulSoup(response.content, "html.parser")
     drug_conf = soup.find("div", class_="drug-conf")
     salt_name = drug_conf.text.strip() if drug_conf else None
     element = soup.select_one('span.price')
-    price_strike = element.find('strike').text.strip()
-    price = price_strike.split()[1]
-    final_price = price
+    if element:
+        price_strike = element.find('strike').text.strip()
+        price = price_strike.split()[1]
+        price = price.replace('₹', '')
+        medicine.price = price
     name = soup.find("h1", class_="black-txt")
     name = name.text.strip()
     element = soup.select_one('button[title="ADD TO CART"]')
     exists = element is not None
     medicine.salt_name = salt_name
     medicine.name = name
-    if final_price:
-        medicine.price = final_price
     medicine.is_available = exists
     medicine.last_updated = datetime.datetime.now()
     medicine.save()
