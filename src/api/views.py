@@ -1,4 +1,4 @@
-from django.db.models import Q
+from rest_framework import generics, permissions, status
 from rest_framework import generics, permissions, status
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import get_object_or_404
@@ -8,8 +8,8 @@ from rest_framework.response import Response
 from .bll import add_medicine_to_card
 from .models import Medicine, MedicineCart
 from .serializers import MedicineSerializer, MedicineToCartSerializer
-from .tasks import scrape_netmeds, update_medicine, update_medicine_pharmeasy, scrape_pharmeasy
-from .utils import get_platform_dict, PHARM_EASY, NET_MEDS
+from .tasks import update_medicine, scrape_netmeds
+from .utils import get_platform_dict, NET_MEDS
 
 
 class MedicineSearchView(generics.ListAPIView):
@@ -23,24 +23,27 @@ class MedicineSearchView(generics.ListAPIView):
 
     def get_queryset(self):
         queryset = Medicine.objects.all()
-        param = self.request.query_params.get('search')
-        if param:
-            queryset = queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
-            if not queryset.exists():
-                scrape_pharmeasy(param)
-                queryset = queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
-                if not queryset.exists():
-                    scrape_netmeds(param)
-                    queryset = queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
-            scrape_pharmeasy.delay(param)
-            scrape_netmeds.delay(param)
+        # param = self.request.query_params.get('search')
 
-        for med in queryset:
-            if not med.salt_name and not med.price and med.med_url:
-                if med.platform == get_platform_dict()[PHARM_EASY]:
-                    update_medicine_pharmeasy.delay(med.pk)
-                if med.platform == get_platform_dict()[NET_MEDS]:
-                    update_medicine.delay(med.pk)
+        scrape_netmeds.delay('pana')
+
+        # if param:
+        #     queryset = queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
+        #     if not queryset.exists():
+        #         scrape_pharmeasy(param)
+        #         queryset = queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
+        #         if not queryset.exists():
+        #             scrape_netmeds(param)
+        #             queryset = queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
+        #     scrape_pharmeasy.delay(param)
+        #     scrape_netmeds.delay(param)
+        #
+        # for med in queryset:
+        #     if not med.salt_name and not med.price and med.med_url:
+        #         if med.platform == get_platform_dict()[PHARM_EASY]:
+        #             update_medicine_pharmeasy.delay(med.pk)
+        #         if med.platform == get_platform_dict()[NET_MEDS]:
+        #             update_medicine.delay(med.pk)
         return queryset
 
 

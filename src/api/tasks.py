@@ -29,6 +29,11 @@ def scrape_netmeds(self, param):
         category_name = li_tag.find_element(By.XPATH, ".//a[@class='category_name']")
         med_url = li_tag.find_element(By.XPATH, ".//a[@class='category_name']").get_attribute("href")
         check_med = Medicine.objects.filter(med_url=med_url).first()
+
+        med_image = category_name.find_element(By.XPATH, ".//img[@class='product-image-photo']").get_attribute("src")
+        name = li_tag.find_element(By.XPATH, ".//span[@class='clsgetname']").text
+        price = li_tag.find_element(By.ID, "price").text
+        price = price.replace('MRP Rs.', '')
         if check_med:
             if check_med and check_med.last_updated \
                     and check_med.last_updated > timezone.now() - datetime.timedelta(days=1):
@@ -37,10 +42,7 @@ def scrape_netmeds(self, param):
             if not check_med.name or not check_med.salt_name or not check_med.price:
                 update_medicine.delay(check_med.id)
                 continue
-        med_image = category_name.find_element(By.XPATH, ".//img[@class='product-image-photo']").get_attribute("src")
-        name = li_tag.find_element(By.XPATH, ".//span[@class='clsgetname']").text
-        price = li_tag.find_element(By.ID, "final_price").text
-        price = price.replace('₹', '')
+
         if not price:
             price = None
         try:
@@ -70,15 +72,15 @@ def update_medicine(self, med_pk):
     medicine = Medicine.objects.get(id=med_pk)
     if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
         return "Medicine already updated today!"
+
     response = requests.get(medicine.med_url)
     soup = BeautifulSoup(response.content, "html.parser")
     drug_conf = soup.find("div", class_="drug-conf")
     salt_name = drug_conf.text.strip() if drug_conf else None
-    element = soup.select_one('span.final-price')
-    try:
-        final_price = element.text.strip().split()[-1]
-    except:
-        pass
+    element = soup.select_one('span.price')
+    price_strike = element.find('strike').text.strip()
+    price = price_strike.split()[1]
+    final_price = price
     name = soup.find("h1", class_="black-txt")
     name = name.text.strip()
     element = soup.select_one('button[title="ADD TO CART"]')
