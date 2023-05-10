@@ -1,6 +1,5 @@
 from django.db.models import Q
 from rest_framework import generics, permissions, status
-from rest_framework import generics, permissions, status
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
@@ -26,19 +25,13 @@ class MedicineSearchView(generics.ListAPIView):
         queryset = Medicine.objects.all()
         param = self.request.query_params.get('search')
         if param:
-            queryset = queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
-            print(queryset)
-            if not queryset.exists():
+            if not Medicine.objects.filter(Q(name__icontains=param) | Q(salt_name__icontains=param)).exists():
                 scrape_pharmeasy(param)
-                queryset = queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
-                print(queryset)
-                if not queryset.exists():
+                if not Medicine.objects.filter(Q(name__icontains=param) | Q(salt_name__icontains=param)).exists():
                     scrape_netmeds(param)
-                    queryset = queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
-                    print(queryset)
             scrape_pharmeasy.delay(param)
             scrape_netmeds.delay(param)
-
+            queryset = Medicine.objects.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
         for med in queryset:
             if not med.salt_name and not med.price and med.med_url:
                 if med.platform == get_platform_dict()[PHARM_EASY]:
