@@ -22,10 +22,10 @@ class MedicineSearchView(generics.ListAPIView):
     serializer_class = MedicineSerializer
 
     def get_queryset(self):
-        queryset = Medicine.objects.all()
         param = self.request.query_params.get('search')
+        queryset = Medicine.objects.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
         if param:
-            if not Medicine.objects.filter(Q(name__icontains=param) | Q(salt_name__icontains=param)).exists():
+            if not queryset.exists():
                 med_list = scrape_pharmeasy(param)
                 print(med_list)
                 queryset = Medicine.objects.filter(pk__in=med_list)
@@ -33,8 +33,6 @@ class MedicineSearchView(generics.ListAPIView):
                 #     scrape_netmeds(param)
             scrape_pharmeasy.delay(param)
             scrape_netmeds.delay(param)
-            if not queryset.exists():
-                queryset = Medicine.objects.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
         for med in queryset:
             if not med.salt_name and not med.price and med.med_url:
                 if med.platform == get_platform_dict()[PHARM_EASY]:

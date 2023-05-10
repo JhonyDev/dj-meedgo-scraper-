@@ -70,8 +70,8 @@ def scrape_netmeds(self, param):
 def update_medicine(self, med_pk):
     print("UPDATING MEDICINE IN NETMEDS")
     medicine = Medicine.objects.get(id=med_pk)
-    # if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
-    #     return "Medicine already updated today!"
+    if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
+        return "Medicine already updated today!"
 
     response = requests.get(medicine.med_url)
     soup = BeautifulSoup(response.content, "html.parser")
