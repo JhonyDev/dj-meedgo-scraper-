@@ -105,6 +105,7 @@ def scrape_pharmeasy(self, param):
     soup = BeautifulSoup(response.text, 'html.parser')
     parent_div = soup.find('div', {'class': 'Search_fullWidthLHS__mteti'})
     menuitems = parent_div.find_all('div', {'role': 'menuitem'})
+    return_list = []
     for menuitem in menuitems:
         medicine_name = menuitem.find('h1', {'class': 'ProductCard_medicineName__8Ydfq'}).text.strip()
         try:
@@ -131,12 +132,15 @@ def scrape_pharmeasy(self, param):
             medicine_price = medicine_price.replace('*', '')
         except:
             pass
+        if medicine_price:
+            medicine_price = medicine_price.replace('₹', '')
         medicine = Medicine.objects.filter(med_url=a_url).first()
         if medicine:
             medicine.is_available = is_available
             medicine.price = medicine_price
             medicine.save()
-            return "DONE!"
+            return_list.append(medicine.pk)
+            continue
         try:
             medicine = Medicine.objects.create(
                 is_available=is_available, name=medicine_name, price=medicine_price, med_url=a_url,
@@ -145,7 +149,8 @@ def scrape_pharmeasy(self, param):
                 update_medicine_pharmeasy.delay(medicine.id)
         except Exception as e:
             print(f"MEDICINE NOT CREATED - {str(e)}")
-    return "DONE!"
+        return_list.append(medicine.pk)
+    return return_list
 
 
 @shared_task(bind=True)

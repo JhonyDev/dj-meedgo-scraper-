@@ -18,7 +18,7 @@ class MedicineSearchView(generics.ListAPIView):
     pagination_class = PageNumberPagination
     pagination_class.page_size = 10
     filter_backends = [SearchFilter]
-    search_fields = ['name', 'salt_name']
+    # search_fields = ['name', 'salt_name']
     serializer_class = MedicineSerializer
 
     def get_queryset(self):
@@ -26,18 +26,22 @@ class MedicineSearchView(generics.ListAPIView):
         param = self.request.query_params.get('search')
         if param:
             if not Medicine.objects.filter(Q(name__icontains=param) | Q(salt_name__icontains=param)).exists():
-                scrape_pharmeasy(param)
-                if not Medicine.objects.filter(Q(name__icontains=param) | Q(salt_name__icontains=param)).exists():
-                    scrape_netmeds(param)
+                med_list = scrape_pharmeasy(param)
+                print(med_list)
+                queryset = Medicine.objects.filter(pk__in=med_list)
+                # if not Medicine.objects.filter(Q(name__icontains=param) | Q(salt_name__icontains=param)).exists():
+                #     scrape_netmeds(param)
             scrape_pharmeasy.delay(param)
             scrape_netmeds.delay(param)
-            queryset = Medicine.objects.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
+            if not queryset.exists():
+                queryset = Medicine.objects.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
         for med in queryset:
             if not med.salt_name and not med.price and med.med_url:
                 if med.platform == get_platform_dict()[PHARM_EASY]:
                     update_medicine_pharmeasy.delay(med.pk)
                 if med.platform == get_platform_dict()[NET_MEDS]:
                     update_medicine.delay(med.pk)
+        print(queryset)
         return queryset
 
 
