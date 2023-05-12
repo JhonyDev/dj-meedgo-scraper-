@@ -14,6 +14,8 @@ from src.api.models import Medicine
 from src.api.utils import get_platform_dict, NET_MEDS, PHARM_EASY, ONE_MG
 
 
+# NET-MEDS
+
 @shared_task(bind=True)
 def scrape_netmeds(self, param):
     if param is None:
@@ -65,6 +67,36 @@ def scrape_netmeds(self, param):
     driver.quit()
     return "DONE!"
 
+
+@shared_task(bind=True)
+def update_medicine(self, med_pk):
+    print("UPDATING MEDICINE IN NETMEDS")
+    medicine = Medicine.objects.get(id=med_pk)
+    if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
+        return "Medicine already updated today!"
+    response = requests.get(medicine.med_url)
+    soup = BeautifulSoup(response.content, "html.parser")
+    drug_conf = soup.find("div", class_="drug-conf")
+    salt_name = drug_conf.text.strip() if drug_conf else None
+    element = soup.select_one('span.price')
+    if element:
+        price_strike = element.find('strike').text.strip()
+        price = price_strike.split()[1]
+        price = price.replace('₹', '')
+        medicine.price = price
+    name = soup.find("h1", class_="black-txt")
+    name = name.text.strip()
+    element = soup.select_one('button[title="ADD TO CART"]')
+    exists = element is not None
+    medicine.salt_name = salt_name
+    medicine.name = name
+    medicine.is_available = exists
+    medicine.last_updated = datetime.datetime.now()
+    medicine.save()
+    return "DONE!"
+
+
+# ONE-MG
 
 @shared_task(bind=True)
 def scrape_1mg(self, param):
@@ -131,9 +163,7 @@ def scrape_1mg(self, param):
 def update_medicine_1mg(self, med_pk):
     print("UPDATING MEDICINE IN ONEMG")
     medicine = Medicine.objects.get(id=med_pk)
-    print(medicine.last_updated)
     if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
-        print("MEDICINE ALREADY UPDATED")
         return "Medicine already updated today!"
     options = Options()
     options.add_argument('--headless')
@@ -170,34 +200,7 @@ def update_medicine_1mg(self, med_pk):
     return "DONE!"
 
 
-@shared_task(bind=True)
-def update_medicine(self, med_pk):
-    print("UPDATING MEDICINE IN NETMEDS")
-    medicine = Medicine.objects.get(id=med_pk)
-    if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
-        return "Medicine already updated today!"
-    response = requests.get(medicine.med_url)
-    soup = BeautifulSoup(response.content, "html.parser")
-    drug_conf = soup.find("div", class_="drug-conf")
-    salt_name = drug_conf.text.strip() if drug_conf else None
-    element = soup.select_one('span.price')
-    if element:
-        price_strike = element.find('strike').text.strip()
-        price = price_strike.split()[1]
-        price = price.replace('₹', '')
-        medicine.price = price
-    name = soup.find("h1", class_="black-txt")
-    name = name.text.strip()
-    element = soup.select_one('button[title="ADD TO CART"]')
-    exists = element is not None
-    medicine.salt_name = salt_name
-    medicine.name = name
-    medicine.is_available = exists
-    medicine.last_updated = datetime.datetime.now()
-    medicine.save()
-    return "DONE!"
-
-
+# PHARM-EASY
 @shared_task(bind=True)
 def scrape_pharmeasy(self, param):
     if param is None:

@@ -29,19 +29,18 @@ class MedicineSearchView(generics.ListAPIView):
             queryset = queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
             if not queryset.exists():
                 med_list = scrape_pharmeasy(param)
-                print(med_list)
                 queryset = Medicine.objects.filter(pk__in=med_list)
                 # if not Medicine.objects.filter(Q(name__icontains=param) | Q(salt_name__icontains=param)).exists():
                 #     scrape_netmeds(param)
-            # scrape_pharmeasy.delay(param)
-            # scrape_1mg.delay(param)
-            # scrape_netmeds.delay(param)
+            scrape_pharmeasy.delay(param)
+            scrape_1mg.delay(param)
+            scrape_netmeds.delay(param)
         for med in queryset:
             if not med.salt_name and med.med_url:
-                # if med.platform == get_platform_dict()[PHARM_EASY]:
-                #     update_medicine_pharmeasy.delay(med.pk)
-                # if med.platform == get_platform_dict()[NET_MEDS]:
-                #     update_medicine.delay(med.pk)
+                if med.platform == get_platform_dict()[PHARM_EASY]:
+                    update_medicine_pharmeasy.delay(med.pk)
+                if med.platform == get_platform_dict()[NET_MEDS]:
+                    update_medicine.delay(med.pk)
                 if med.platform == get_platform_dict()[ONE_MG]:
                     update_medicine_1mg.delay(med.pk)
 
