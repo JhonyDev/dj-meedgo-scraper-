@@ -11,7 +11,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 
 from src.api.models import Medicine
-from src.api.utils import get_platform_dict, NET_MEDS, PHARM_EASY
+from src.api.utils import get_platform_dict, NET_MEDS, PHARM_EASY, ONE_MG
 
 
 @shared_task(bind=True)
@@ -67,12 +67,115 @@ def scrape_netmeds(self, param):
 
 
 @shared_task(bind=True)
+def scrape_1mg(self, param):
+    if param is None:
+        return "DONE!"
+    url = f"https://www.1mg.com/search/all?name={param}"
+    options = Options()
+    options.add_argument('--headless')
+    options.add_argument("--force-device-scale-factor=0.5")
+    driver = webdriver.Chrome(options=options)
+    driver.get(url)
+    ul_tag = driver.find_elements(By.CLASS_NAME, "style__container___cTDz0")
+    default_image = 'https://onemg.gumlet.io/w_150,c_fit,h_150,f_auto,q_auto/hx2gxivwmeoxxxsc1hix.png'
+    for ul_ in ul_tag:
+        medicine_name = ul_.find_element(By.CLASS_NAME, "style__pro-title___3zxNC").text
+        discounted_price = ul_.find_element(By.CLASS_NAME, "style__price-tag___B2csA").text.replace(
+            '₹', '')
+        discounted_price = discounted_price.replace('MRP', '')
+        a_tag = ul_.find_element(By.TAG_NAME, "a").get_attribute('href')
+        try:
+            image_ = ul_.find_element(By.CLASS_NAME, "style__loaded___22epL").get_attribute('src')
+        except:
+            image_ = default_image
+        try:
+            original_price = ul_.find_element(By.CLASS_NAME, "style__discount-price___-Cikw").text.replace(
+                '₹', '')
+            original_price = original_price.replace('MRP', '')
+        except:
+            original_price = None
+
+        try:
+            is_available = True if ul_.find_element(By.CLASS_NAME, "style__not-available___ADBvR") else False
+        except:
+            is_available = True
+
+        # print(image_)
+        # print(a_tag)
+        # print(medicine_name)
+        # print(discounted_price)
+        # print(original_price or discounted_price)
+        # print(is_available)
+        # print('====' * 30)
+
+        if Medicine.objects.filter(med_url=a_tag).exists():
+            medicine = Medicine.objects.filter(med_url=a_tag).first()
+            medicine.is_available = is_available
+            medicine.discounted_price = original_price or discounted_price
+            medicine.price = original_price
+            medicine.name = medicine_name
+            medicine.save()
+        else:
+            medicine = Medicine.objects.create(
+                is_available=is_available, name=medicine_name, discounted_price=original_price or discounted_price,
+                price=original_price, med_url=a_tag,
+                med_image=image_, platform=get_platform_dict()[ONE_MG])
+
+        if medicine.name:
+            update_medicine_1mg.delay(medicine.id)
+
+    return "DONE!"
+
+
+@shared_task(bind=True)
+def update_medicine_1mg(self, med_pk):
+    print("UPDATING MEDICINE IN ONEMG")
+    medicine = Medicine.objects.get(id=med_pk)
+    print(medicine.last_updated)
+    if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
+        print("MEDICINE ALREADY UPDATED")
+        return "Medicine already updated today!"
+    options = Options()
+    options.add_argument('--headless')
+    options.add_argument("--force-device-scale-factor=0.5")
+    driver = webdriver.Chrome(options=options)
+    driver.get(medicine.med_url)
+    name = driver.find_element(By.CLASS_NAME, "DrugHeader__title-content___2ZaPo").text
+    salt_name = driver.find_element(By.CLASS_NAME, "DrugHeader__meta-value___vqYM0").text
+    try:
+        original_price = driver.find_element(By.CLASS_NAME, "PriceBoxPlanOption__stike___pDQVN").text.replace(
+            '₹', '')
+        discounted_price = driver.find_element(By.CLASS_NAME,
+                                               "PriceBoxPlanOption__offer-price-cp___2QPU_").text.replace(
+            '₹', '')
+        is_available = True
+    except:
+        is_available = False
+        discounted_price = None
+        original_price = None
+
+    # print(name)
+    # print(salt_name)
+    # print(original_price)
+    # print(discounted_price)
+    # print(is_available)
+
+    medicine.salt_name = salt_name
+    medicine.name = name
+    medicine.price = original_price or medicine.price
+    medicine.discounted_price = discounted_price or medicine.discounted_price
+    medicine.is_available = is_available
+    medicine.last_updated = datetime.datetime.now()
+    medicine.save()
+    return "DONE!"
+
+
+@shared_task(bind=True)
 def update_medicine(self, med_pk):
     print("UPDATING MEDICINE IN NETMEDS")
     medicine = Medicine.objects.get(id=med_pk)
     if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
         return "Medicine already updated today!"
-
     response = requests.get(medicine.med_url)
     soup = BeautifulSoup(response.content, "html.parser")
     drug_conf = soup.find("div", class_="drug-conf")

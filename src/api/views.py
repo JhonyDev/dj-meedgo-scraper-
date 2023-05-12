@@ -8,8 +8,9 @@ from rest_framework.response import Response
 from .bll import add_medicine_to_card
 from .models import Medicine, MedicineCart
 from .serializers import MedicineSerializer, MedicineToCartSerializer
-from .tasks import update_medicine, scrape_netmeds, scrape_pharmeasy, update_medicine_pharmeasy
-from .utils import get_platform_dict, NET_MEDS, PHARM_EASY
+from .tasks import update_medicine, scrape_netmeds, scrape_pharmeasy, update_medicine_pharmeasy, scrape_1mg, \
+    update_medicine_1mg
+from .utils import get_platform_dict, NET_MEDS, PHARM_EASY, ONE_MG
 
 
 class MedicineSearchView(generics.ListAPIView):
@@ -23,23 +24,28 @@ class MedicineSearchView(generics.ListAPIView):
 
     def get_queryset(self):
         param = self.request.query_params.get('search')
-        queryset = Medicine.objects.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
+        queryset = Medicine.objects.all()
         if param:
+            queryset = queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
             if not queryset.exists():
                 med_list = scrape_pharmeasy(param)
                 print(med_list)
                 queryset = Medicine.objects.filter(pk__in=med_list)
                 # if not Medicine.objects.filter(Q(name__icontains=param) | Q(salt_name__icontains=param)).exists():
                 #     scrape_netmeds(param)
-            scrape_pharmeasy.delay(param)
-            scrape_netmeds.delay(param)
+            # scrape_pharmeasy.delay(param)
+            # scrape_1mg.delay(param)
+            # scrape_netmeds.delay(param)
         for med in queryset:
-            if not med.salt_name and not med.price and med.med_url:
-                if med.platform == get_platform_dict()[PHARM_EASY]:
-                    update_medicine_pharmeasy.delay(med.pk)
-                if med.platform == get_platform_dict()[NET_MEDS]:
-                    update_medicine.delay(med.pk)
-        print(queryset)
+            if not med.salt_name and med.med_url:
+                # if med.platform == get_platform_dict()[PHARM_EASY]:
+                #     update_medicine_pharmeasy.delay(med.pk)
+                # if med.platform == get_platform_dict()[NET_MEDS]:
+                #     update_medicine.delay(med.pk)
+                if med.platform == get_platform_dict()[ONE_MG]:
+                    update_medicine_1mg.delay(med.pk)
+
+        # print(queryset)
         return queryset
 
 

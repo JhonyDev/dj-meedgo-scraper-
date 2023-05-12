@@ -9,6 +9,7 @@ class Medicine(models.Model):
     name = models.CharField(max_length=500, null=True, default=None)
     salt_name = models.CharField(max_length=500, null=True, default=None)
     price = models.FloatField(null=True, blank=True, default=None)
+    discounted_price = models.FloatField(null=True, blank=True, default=None)
     med_image = models.URLField(null=True, blank=True, default=None)
     platform = models.CharField(max_length=500, choices=PLATFORMS)
     dosage = models.PositiveIntegerField(null=True, blank=True, default=None, help_text="in Milligrams")
