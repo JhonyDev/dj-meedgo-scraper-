@@ -83,6 +83,7 @@ def update_medicine(self, med_pk):
         price_strike = element.find('strike').text.strip()
         price = price_strike.split()[1]
         price = price.replace('₹', '')
+        price = price.replace(',', '')
         medicine.price = price
     name = soup.find("h1", class_="black-txt")
     name = name.text.strip()
