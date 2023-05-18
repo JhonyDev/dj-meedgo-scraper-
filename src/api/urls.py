@@ -8,4 +8,5 @@ urlpatterns = [
     path('cart/', views.MedicineToCartView.as_view()),
     path('alternate-medicine/<int:medicine_pk>/', views.AlternateMedicineView.as_view()),
     path('order-requests/', views.OrderRequestsView.as_view()),
+    path('locality/order-requests/', views.OrderRequestsLocalityView.as_view()),
 ]

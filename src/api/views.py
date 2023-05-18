@@ -93,3 +93,11 @@ class OrderRequestsView(generics.ListCreateAPIView):
         instance = serializer.save()
         instance.user = self.request.user
         instance.save()
+
+
+class OrderRequestsLocalityView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = OrderRequestListSerializer
+
+    def get_queryset(self):
+        return OrderRequest.objects.filter(user__postal_code=self.request.user.postal_code)
