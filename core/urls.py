@@ -25,11 +25,11 @@ from .settings import DEBUG, MEDIA_ROOT, MEDIA_URL
 
 schema_view = get_schema_view(
     openapi.Info(
-        title='Your API',
+        title='Meedgo API',
         default_version='v1',
-        description='Your API description',
-        terms_of_service='https://www.example.com/terms/',
-        contact=openapi.Contact(email='contact@example.com'),
+        description='Meedgo API Built using DRF',
+        # terms_of_service='https://www.example.com/terms/',
+        contact=openapi.Contact(email='junaid@jhonydev.com'),
         license=openapi.License(name='BSD License'),
     ),
     public=True,
