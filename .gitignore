@@ -142,5 +142,5 @@ migrations/
 media/
 media
 
-
+bash_commands*
 # this is check
