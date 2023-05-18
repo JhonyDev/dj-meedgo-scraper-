@@ -27,8 +27,10 @@ def get_platform_dict():
 
 
 def balance_medicines(instance):
+    from django.db import transaction
     from src.api.models import MedicineOfferBridge
     medicines = MedicineOfferBridge.objects.filter(order_grab=instance).values('medicine__pk')
     remaining_medicines = instance.order_request.medicine_cart.medicines.exclude(pk__in=medicines)
-    for medicine in remaining_medicines:
-        MedicineOfferBridge.objects.create(order_grab=instance, medicine=medicine)
+    with transaction.atomic():
+        for medicine in remaining_medicines:
+            MedicineOfferBridge.objects.create(order_grab=instance, medicine=medicine)

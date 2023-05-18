@@ -36,38 +36,27 @@
 <!-- Begin page -->
 <div id="layout-wrapper">
 
-    {# BASE TOP NAVIGATION PANEL AREA -------------------------- #}
-    {% block base_top_nav %}
-        {% include 'core/base_head.html' %}
-    {% endblock %}
     {# --------------------------------------------------------- #}
-
     {% block dont_include_details %}
-
         <div class="main-content">
-
             <div class="page-content mt-4">
                 <div class="container-fluid mt-5">
-
                     <div class="row">
                         {% include 'core/include/message.html' %}
                     </div>
-
                     <!-- start page title -->
                     <div class="row">
                         <div class="col-12">
                             <div class="page-title-box d-flex align-items-center justify-content-between">
                                 <h4 class="mb-0 font-size-18">
-
                                     {% block page_heading %} {% endblock %}</h4>
-
                             </div>
                         </div>
                     </div>
                     <!-- end page title -->
 
-                    <div class="row">
-                        <div class="col-12">
+                    <div class="row  d-flex justify-content-center">
+                        <div class="col-12 ">
                             {% block content %}
 
                             {% endblock %}

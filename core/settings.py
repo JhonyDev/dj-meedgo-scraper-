@@ -79,9 +79,12 @@ INSTALLED_APPS = [
 
     'src.accounts',
     'src.api',
-
+    'drf_yasg',
     'corsheaders',
 ]
+SWAGGER_SETTINGS = {
+    'DEFAULT_INFO': 'core.urls.swagger_info',
+}
 
 """ MIDDLE WARES ----------------------------------------------------------------------------"""
 MIDDLEWARE = [

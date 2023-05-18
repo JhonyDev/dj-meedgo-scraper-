@@ -108,6 +108,29 @@ class GrabbedOrderRequestsListSerializer(serializers.ModelSerializer):
     # order_request = OrderRequestListSerializer()
     medicine_offers = serializers.SerializerMethodField('get_medicine_offers')
     offered_total_price = serializers.SerializerMethodField('get_offered_total')
+    cost_comparisons = serializers.SerializerMethodField('get_cost_comparisons')
+
+    def get_cost_comparisons(self, q):
+        from src.api.utils import LIST_PLATFORMS
+        from src.api.utils import get_platform_dict
+        platforms_list = []
+        for platform in LIST_PLATFORMS:
+            platform_medicines = Medicine.objects.filter(platform=get_platform_dict()[platform])
+            missing_count = 0
+            total_cost = 0
+            for medicine in q.order_request.medicine_cart.medicines.all():
+                query_set = platform_medicines.filter(
+                    name=medicine.name, salt_name=medicine.salt_name, dosage=medicine.dosage)
+                if not query_set.exists():
+                    missing_count += 1
+                else:
+                    total_cost += query_set.first().price or 0
+            platforms_list.append({
+                'platform': platform,
+                'total_cost': total_cost,
+                'status': f'{missing_count} medicines are missing'
+            })
+        return platforms_list
 
     def get_medicine_offers(self, q):
         return MedicineOfferSerializer(MedicineOfferBridge.objects.filter(order_grab=q), many=True).data
@@ -119,7 +142,7 @@ class GrabbedOrderRequestsListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GrabUserBridge
-        fields = ['pk', 'order_request', 'medicine_offers', 'offered_total_price', 'is_active']
+        fields = ['pk', 'order_request', 'cost_comparisons', 'medicine_offers', 'offered_total_price', 'is_active']
 
 
 """ SIMPLE SERIALIZERS """

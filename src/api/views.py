@@ -15,6 +15,24 @@ from .tasks import update_medicine, scrape_netmeds, scrape_pharmeasy, update_med
     update_medicine_1mg
 from .utils import get_platform_dict, NET_MEDS, PHARM_EASY, ONE_MG, balance_medicines
 
+"""
+Elastic Search DSL (Domain Specific Language)
+
+Query Annotations
+    - Basic Annotation
+    - Conditional Annotation
+    - Related Model Annotation
+    - Window Function Annotations
+
+Atomic Transactions
+
+ACID properties
+    - Atomicity
+    - Consistency
+    - Isolation
+    - Durability
+"""
+
 
 class MedicineSearchView(generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
