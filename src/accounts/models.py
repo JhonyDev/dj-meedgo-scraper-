@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import RegexValidator
 from django.db import models
 from django_resized import ResizedImageField
 
@@ -15,6 +16,18 @@ class User(AbstractUser):
     )
     type = models.CharField(max_length=25, null=False, blank=False, default='Admin', choices=USER_TYPES)
     phone_number = models.CharField(max_length=50, default=None, null=True, blank=True)
+    # postal_code = models.PositiveIntegerField(max_length=50, default=None, null=True, blank=True)
+    postal_code = models.CharField(
+        max_length=10, null=False, blank=False,
+        help_text='Enter a valid postal code (e.g., 12345 or 12345-6789).',
+        validators=[
+            RegexValidator(
+                regex=r'^\d{5}(-\d{4})?$',
+                message='Enter a valid postal code (e.g., 12345 or 12345-6789).'
+            )
+        ]
+    )
+
     # user_password = models.CharField(max_length=50, default=None, null=True, blank=True)
 
     class Meta:

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from src.accounts.models import User
-from .models import Medicine, MedicineCart
+from .models import Medicine, MedicineCart, OrderRequest
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -60,6 +60,22 @@ class MedicineCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = MedicineCart
         fields = ['id', 'medicines']
+
+
+class OrderRequestCreateSerializer(serializers.ModelSerializer):
+    # medicine_cart = MedicineCartSerializer()
+
+    class Meta:
+        model = OrderRequest
+        fields = ['medicine_cart']
+
+
+class OrderRequestListSerializer(serializers.ModelSerializer):
+    medicine_cart = MedicineCartSerializer()
+
+    class Meta:
+        model = OrderRequest
+        fields = ['medicine_cart']
 
 
 class MedicineToCartSerializer(serializers.Serializer):

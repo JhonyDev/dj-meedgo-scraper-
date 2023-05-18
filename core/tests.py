@@ -1,73 +1,54 @@
-# from selenium import webdriver
-# from selenium.webdriver.chrome.options import Options
-# from selenium.webdriver.common.by import By
-#
-# #
-# # url = f"https://www.1mg.com/search/all?name=Petril MD"
-# # options = Options()
-# # options.add_argument('--headless')
-# # options.add_argument("--force-device-scale-factor=0.5")
-# # driver = webdriver.Chrome(options=options)
-# # driver.get(url)
-# # ul_tag = driver.find_elements(By.CLASS_NAME, "style__container___cTDz0")
-# # default_image = 'https://onemg.gumlet.io/w_150,c_fit,h_150,f_auto,q_auto/hx2gxivwmeoxxxsc1hix.png'
-# # for ul_ in ul_tag:
-# #     medicine_name = ul_.find_element(By.CLASS_NAME, "style__pro-title___3zxNC").text
-# #     discounted_price = ul_.find_element(By.CLASS_NAME, "style__price-tag___B2csA").text
-# #     a_tag = ul_.find_element(By.TAG_NAME, "a").get_attribute('href')
-# #     try:
-# #         image_ = ul_.find_element(By.CLASS_NAME, "style__loaded___22epL").get_attribute('src')
-# #     except:
-# #         image_ = default_image
-# #     try:
-# #         original_price = ul_.find_element(By.CLASS_NAME, "style__discount-price___-Cikw").text
-# #     except:
-# #         original_price = None
-# #
-# #     try:
-# #         is_available = True if ul_.find_element(By.CLASS_NAME, "style__not-available___ADBvR") else False
-# #     except:
-# #         is_available = True
-# #     print(image_)
-# #     print(a_tag)
-# #     print(medicine_name)
-# #     print(discounted_price)
-# #     print(original_price or discounted_price)
-# #     print(is_available)
-# #     print('====' * 30)
-# #
-# url = f"https://www.1mg.com/drugs/petril-md-0.5-tablet-57666"
-# options = Options()
-# options.add_argument('--headless')
-# options.add_argument("--force-device-scale-factor=0.5")
-# driver = webdriver.Chrome(options=options)
-# driver.get(url)
-# name = driver.find_element(By.CLASS_NAME, "DrugHeader__title-content___2ZaPo").text
-# salt_name = driver.find_element(By.CLASS_NAME, "DrugHeader__meta-value___vqYM0").text
-# try:
-#     original_price = driver.find_element(By.CLASS_NAME, "PriceBoxPlanOption__stike___pDQVN").text.replace(
-#         '₹', '')
-#     discounted_price = driver.find_element(By.CLASS_NAME, "PriceBoxPlanOption__offer-price-cp___2QPU_").text.replace(
-#         '₹', '')
-#     is_available = True
-# except:
-#     is_available = False
-#     discounted_price = None
-#     original_price = None
-# print(name)
-# print(salt_name)
-# print(original_price)
-# print(discounted_price)
-# print(is_available)
+import urllib.request
+
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 
-import re
+# Initialize the webdriver
+options = webdriver.ChromeOptions()
+driver = webdriver.Chrome(options=options)
 
-# sample string
-string_with_numbers = "MRP105"
+# Open the URL
+driver.get("https://healthplus.flipkart.com/")
 
-# extract only numbers using regular expressions
-numbers = re.findall('\d+', string_with_numbers)
+# Wait until the qck-list-item divs appear
+wait = WebDriverWait(driver, 10000)
 
-# print the extracted numbers
-print(numbers)
+input_ = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "src-front")))
+
+# Find the input field by class name
+input_field = driver.find_element(By.CLASS_NAME, "src-front")
+
+# Input text into the field
+input_field.send_keys("pana")
+
+divs = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "qck-list-item")))
+
+# Loop through each div
+for div in divs:
+    # Extract the necessary information
+    brand_name = div.find_element_by_class_name("brand-name").text
+    highlighted_text = div.find_element_by_css_selector("a.text-highlighted").text
+    o_price = div.find_element_by_class_name("o-price").text
+    s_price = div.find_element_by_class_name("s-price").text
+
+    # Check if js_add_to_cart link exists
+    add_to_cart_link = div.find_elements_by_css_selector("a.js_add_to_cart")
+    if add_to_cart_link:
+        has_add_to_cart = True
+    else:
+        has_add_to_cart = False
+
+    # Print the extracted information and whether the add_to_cart link exists
+    print("Brand name: ", brand_name)
+    print("Highlighted text: ", highlighted_text)
+    print("Original price: ", o_price)
+    print("Sale price: ", s_price)
+    print("Has add to cart: ", has_add_to_cart)
+    print()
+
+# Close the webdriver
+driver.quit()

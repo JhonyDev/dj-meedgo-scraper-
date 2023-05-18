@@ -6,8 +6,9 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 from .bll import add_medicine_to_card
-from .models import Medicine, MedicineCart
-from .serializers import MedicineSerializer, MedicineToCartSerializer
+from .models import Medicine, MedicineCart, OrderRequest
+from .serializers import MedicineSerializer, MedicineToCartSerializer, \
+    OrderRequestListSerializer, OrderRequestCreateSerializer
 from .tasks import update_medicine, scrape_netmeds, scrape_pharmeasy, update_medicine_pharmeasy, scrape_1mg, \
     update_medicine_1mg
 from .utils import get_platform_dict, NET_MEDS, PHARM_EASY, ONE_MG
@@ -73,3 +74,22 @@ class AlternateMedicineView(generics.ListAPIView):
             return Medicine.objects.none()
         return Medicine.objects.filter(
             salt_name=target_medicine.salt_name).order_by('price')
+
+
+class OrderRequestsView(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return OrderRequestListSerializer
+        elif self.request.method == 'POST':
+            return OrderRequestCreateSerializer
+        return super().get_serializer_class()
+
+    def get_queryset(self):
+        return OrderRequest.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        instance.user = self.request.user
+        instance.save()

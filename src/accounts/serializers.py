@@ -12,7 +12,7 @@ class CustomRegisterAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'pk', 'first_name', 'last_name', 'username', 'email', 'password', 'password2', 'type'
+            'pk', 'username', 'email', 'postal_code', 'password', 'password2', 'type'
         ]
         read_only_fields = [
             'type'
@@ -23,9 +23,10 @@ class CustomRegisterAccountSerializer(serializers.ModelSerializer):
 
     def save(self):
         user = User(
-            first_name=self.validated_data['first_name'],
-            last_name=self.validated_data['last_name'],
+            # first_name=self.validated_data['first_name'],
+            # last_name=self.validated_data['last_name'],
             email=self.validated_data['email'],
+            postal_code=self.validated_data['postal_code'],
             username=self.validated_data['username'],
         )
         password = self.validated_data['password']
