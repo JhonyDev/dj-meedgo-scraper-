@@ -6,12 +6,14 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 from .bll import add_medicine_to_card
-from .models import Medicine, MedicineCart, OrderRequest
+from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge
 from .serializers import MedicineSerializer, MedicineToCartSerializer, \
-    OrderRequestListSerializer, OrderRequestCreateSerializer
+    OrderRequestListSerializer, OrderRequestCreateSerializer, GrabbedOrderRequestsListSerializer, \
+    GrabbedOrderRequestsCreateSerializer, GrabbedOrderRequestsUpdateSerializer, MedicineOfferSerializer, \
+    MedicineOfferUpdateSerializer
 from .tasks import update_medicine, scrape_netmeds, scrape_pharmeasy, update_medicine_pharmeasy, scrape_1mg, \
     update_medicine_1mg
-from .utils import get_platform_dict, NET_MEDS, PHARM_EASY, ONE_MG
+from .utils import get_platform_dict, NET_MEDS, PHARM_EASY, ONE_MG, balance_medicines
 
 
 class MedicineSearchView(generics.ListAPIView):
@@ -101,3 +103,57 @@ class OrderRequestsLocalityView(generics.ListAPIView):
 
     def get_queryset(self):
         return OrderRequest.objects.filter(user__postal_code=self.request.user.postal_code)
+
+
+class GrabOrdersView(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def dispatch(self, request, *args, **kwargs):
+        for medicine in self.get_queryset():
+            balance_medicines(medicine)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return GrabbedOrderRequestsListSerializer
+        elif self.request.method == 'POST':
+            return GrabbedOrderRequestsCreateSerializer
+        return super().get_serializer_class()
+
+    def get_queryset(self):
+        return GrabUserBridge.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        instance.user = self.request.user
+        instance.save()
+
+
+class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = GrabUserBridge.objects.all()
+    serializer_class = GrabbedOrderRequestsUpdateSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return GrabbedOrderRequestsListSerializer
+        elif self.request.method == 'UPDATE':
+            return GrabbedOrderRequestsUpdateSerializer
+        return super().get_serializer_class()
+
+    def dispatch(self, request, *args, **kwargs):
+        balance_medicines(self.get_object())
+        return super().dispatch(request, *args, **kwargs)
+
+
+class MedicineOfferUpdateView(generics.RetrieveUpdateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = MedicineOfferBridge.objects.all()
+    serializer_class = MedicineOfferUpdateSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return MedicineOfferSerializer
+        elif self.request.method == 'UPDATE':
+            return MedicineOfferUpdateSerializer
+        return super().get_serializer_class()

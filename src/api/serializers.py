@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from src.accounts.models import User
-from .models import Medicine, MedicineCart, OrderRequest
+from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -59,7 +59,7 @@ class MedicineCartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MedicineCart
-        fields = ['id', 'medicines']
+        fields = ['pk', 'medicines']
 
 
 class OrderRequestCreateSerializer(serializers.ModelSerializer):
@@ -75,7 +75,54 @@ class OrderRequestListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderRequest
-        fields = ['medicine_cart']
+        fields = ['pk', 'medicine_cart']
+
+
+class GrabbedOrderRequestsCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GrabUserBridge
+        fields = ['order_request']
+
+
+class GrabbedOrderRequestsUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GrabUserBridge
+        fields = ['is_active']
+
+
+class MedicineOfferSerializer(serializers.ModelSerializer):
+    medicine = MedicineSerializer()
+
+    class Meta:
+        model = MedicineOfferBridge
+        fields = ['pk', 'medicine', 'offered_price']
+
+
+class MedicineOfferUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MedicineOfferBridge
+        fields = ['offered_price']
+
+
+class GrabbedOrderRequestsListSerializer(serializers.ModelSerializer):
+    # order_request = OrderRequestListSerializer()
+    medicine_offers = serializers.SerializerMethodField('get_medicine_offers')
+    offered_total_price = serializers.SerializerMethodField('get_offered_total')
+
+    def get_medicine_offers(self, q):
+        return MedicineOfferSerializer(MedicineOfferBridge.objects.filter(order_grab=q), many=True).data
+
+    def get_offered_total(self, q):
+        return sum(
+            MedicineOfferBridge.objects.filter(
+                order_grab=q).exclude(offered_price=None).values_list('offered_price', flat=True))
+
+    class Meta:
+        model = GrabUserBridge
+        fields = ['pk', 'order_request', 'medicine_offers', 'offered_total_price', 'is_active']
+
+
+""" SIMPLE SERIALIZERS """
 
 
 class MedicineToCartSerializer(serializers.Serializer):
@@ -85,45 +132,3 @@ class MedicineToCartSerializer(serializers.Serializer):
 
 class AlternateMedicineSerializer(serializers.Serializer):
     medicine_id = serializers.IntegerField(required=False)
-
-# class ServicesSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = models.Service
-#         exclude = ('service_base_64',)
-
-#
-# class ServicesAllSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = models.Service
-#         fields = '__all__'
-#
-#
-# class CategoryNumSerializer(serializers.ModelSerializer):
-#     number_of_rooms = serializers.IntegerField()
-#
-#     class Meta:
-#         model = models.Category
-#         fields = ['name', 'number_of_rooms', 'cost_per_night']
-#
-#     def update(self, instance, validated_data):
-#         instance.name = self.validated_data['name']
-#         number = self.validated_data['number_of_rooms']
-#         cost_per_night = self.validated_data['cost_per_night']
-#         rooms = models.Room.objects.filter(category=instance)
-#         if rooms.count() < number:
-#             for x in range(number - rooms.count()):
-#                 models.Room.objects.create(category=instance)
-#         elif rooms.count() > number:
-#             difference = rooms.count() - number
-#             removed = 0
-#             for x in rooms:
-#                 if removed > difference:
-#                     pass
-#                 else:
-#                     x.delete()
-#                     removed += 1
-#         rooms = models.Room.objects.filter(category=instance).count()
-#         instance.number_of_rooms = rooms
-#         instance.cost_per_night = cost_per_night
-#         instance.save()
-#         return instance

@@ -9,4 +9,7 @@ urlpatterns = [
     path('alternate-medicine/<int:medicine_pk>/', views.AlternateMedicineView.as_view()),
     path('order-requests/', views.OrderRequestsView.as_view()),
     path('locality/order-requests/', views.OrderRequestsLocalityView.as_view()),
+    path('grab-orders/', views.GrabOrdersView.as_view()),
+    path('grab-orders/<int:pk>/', views.GrabOrderDetailView.as_view()),
+    path('medicine-offer/<int:pk>/', views.MedicineOfferUpdateView.as_view()),
 ]

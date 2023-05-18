@@ -32,17 +32,43 @@ class MedicineCart(models.Model):
         return str(self.pk)
 
 
-class MedicineCartBridge(models.Model):
-    medicine = models.ForeignKey(Medicine, null=True, blank=True, default=None, on_delete=models.CASCADE)
-    medicine_card = models.ForeignKey(MedicineCart, null=True, blank=True, default=None, on_delete=models.CASCADE)
+class OrderRequest(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, default=None)
+    medicine_cart = models.ForeignKey(MedicineCart, on_delete=models.CASCADE)
+    grabbed_by = models.ManyToManyField(User, through='GrabUserBridge', blank=True, null=True, related_name="+")
 
     def __str__(self):
         return str(self.pk)
 
 
-class OrderRequest(models.Model):
+"""
+ Many to Many Bridges
+"""
+
+
+class MedicineOfferBridge(models.Model):
+    medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE, null=True, blank=True, default=None)
+    order_grab = models.ForeignKey('GrabUserBridge', on_delete=models.CASCADE, null=True, blank=True, default=None)
+    offered_price = models.PositiveIntegerField(
+        null=True, default=None, blank=True,
+        help_text='Positive Integer expected. Mention amount in INR')
+
+    def __str__(self):
+        return str(self.pk)
+
+
+class GrabUserBridge(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, default=None)
-    medicine_cart = models.ForeignKey(MedicineCart, on_delete=models.CASCADE)
+    order_request = models.ForeignKey('OrderRequest', on_delete=models.CASCADE, null=True, blank=True, default=None)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return str(self.pk)
+
+
+class MedicineCartBridge(models.Model):
+    medicine = models.ForeignKey(Medicine, null=True, blank=True, default=None, on_delete=models.CASCADE)
+    medicine_card = models.ForeignKey(MedicineCart, null=True, blank=True, default=None, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.pk)

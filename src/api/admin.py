@@ -15,3 +15,6 @@ class MedicineCartView(admin.ModelAdmin):
 
 admin.site.register(models.Medicine, MedicineView)
 admin.site.register(models.MedicineCart, MedicineCartView)
+admin.site.register(models.OrderRequest)
+admin.site.register(models.GrabUserBridge)
+admin.site.register(models.MedicineCartBridge)
