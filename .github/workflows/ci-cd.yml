@@ -13,7 +13,8 @@ jobs:
         with:
           command: |
             cd /home/admin22/dj-meedgo/
-            git pull origin main
+            echo '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' | git pull origin main
+            echo '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'
             sudo systemctl restart gunicorn.service
             sudo systemctl restart celery.service
           host: ${{ secrets.REMOTE_HOST }}
