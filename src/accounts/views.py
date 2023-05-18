@@ -38,8 +38,8 @@ class CustomLoginView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        username = request.data['username']
-        email = request.data['email']
+        username = request.data.get('username')
+        email = request.data.get('email')
         password = request.data['password']
 
         user = User.objects.filter(username=username).first()
