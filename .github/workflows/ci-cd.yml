@@ -14,6 +14,9 @@ jobs:
           command: |
             cd /home/admin22/dj-meedgo/
             git pull https://${{ secrets.ACCESS_TOKEN }}:${{ secrets.ACCESS_TOKEN }}@github.com/JhonyDev/dj-meedgo.git main
+            source env/bin/activate
+            python manage.py makemigrations
+            python manage.py migrate
             sudo systemctl restart gunicorn.service
             sudo systemctl restart celery.service
           host: ${{ secrets.REMOTE_HOST }}
