@@ -272,31 +272,49 @@ def update_medicine_pharmeasy(self, med_pk):
     firsts = soup.find_all('td', {'class': 'DescriptionTable_field__l5jJ3'})
     seconds = soup.find_all('td', {'class': 'DescriptionTable_value__0GUMC'})
     generic_name = 0
-    price = soup.find('span', {'class': 'PriceInfo_striked__Hk2U_'}).text.strip()
-    price_span = soup.find('span', class_='PriceInfo_gcdDiscountContainer__hr0YD').find('span')
-    disc_price = price_span.text
+    price = None
+    name = soup.find('h1', {'class': 'MedicineOverviewSection_medicineName__dHDQi'}).text.strip()
+    try:
+        price = soup.find('div', {'class': 'PriceInfo_ourPrice__jFYXr'}).text.strip()
+    except:
+        try:
+            price = soup.find('span', {'class': 'PriceInfo_striked__Hk2U_'}).text.strip()
+        except:
+            pass
+    if price:
+        price = price.replace('MRP', '')
+        price = price.replace('*', '')
+        price = price.replace('₹', '')
+        price = float(price)
+
+    disc_price = None
+    try:
+        disc_price = soup.find('div', class_='PriceInfo_gcdDiscountContainer__hr0YD').find('span').text
+        if disc_price:
+            disc_price = disc_price.replace('MRP', '')
+            disc_price = disc_price.replace('*', '')
+            disc_price = disc_price.replace('₹', '')
+            disc_price = float(disc_price)
+    except:
+        pass
+
     for first in firsts:
         if first.text.strip() == 'Contains':
             break
         generic_name += 1
-    is_available = True if price else False
-    medicine.salt_name = seconds[generic_name].text.strip()
-    # price_ = seconds[price].text.strip()
-    print(price)
-    print(disc_price)
+    is_available = True if price or disc_price else False
+    salt_name = seconds[generic_name].text.strip()
 
-    if price:
-        price = price.replace('₹', '')
-        price = price.replace('*', '')
-        price = float(price)
-        medicine.price = price
+    # print(name)
+    # print(price or disc_price)
+    # print(disc_price or price)
+    # print(salt_name)
+    # print(is_available)
 
-    if disc_price:
-        disc_price = disc_price.replace('₹', '')
-        disc_price = disc_price.replace('*', '')
-        disc_price = float(disc_price)
-        medicine.discounted_price = disc_price
-
+    medicine.name = name
+    medicine.price = price or disc_price
+    medicine.discounted_price = disc_price or price
+    medicine.salt_name = salt_name
     medicine.is_available = is_available
     medicine.last_updated = datetime.datetime.now()
     medicine.save()
