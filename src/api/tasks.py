@@ -247,6 +247,7 @@ def scrape_pharmeasy(self, param):
             medicine.price = medicine_price
             medicine.save()
             return_list.append(medicine.pk)
+            update_medicine_pharmeasy.delay(medicine.id)
             continue
         try:
             medicine = Medicine.objects.create(
@@ -271,23 +272,31 @@ def update_medicine_pharmeasy(self, med_pk):
     firsts = soup.find_all('td', {'class': 'DescriptionTable_field__l5jJ3'})
     seconds = soup.find_all('td', {'class': 'DescriptionTable_value__0GUMC'})
     generic_name = 0
-    price = 0
+    price = soup.find('span', {'class': 'PriceInfo_striked__Hk2U_'}).text.strip()
+    price_span = soup.find('span', class_='PriceInfo_gcdDiscountContainer__hr0YD').find('span')
+    disc_price = price_span.text
     for first in firsts:
         if first.text.strip() == 'Contains':
             break
         generic_name += 1
-    for first in firsts:
-        if first.text.strip() == 'Offer Price':
-            break
-        price += 1
-    is_available = True if seconds[price].text.strip() else False
+    is_available = True if price else False
     medicine.salt_name = seconds[generic_name].text.strip()
-    price_ = seconds[price].text.strip()
-    if price_:
-        price_ = price_.replace('₹', '')
-        price_ = price_.replace('*', '')
-        price_ = float(price_)
-        medicine.price = price_
+    # price_ = seconds[price].text.strip()
+    print(price)
+    print(disc_price)
+
+    if price:
+        price = price.replace('₹', '')
+        price = price.replace('*', '')
+        price = float(price)
+        medicine.price = price
+
+    if disc_price:
+        disc_price = disc_price.replace('₹', '')
+        disc_price = disc_price.replace('*', '')
+        disc_price = float(disc_price)
+        medicine.discounted_price = disc_price
+
     medicine.is_available = is_available
     medicine.last_updated = datetime.datetime.now()
     medicine.save()
