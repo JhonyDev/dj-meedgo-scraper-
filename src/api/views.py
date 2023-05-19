@@ -14,6 +14,7 @@ from .serializers import MedicineSerializer, MedicineToCartSerializer, \
 from .tasks import scrape_pharmeasy, update_medicine_pharmeasy, scrape_1mg, scrape_netmeds, update_medicine, \
     update_medicine_1mg
 from .utils import get_platform_dict, PHARM_EASY, balance_medicines, NET_MEDS, ONE_MG
+from ..accounts.authentication import JWTAuthentication
 
 """
 Elastic Search DSL (Domain Specific Language)
@@ -95,6 +96,7 @@ class AlternateMedicineView(generics.ListAPIView):
 
 
 class OrderRequestsView(generics.ListCreateAPIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get_serializer_class(self):
@@ -114,6 +116,7 @@ class OrderRequestsView(generics.ListCreateAPIView):
 
 
 class OrderRequestsLocalityView(generics.ListAPIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = OrderRequestListSerializer
 
@@ -122,6 +125,7 @@ class OrderRequestsLocalityView(generics.ListAPIView):
 
 
 class GrabOrdersView(generics.ListCreateAPIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def dispatch(self, request, *args, **kwargs):
@@ -146,6 +150,7 @@ class GrabOrdersView(generics.ListCreateAPIView):
 
 
 class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     queryset = GrabUserBridge.objects.all()
     serializer_class = GrabbedOrderRequestsUpdateSerializer
@@ -163,6 +168,7 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class MedicineOfferUpdateView(generics.RetrieveUpdateAPIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     queryset = MedicineOfferBridge.objects.all()
     serializer_class = MedicineOfferUpdateSerializer
