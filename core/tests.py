@@ -46,3 +46,34 @@
 # print(disc_price or price)
 # print(salt_name)
 # print(is_available)
+
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+
+options = Options()
+# options.add_argument('--headless')
+# options.add_argument("--force-device-scale-factor=0.5")
+driver = webdriver.Chrome(options=options)
+driver.get("https://www.1mg.com/drugs/famomeg-40mg-tablet-648333")
+name = driver.find_element(By.CLASS_NAME, "DrugHeader__title-content___2ZaPo").text
+salt_name = driver.find_element(By.CLASS_NAME, "DrugHeader__meta-value___vqYM0").text
+print(name)
+print(salt_name)
+try:
+    original_price = driver.find_element(By.CLASS_NAME, "DrugPriceBox__slashed-price___2UGqd").text.replace(
+        '₹', '')
+except:
+    original_price = None
+try:
+    discounted_price = driver.find_element(By.CLASS_NAME,
+                                           "DrugPriceBox__price___dj2lv").text.replace(
+        '₹', '')
+except:
+    discounted_price = None
+is_available = True if original_price or discounted_price else False
+print(name)
+print(salt_name)
+print(original_price or discounted_price)
+print(discounted_price or original_price)
+print(is_available)

@@ -174,25 +174,24 @@ def update_medicine_1mg(self, med_pk):
     name = driver.find_element(By.CLASS_NAME, "DrugHeader__title-content___2ZaPo").text
     salt_name = driver.find_element(By.CLASS_NAME, "DrugHeader__meta-value___vqYM0").text
     try:
-        original_price = driver.find_element(By.CLASS_NAME, "PriceBoxPlanOption__stike___pDQVN").text.replace(
+        original_price = driver.find_element(By.CLASS_NAME, "DrugPriceBox__slashed-price___2UGqd").text.replace(
             '₹', '')
-        discounted_price = driver.find_element(By.CLASS_NAME,
-                                               "PriceBoxPlanOption__offer-price-cp___2QPU_").text.replace(
-            '₹', '')
-        is_available = True
     except:
-        is_available = False
-        discounted_price = None
         original_price = None
-
+    try:
+        discounted_price = driver.find_element(By.CLASS_NAME,
+                                               "DrugPriceBox__price___dj2lv").text.replace(
+            '₹', '')
+    except:
+        discounted_price = None
+    is_available = True if original_price or discounted_price else False
     # print(name)
     # print(salt_name)
-    # print(original_price)
-    # print(discounted_price)
+    # print(original_price or discounted_price)
+    # print(discounted_price or original_price)
     # print(is_available)
-
-    medicine.salt_name = salt_name
     medicine.name = name
+    medicine.salt_name = salt_name
     medicine.price = original_price or medicine.price
     medicine.discounted_price = discounted_price or medicine.discounted_price
     medicine.is_available = is_available
