@@ -85,6 +85,7 @@ INSTALLED_APPS = [
 SWAGGER_SETTINGS = {
     'DEFAULT_INFO': 'core.urls.swagger_info',
 }
+# Replace 'myapp' with your Django app name
 
 """ MIDDLE WARES ----------------------------------------------------------------------------"""
 MIDDLEWARE = [

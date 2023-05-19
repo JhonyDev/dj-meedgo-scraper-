@@ -47,7 +47,9 @@ class MedicineSearchView(generics.ListAPIView):
         if param:
             # queryset = queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
             print("CHECKING SIMILAR WORDS")
-            queryset_name = Medicine.objects.annotate(similarity=TrigramSimilarity('name', param)).filter(
+            queryset_name = Medicine.objects.annotate(similarity=TrigramSimilarity('name', param))
+            print(queryset_name)
+            queryset_name = queryset_name.filter(
                 similarity__gt=0.3).order_by('-similarity')
             print(queryset_name)
             queryset_salt_name = queryset.annotate(similarity=TrigramSimilarity('salt_name', param)).filter(
