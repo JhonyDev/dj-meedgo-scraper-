@@ -1,4 +1,5 @@
 from django.contrib.postgres.search import TrigramSimilarity
+from django.db.models import Count
 from rest_framework import generics, permissions, status
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import get_object_or_404
@@ -47,9 +48,9 @@ class MedicineSearchView(generics.ListAPIView):
         if param:
             # queryset = queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
             print("CHECKING SIMILAR WORDS")
-            queryset_name = Medicine.objects.annotate(similarity=123)
-            print(queryset_name)
             print(TrigramSimilarity('name', param))
+            queryset_name = Medicine.objects.annotate(similarity=Count('name'))
+            print(queryset_name)
             queryset_name = queryset_name.filter(
                 similarity__gt=0.3).order_by('-similarity')
             print(queryset_name)
