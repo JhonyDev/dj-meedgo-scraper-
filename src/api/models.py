@@ -17,6 +17,11 @@ class Medicine(models.Model):
     is_available = models.BooleanField(default=True)
     last_updated = models.DateTimeField(default=None, null=True, blank=True)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.price:
+            self.price = self.discounted_price
+
     def get_platform(self):
         return dict(PLATFORMS).get(self.platform)
 
