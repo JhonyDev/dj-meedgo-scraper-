@@ -49,10 +49,11 @@ class MedicineSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Medicine
-        fields = ['pk', 'name', 'salt_name', 'price', 'med_image', 'med_url', 'platform', 'is_available']
+        fields = ['pk', 'name', 'salt_name', 'price', 'discounted_price', 'med_image', 'med_url', 'platform',
+                  'is_available']
 
     def get_price(self, obj):
-        return obj.price if obj.price else obj.discounted_price
+        return obj.price if obj.price is not None else obj.discounted_price
 
     def get_platform(self, obj):
         return obj.get_platform()
