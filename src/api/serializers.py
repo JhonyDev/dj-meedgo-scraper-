@@ -45,10 +45,14 @@ class UserSerializer(serializers.ModelSerializer):
 
 class MedicineSerializer(serializers.ModelSerializer):
     platform = serializers.SerializerMethodField()
+    price = serializers.SerializerMethodField('get_price')
 
     class Meta:
         model = Medicine
         fields = ['pk', 'name', 'salt_name', 'price', 'med_image', 'med_url', 'platform', 'is_available']
+
+    def get_price(self, obj):
+        return obj.price if obj.price else obj.discounted_price
 
     def get_platform(self, obj):
         return obj.get_platform()
