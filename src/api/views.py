@@ -1,5 +1,4 @@
-from django.contrib.postgres.search import TrigramSimilarity
-from django.db.models import Count
+from fuzzywuzzy import fuzz
 from rest_framework import generics, permissions, status
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import get_object_or_404
@@ -12,8 +11,9 @@ from .serializers import MedicineSerializer, MedicineToCartSerializer, \
     OrderRequestListSerializer, OrderRequestCreateSerializer, GrabbedOrderRequestsListSerializer, \
     GrabbedOrderRequestsCreateSerializer, GrabbedOrderRequestsUpdateSerializer, MedicineOfferSerializer, \
     MedicineOfferUpdateSerializer
-from .tasks import scrape_pharmeasy, update_medicine_pharmeasy
-from .utils import get_platform_dict, PHARM_EASY, balance_medicines
+from .tasks import scrape_pharmeasy, update_medicine_pharmeasy, scrape_1mg, scrape_netmeds, update_medicine, \
+    update_medicine_1mg
+from .utils import get_platform_dict, PHARM_EASY, balance_medicines, NET_MEDS, ONE_MG
 
 """
 Elastic Search DSL (Domain Specific Language)
@@ -46,33 +46,24 @@ class MedicineSearchView(generics.ListAPIView):
         param = self.request.query_params.get('search')
         queryset = Medicine.objects.all()
         if param:
+            similar_words = Medicine.objects.all().values('pk', 'name')
+            similar_words = [word['pk'] for word in similar_words if fuzz.ratio(param, word['name']) > 65]
             # queryset = queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
-            print("CHECKING SIMILAR WORDS")
-            print(TrigramSimilarity('name', param))
-            queryset_name = Medicine.objects.annotate(similarity=Count('name'))
-            print(queryset_name)
-            queryset_name = queryset_name.filter(
-                similarity__gt=0.3).order_by('-similarity')
-            print(queryset_name)
-            queryset_salt_name = queryset.annotate(similarity=TrigramSimilarity('salt_name', param)).filter(
-                similarity__gt=0.3).order_by('-similarity')
-
-            print(queryset_salt_name)
-            queryset = queryset_name.union(queryset_salt_name)
+            queryset = queryset.filter(pk__in=similar_words)
             if not queryset:
                 med_list = scrape_pharmeasy(param)
                 queryset = Medicine.objects.filter(pk__in=med_list)
             scrape_pharmeasy.delay(param)
-            # scrape_1mg.delay(param)
-            # scrape_netmeds.delay(param)
+            scrape_1mg.delay(param)
+            scrape_netmeds.delay(param)
         for med in queryset:
             if not med.salt_name and med.med_url:
                 if med.platform == get_platform_dict()[PHARM_EASY]:
                     update_medicine_pharmeasy.delay(med.pk)
-                # if med.platform == get_platform_dict()[NET_MEDS]:
-                #     update_medicine.delay(med.pk)
-                # if med.platform == get_platform_dict()[ONE_MG]:
-                #     update_medicine_1mg.delay(med.pk)
+                if med.platform == get_platform_dict()[NET_MEDS]:
+                    update_medicine.delay(med.pk)
+                if med.platform == get_platform_dict()[ONE_MG]:
+                    update_medicine_1mg.delay(med.pk)
         return queryset
 
 

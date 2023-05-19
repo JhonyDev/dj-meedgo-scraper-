@@ -1,54 +1,14 @@
-import urllib.request
+from fuzzywuzzy import fuzz
 
-from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-
-
-# Initialize the webdriver
-options = webdriver.ChromeOptions()
-driver = webdriver.Chrome(options=options)
-
-# Open the URL
-driver.get("https://healthplus.flipkart.com/")
-
-# Wait until the qck-list-item divs appear
-wait = WebDriverWait(driver, 10000)
-
-input_ = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "src-front")))
-
-# Find the input field by class name
-input_field = driver.find_element(By.CLASS_NAME, "src-front")
-
-# Input text into the field
-input_field.send_keys("pana")
-
-divs = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "qck-list-item")))
-
-# Loop through each div
-for div in divs:
-    # Extract the necessary information
-    brand_name = div.find_element_by_class_name("brand-name").text
-    highlighted_text = div.find_element_by_css_selector("a.text-highlighted").text
-    o_price = div.find_element_by_class_name("o-price").text
-    s_price = div.find_element_by_class_name("s-price").text
-
-    # Check if js_add_to_cart link exists
-    add_to_cart_link = div.find_elements_by_css_selector("a.js_add_to_cart")
-    if add_to_cart_link:
-        has_add_to_cart = True
-    else:
-        has_add_to_cart = False
-
-    # Print the extracted information and whether the add_to_cart link exists
-    print("Brand name: ", brand_name)
-    print("Highlighted text: ", highlighted_text)
-    print("Original price: ", o_price)
-    print("Sale price: ", s_price)
-    print("Has add to cart: ", has_add_to_cart)
-    print()
-
-# Close the webdriver
-driver.quit()
+list_ = [{'pk': 2, 'name': 'Medicine 2'},
+         {'pk': 6, 'name': 'Medicine 6'},
+         {'pk': 8, 'name': 'Medicine 8'},
+         {'pk': 1, 'name': 'Medicine 1'},
+         {'pk': 7, 'name': 'Medicine 7'},
+         {'pk': 9, 'name': 'Medicine 9'},
+         {'pk': 3, 'name': 'Medicine 3'},
+         {'pk': 4, 'name': 'Medicine 4'},
+         {'pk': 5, 'name': 'Medicine 5'},
+         {'pk': 10, 'name': 'Medicine 10'}]
+similar_words = [word['pk'] for word in list_ if fuzz.ratio('Med 1', word['name']) > 65]
+print(similar_words)
