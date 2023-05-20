@@ -174,7 +174,7 @@ def update_medicine_1mg(self, med_pk):
     try:
         name = driver.find_element(By.CLASS_NAME, "DrugHeader__title-content___2ZaPo").text
     except:
-        name=None
+        name = None
 
     try:
         salt_name = driver.find_element(By.CLASS_NAME, "DrugHeader__meta-value___vqYM0").text
@@ -221,7 +221,10 @@ def scrape_pharmeasy(self, param):
     menuitems = parent_div.find_all('div', {'role': 'menuitem'})
     return_list = []
     for menuitem in menuitems:
-        medicine_name = menuitem.find('h1', {'class': 'ProductCard_medicineName__8Ydfq'}).text.strip()
+        try:
+            medicine_name = menuitem.find('h1', {'class': 'ProductCard_medicineName__8Ydfq'}).text.strip()
+        except:
+            continue
         try:
             medicine_price = menuitem.find('div', {'class': 'ProductCard_ourPrice__yDytt'}).text.strip()
         except:
