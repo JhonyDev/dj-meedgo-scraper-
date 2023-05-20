@@ -13,6 +13,8 @@ from .utils import get_api_exception
 def add_medicine_to_card(self, request):
     serializer = self.get_serializer(data=request.data)
     serializer.is_valid(raise_exception=True)
+    quantity = serializer.validated_data.get('quantity')
+    action = serializer.validated_data.get('action')
     cart_id = serializer.validated_data.get('cart_id')
     medicine_id = serializer.validated_data.get('medicine_id')
     if medicine_id is None and cart_id is None:
@@ -30,7 +32,17 @@ def add_medicine_to_card(self, request):
         cart = MedicineCart.objects.create()
     try:
         medicine = Medicine.objects.get(id=medicine_id)
-        MedicineCartBridge.objects.create(medicine=medicine, medicine_card=cart)
+        target_med_bridge = MedicineCartBridge.objects.filter(medicine=medicine, medicine_card=cart)
+        if action == 'ADD':
+            if target_med_bridge.exists():
+                target_med_bridge = target_med_bridge.first()
+                target_med_bridge.quantity = quantity
+                target_med_bridge.save()
+            else:
+                MedicineCartBridge.objects.create(medicine=medicine, medicine_card=cart)
+        if action == 'REMOVE':
+            target_med_bridge.delete()
+
     except Medicine.DoesNotExist:
         pass
     cart_serialized = MedicineCartSerializer(cart)

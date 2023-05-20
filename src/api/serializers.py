@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from src.accounts.models import User
-from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge
+from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge, MedicineCartBridge
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -60,7 +60,12 @@ class MedicineSerializer(serializers.ModelSerializer):
 
 
 class MedicineCartSerializer(serializers.ModelSerializer):
-    medicines = MedicineSerializer(many=True)
+    medicines = serializers.SerializerMethodField('get_meds')
+
+    def get_meds(self, obj):
+        all_bridges = MedicineCartBridge.objects.filter(
+            medicine_card=obj, medicine__pk__in=obj.medicines.all().values_list('pk', flat=True))
+        return MedicineCartBridgeSerializer(all_bridges, many=True).data
 
     class Meta:
         model = MedicineCart
@@ -73,6 +78,14 @@ class OrderRequestCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderRequest
         fields = ['medicine_cart']
+
+
+class MedicineCartBridgeSerializer(serializers.ModelSerializer):
+    medicine = MedicineSerializer()
+
+    class Meta:
+        model = MedicineCartBridge
+        fields = ['quantity', 'medicine']
 
 
 class OrderRequestListSerializer(serializers.ModelSerializer):
@@ -154,8 +167,14 @@ class GrabbedOrderRequestsListSerializer(serializers.ModelSerializer):
 
 
 class MedicineToCartSerializer(serializers.Serializer):
+    CHOICES = [
+        ('ADD', 'ADD'),
+        ('REMOVE', 'REMOVE'),
+    ]
     medicine_id = serializers.IntegerField(required=False)
+    quantity = serializers.IntegerField(required=False)
     cart_id = serializers.IntegerField(required=False)
+    action = serializers.ChoiceField(choices=CHOICES)
 
 
 class AlternateMedicineSerializer(serializers.Serializer):

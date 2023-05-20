@@ -74,6 +74,7 @@ class GrabUserBridge(models.Model):
 class MedicineCartBridge(models.Model):
     medicine = models.ForeignKey(Medicine, null=True, blank=True, default=None, on_delete=models.CASCADE)
     medicine_card = models.ForeignKey(MedicineCart, null=True, blank=True, default=None, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
         return str(self.pk)
