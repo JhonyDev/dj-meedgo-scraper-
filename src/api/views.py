@@ -37,6 +37,7 @@ ACID properties
 
 class MedicineSearchView(generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
+    authentication_classes = [JWTAuthentication]
     queryset = Medicine.objects.all()
     pagination_class = PageNumberPagination
     pagination_class.page_size = 10
@@ -70,6 +71,7 @@ class MedicineSearchView(generics.ListAPIView):
 
 class MedicineToCartView(generics.GenericAPIView):
     serializer_class = MedicineToCartSerializer
+    authentication_classes = [JWTAuthentication]
     queryset = MedicineCart.objects.all()
     permission_classes = [permissions.AllowAny]
 
@@ -85,6 +87,7 @@ class MedicineToCartView(generics.GenericAPIView):
 class AlternateMedicineView(generics.ListAPIView):
     serializer_class = MedicineSerializer
     queryset = Medicine.objects.all()
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
