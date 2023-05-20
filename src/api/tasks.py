@@ -171,8 +171,16 @@ def update_medicine_1mg(self, med_pk):
     options.add_argument("--force-device-scale-factor=0.5")
     driver = webdriver.Chrome(options=options)
     driver.get(medicine.med_url)
-    name = driver.find_element(By.CLASS_NAME, "DrugHeader__title-content___2ZaPo").text
-    salt_name = driver.find_element(By.CLASS_NAME, "DrugHeader__meta-value___vqYM0").text
+    try:
+        name = driver.find_element(By.CLASS_NAME, "DrugHeader__title-content___2ZaPo").text
+    except:
+        name=None
+
+    try:
+        salt_name = driver.find_element(By.CLASS_NAME, "DrugHeader__meta-value___vqYM0").text
+    except:
+        salt_name = None
+
     try:
         original_price = driver.find_element(By.CLASS_NAME, "DrugPriceBox__slashed-price___2UGqd").text.replace(
             '₹', '')
@@ -190,8 +198,8 @@ def update_medicine_1mg(self, med_pk):
     # print(original_price or discounted_price)
     # print(discounted_price or original_price)
     # print(is_available)
-    medicine.name = name
-    medicine.salt_name = salt_name
+    medicine.name = name or medicine.name
+    medicine.salt_name = salt_name or medicine.salt_name
     medicine.price = original_price or medicine.price
     medicine.discounted_price = discounted_price or medicine.discounted_price
     medicine.is_available = is_available
