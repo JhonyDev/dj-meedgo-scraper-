@@ -229,9 +229,15 @@ def scrape_pharmeasy(self, param):
             medicine_price = menuitem.find('div', {'class': 'ProductCard_ourPrice__yDytt'}).text.strip()
         except:
             try:
-                medicine_price = menuitem.find('div', {'class': 'ProductCard_striked__jkSiD'}).text.strip()
+                medicine_price = menuitem.find('span', {'class': 'ProductCard_striked__jkSiD'}).text.strip()
             except:
                 medicine_price = None
+
+        try:
+            disc_price = menuitem.find('div', {'class': 'ProductCard_gcdDiscountContainer__CCi51'}).find(
+                'span').text.strip()
+        except:
+            disc_price = None
         div_element = menuitem.find('div', {'class': 'ProductCard_productWarningAndCta__kKe3q'})
         is_available = False
         if "Out of Stock" not in div_element.text:
@@ -251,10 +257,23 @@ def scrape_pharmeasy(self, param):
             pass
         if medicine_price:
             medicine_price = medicine_price.replace('₹', '')
+
+        if disc_price:
+            disc_price = disc_price.replace('₹', '')
+            disc_price = disc_price.replace('*', '')
+            disc_price = disc_price.replace('MRP', '')
+            disc_price = float(disc_price)
+        #
+        # print(medicine_name)
+        # print(medicine_price)
+        # print(disc_price)
+        # print(image_url)
+
         medicine = Medicine.objects.filter(med_url=a_url).first()
         if medicine:
             medicine.is_available = is_available
-            medicine.price = medicine_price
+            medicine.price = medicine_price or medicine.price
+            medicine.discounted_price = disc_price or medicine.discounted_price
             medicine.save()
             return_list.append(medicine.pk)
             update_medicine_pharmeasy.delay(medicine.id)
