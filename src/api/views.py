@@ -47,7 +47,7 @@ class MedicineSearchView(generics.ListAPIView):
 
     def get_queryset(self):
         param = self.request.query_params.get('search')
-        queryset = Medicine.objects.all()
+        queryset = Medicine.objects.exclude(price=None, discounted_price=None)
         if param:
             similar_words = Medicine.objects.all().values('pk', 'name')
             similar_words_ = []
@@ -61,9 +61,8 @@ class MedicineSearchView(generics.ListAPIView):
                     similarities_map[ratio_] = word['pk']
             similarities.sort()
             similarities.reverse()
-            sorted_similar_words = []
-            for similarity in similarities:
-                sorted_similar_words.append(similarities_map[similarity])
+            sorted_similar_words = [similarities_map[x] for x in similarities]
+            print(sorted_similar_words)
             queryset = queryset.filter(pk__in=sorted_similar_words)
             order_dict = {word: index for index, word in enumerate(sorted_similar_words)}
             queryset = queryset.annotate(custom_order=models.Case(
