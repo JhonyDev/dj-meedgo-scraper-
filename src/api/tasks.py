@@ -283,7 +283,10 @@ def update_medicine_pharmeasy(self, med_pk):
     seconds = soup.find_all('td', {'class': 'DescriptionTable_value__0GUMC'})
     generic_name = 0
     price = None
-    name = soup.find('h1', {'class': 'MedicineOverviewSection_medicineName__dHDQi'}).text.strip()
+    try:
+        name = soup.find('h1', {'class': 'MedicineOverviewSection_medicineName__dHDQi'}).text.strip()
+    except:
+        name = None
     try:
         price = soup.find('div', {'class': 'PriceInfo_ourPrice__jFYXr'}).text.strip()
     except:
@@ -321,10 +324,10 @@ def update_medicine_pharmeasy(self, med_pk):
     # print(salt_name)
     # print(is_available)
 
-    medicine.name = name
-    medicine.price = price or disc_price
-    medicine.discounted_price = disc_price or price
-    medicine.salt_name = salt_name
+    medicine.name = name or medicine.name
+    medicine.price = price or disc_price if price is not None and disc_price is not None else medicine.price
+    medicine.discounted_price = disc_price or price if price is not None and disc_price is not None else medicine.price
+    medicine.salt_name = salt_name or medicine.salt_name
     medicine.is_available = is_available
     medicine.last_updated = datetime.datetime.now()
     medicine.save()
