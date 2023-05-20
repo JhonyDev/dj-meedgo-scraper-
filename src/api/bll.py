@@ -36,7 +36,7 @@ def add_medicine_to_card(self, request):
         if action == 'ADD':
             if target_med_bridge.exists():
                 target_med_bridge = target_med_bridge.first()
-                target_med_bridge.quantity = quantity
+                target_med_bridge.quantity = quantity or target_med_bridge.quantity
                 target_med_bridge.save()
             else:
                 MedicineCartBridge.objects.create(medicine=medicine, medicine_card=cart)
