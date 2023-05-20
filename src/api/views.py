@@ -94,8 +94,11 @@ class AlternateMedicineView(generics.ListAPIView):
         target_medicine = get_object_or_404(Medicine, pk=self.kwargs.get('medicine_pk'))
         if not target_medicine.salt_name:
             return Medicine.objects.none()
-        return Medicine.objects.filter(
+        query_set = Medicine.objects.filter(
             salt_name=target_medicine.salt_name).order_by('price')
+        if not query_set:
+            query_set = Medicine.objects.filter(name=target_medicine.name)
+        return query_set
 
 
 class OrderRequestsView(generics.ListCreateAPIView):
