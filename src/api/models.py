@@ -28,6 +28,9 @@ class Medicine(models.Model):
     def __str__(self):
         return str(self.name)
 
+    class Meta:
+        ordering = ['-last_updated']
+
 
 class MedicineCart(models.Model):
     user = models.ForeignKey(User, null=True, blank=True, default=None, on_delete=models.CASCADE)
