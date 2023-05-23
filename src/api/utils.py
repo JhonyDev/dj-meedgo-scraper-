@@ -39,13 +39,16 @@ def balance_medicines(instance):
 def get_similarity_queryset(queryset, param1, is_salt=False):
     from django.db import models
     from fuzzywuzzy import fuzz
-    similar_words = queryset.values('pk', 'name', 'salt_name')
+    if is_salt:
+        similar_words = queryset.exclude(salt_name=None).values('pk', 'name', 'salt_name')
+    else:
+        similar_words = queryset.values('pk', 'name', 'salt_name')
     similar_words_ = []
     similarities = []
     similarities_map = {}
     for word in similar_words:
         ratio_ = fuzz.ratio(param1, word['salt_name'] if is_salt else word['name'])
-        compare_percentage = 70 if is_salt else 65
+        compare_percentage = 63 if is_salt else 65
         print(f"{param1} - {word['salt_name']} = {ratio_}")
         if ratio_ > compare_percentage:
             print("SATISFIES CHECK")
