@@ -56,12 +56,11 @@ def add_medicine_to_card(self, request):
         missing_count = 0
         total_cost = 0
         for medicine in cart.medicines.all():
-            query_set = platform_medicines.filter(
-                name=medicine.name, salt_name=medicine.salt_name, dosage=medicine.dosage)
+            query_set = platform_medicines.filter(salt_name__icontains=medicine.salt_name)
             if not query_set.exists():
                 missing_count += 1
             else:
-                total_cost += query_set.first().price or 0
+                total_cost += query_set.first().price or query_set.first().discounted_price or 0
         platforms_list.append({
             'platform': platform,
             'total_cost': total_cost,
