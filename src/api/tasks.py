@@ -177,7 +177,7 @@ def update_medicine_1mg(self, med_pk):
         name = None
 
     try:
-        salt_name = driver.find_element(By.CLASS_NAME, "DrugHeader__meta-value___vqYM0").text
+        salt_name = driver.find_element(By.CSS_SELECTOR, '.saltInfo.DrugHeader__meta-value___vqYM0').text
     except:
         salt_name = None
 
