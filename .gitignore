@@ -138,7 +138,6 @@ assets/
 
 migrations
 migrations/
-
 media/
 media
 bash_commands.sh
