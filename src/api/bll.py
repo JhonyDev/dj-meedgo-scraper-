@@ -62,9 +62,10 @@ def add_medicine_to_card(self, request):
                 missing_count += 1
             else:
                 total_cost += query_set.first().price or query_set.first().discounted_price or 0
+
         platforms_list.append({
             'platform': platform,
-            'total_cost': total_cost,
+            'total_cost': round(total_cost, 2),
             'status': f'{missing_count} medicines are missing'
         })
 
