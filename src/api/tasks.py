@@ -132,14 +132,14 @@ def scrape_1mg(self, param):
             is_available = True if ul_.find_element(By.CLASS_NAME, "style__not-available___ADBvR") else False
         except:
             is_available = True
-
-        # print(image_)
-        # print(a_tag)
-        # print(medicine_name)
-        # print(discounted_price)
-        # print(original_price or discounted_price)
-        # print(is_available)
-        # print('====' * 30)
+        print("SCRAPPING ONE MG FOR MEDICINES")
+        print(image_)
+        print(a_tag)
+        print(medicine_name)
+        print(discounted_price)
+        print(original_price or discounted_price)
+        print(is_available)
+        print('====' * 30)
 
         if Medicine.objects.filter(med_url=a_tag).exists():
             medicine = Medicine.objects.filter(med_url=a_tag).first()
