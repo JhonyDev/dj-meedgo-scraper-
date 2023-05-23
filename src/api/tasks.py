@@ -185,19 +185,29 @@ def update_medicine_1mg(self, med_pk):
         original_price = driver.find_element(By.CLASS_NAME, "DrugPriceBox__slashed-price___2UGqd").text.replace(
             '₹', '')
     except:
-        original_price = None
+        try:
+            original_price = driver.find_element(By.CLASS_NAME, "PriceBoxPlanOption__stike___pDQVN").text.replace(
+                '₹', '')
+        except:
+            original_price = None
     try:
         discounted_price = driver.find_element(By.CLASS_NAME,
                                                "DrugPriceBox__price___dj2lv").text.replace(
             '₹', '')
     except:
-        discounted_price = None
+        try:
+            discounted_price = driver.find_element(By.CLASS_NAME,
+                                                   "PriceBoxPlanOption__offer-price-cp___2QPU_").text.replace(
+                '₹', '')
+        except:
+            discounted_price = None
     is_available = True if original_price or discounted_price else False
-    # print(name)
-    # print(salt_name)
-    # print(original_price or discounted_price)
-    # print(discounted_price or original_price)
-    # print(is_available)
+    print("1mg" * 20)
+    print(name)
+    print(salt_name)
+    print(original_price or discounted_price)
+    print(discounted_price or original_price)
+    print(is_available)
     medicine.name = name or medicine.name
     medicine.salt_name = salt_name or medicine.salt_name
     medicine.price = original_price or medicine.price
