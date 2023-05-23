@@ -34,3 +34,28 @@ def balance_medicines(instance):
     with transaction.atomic():
         for medicine in remaining_medicines:
             MedicineOfferBridge.objects.create(order_grab=instance, medicine=medicine)
+
+
+def get_similarity_queryset(queryset, param1, is_salt=False):
+    from django.db import models
+    from fuzzywuzzy import fuzz
+    similar_words = queryset.values('pk', 'name', 'salt_name')
+    similar_words_ = []
+    similarities = []
+    similarities_map = {}
+    for word in similar_words:
+        ratio_ = fuzz.ratio(param1, word['salt_name'] if is_salt else word['name'])
+        if ratio_ > 60:
+            similar_words_.append(word['pk'])
+            similarities.append(ratio_)
+            similarities_map[ratio_] = word['pk']
+    similarities.sort()
+    similarities.reverse()
+    sorted_similar_words = [similarities_map[x] for x in similarities]
+    queryset = queryset.filter(pk__in=sorted_similar_words)
+    order_dict = {word: index for index, word in enumerate(sorted_similar_words)}
+    queryset = queryset.annotate(custom_order=models.Case(
+        *[models.When(pk=pk, then=models.Value(order)) for pk, order in order_dict.items()],
+        default=models.Value(len(order_dict))
+    ))
+    return queryset.order_by('custom_order')

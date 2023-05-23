@@ -16,7 +16,7 @@ from .tasks import scrape_pharmeasy, update_medicine_pharmeasy, scrape_1mg, scra
     update_medicine_1mg
 from .utils import get_platform_dict, PHARM_EASY, balance_medicines, NET_MEDS, ONE_MG
 from ..accounts.authentication import JWTAuthentication
-
+from . import utils
 """
 Elastic Search DSL (Domain Specific Language)
 
@@ -49,27 +49,9 @@ class MedicineSearchView(generics.ListAPIView):
         param = self.request.query_params.get('search')
         queryset = Medicine.objects.exclude(price=None, discounted_price=None)
         if param:
-            similar_words = Medicine.objects.all().values('pk', 'name')
-            similar_words_ = []
-            similarities = []
-            similarities_map = {}
-            for word in similar_words:
-                ratio_ = fuzz.ratio(param, word['name'])
-                if ratio_ > 65:
-                    similar_words_.append(word['pk'])
-                    similarities.append(ratio_)
-                    similarities_map[ratio_] = word['pk']
-            similarities.sort()
-            similarities.reverse()
-            sorted_similar_words = [similarities_map[x] for x in similarities]
-            print(sorted_similar_words)
-            queryset = queryset.filter(pk__in=sorted_similar_words)
-            order_dict = {word: index for index, word in enumerate(sorted_similar_words)}
-            queryset = queryset.annotate(custom_order=models.Case(
-                *[models.When(pk=pk, then=models.Value(order)) for pk, order in order_dict.items()],
-                default=models.Value(len(order_dict))
-            ))
-            queryset = queryset.order_by('custom_order')
+            similar_words = Medicine.objects.all()
+            queryset = utils.get_similarity_queryset(similar_words, param)
+
             if not queryset:
                 med_list = scrape_pharmeasy(param)
                 queryset = Medicine.objects.filter(pk__in=med_list)

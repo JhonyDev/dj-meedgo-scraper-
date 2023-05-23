@@ -7,7 +7,7 @@ from src.api.models import Medicine, MedicineCartBridge
 from src.api.models import MedicineCart
 from src.api.serializers import MedicineCartSerializer
 from src.api.utils import LIST_PLATFORMS, get_platform_dict
-from .utils import get_api_exception
+from .utils import get_api_exception, get_similarity_queryset
 
 
 def add_medicine_to_card(self, request):
@@ -56,7 +56,8 @@ def add_medicine_to_card(self, request):
         missing_count = 0
         total_cost = 0
         for medicine in cart.medicines.all():
-            query_set = platform_medicines.filter(salt_name__icontains=medicine.salt_name)
+            # query_set = platform_medicines.filter(salt_name__icontains=medicine.salt_name)
+            query_set = get_similarity_queryset(platform_medicines, medicine.salt_name, is_salt=True)
             if not query_set.exists():
                 missing_count += 1
             else:
