@@ -49,9 +49,7 @@ def get_similarity_queryset(queryset, param1, is_salt=False):
     for word in similar_words:
         ratio_ = fuzz.ratio(param1, word['salt_name'] if is_salt else word['name'])
         compare_percentage = 63 if is_salt else 65
-        print(f"{param1} - {word['salt_name']} = {ratio_}")
         if ratio_ > compare_percentage:
-            print("SATISFIES CHECK")
             similar_words_.append(word['pk'])
             similarities.append(ratio_)
             similarities_map[ratio_] = word['pk']
