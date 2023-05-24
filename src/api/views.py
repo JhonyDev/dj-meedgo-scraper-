@@ -1,11 +1,11 @@
-from django.db import models
-from fuzzywuzzy import fuzz
+from django.shortcuts import redirect
 from rest_framework import generics, permissions, status
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
+from . import utils
 from .bll import add_medicine_to_card
 from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge
 from .serializers import MedicineSerializer, MedicineToCartSerializer, \
@@ -16,7 +16,7 @@ from .tasks import scrape_pharmeasy, update_medicine_pharmeasy, scrape_1mg, scra
     update_medicine_1mg
 from .utils import get_platform_dict, PHARM_EASY, balance_medicines, NET_MEDS, ONE_MG
 from ..accounts.authentication import JWTAuthentication
-from . import utils
+
 """
 Elastic Search DSL (Domain Specific Language)
 
@@ -183,3 +183,15 @@ class MedicineOfferUpdateView(generics.RetrieveUpdateAPIView):
         elif self.request.method == 'UPDATE':
             return MedicineOfferUpdateSerializer
         return super().get_serializer_class()
+
+
+def custom_method_view(request, object_id):
+    med = Medicine.objects.get(pk=object_id)
+    if not med.salt_name and med.med_url:
+        if med.platform == get_platform_dict()[PHARM_EASY]:
+            update_medicine_pharmeasy.delay(med.pk)
+        if med.platform == get_platform_dict()[NET_MEDS]:
+            update_medicine.delay(med.pk)
+        if med.platform == get_platform_dict()[ONE_MG]:
+            update_medicine_1mg.delay(med.pk)
+    return redirect('admin:api_medicine_change', object_id)
