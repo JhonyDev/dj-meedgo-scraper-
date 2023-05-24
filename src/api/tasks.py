@@ -51,16 +51,23 @@ def scrape_netmeds(self, param):
             is_available = not li_tag.find_element(By.CLASS_NAME, "notify_me").text
         except:
             is_available = True
+
+        discounted_price = li_tag.find_element(By.ID, "final_price").text
+        discounted_price = discounted_price.replace('MRP Rs.', '')
+        discounted_price = discounted_price.replace('₹', '')
+        if not discounted_price:
+            discounted_price = None
+
         if Medicine.objects.filter(med_url=med_url).exists():
             medicine = Medicine.objects.filter(med_url=med_url).first()
             medicine.is_available = is_available
-            medicine.price = medicine.price
+            medicine.price = price or medicine.price
+            medicine.discounted_price = discounted_price or medicine.discounted_price
             medicine.save()
         else:
             medicine = Medicine.objects.create(
-                is_available=is_available, name=name, price=price, med_url=med_url,
+                is_available=is_available, name=name, price=price, discounted_price=discounted_price, med_url=med_url,
                 med_image=med_image, platform=get_platform_dict()[NET_MEDS])
-
         if name:
             update_medicine.delay(medicine.id)
 
@@ -74,24 +81,45 @@ def update_medicine(self, med_pk):
     medicine = Medicine.objects.get(id=med_pk)
     if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
         return "Medicine already updated today!"
-    response = requests.get(medicine.med_url)
+    response = requests.get("https://www.netmeds.com/non-prescriptions/mamypoko-pants-m-12s")
     soup = BeautifulSoup(response.content, "html.parser")
     drug_conf = soup.find("div", class_="drug-conf")
     salt_name = drug_conf.text.strip() if drug_conf else None
     element = soup.select_one('span.price')
+    price = None
     if element:
         price_strike = element.find('strike').text.strip()
         price = price_strike.split()[1]
         price = price.replace('₹', '')
         price = price.replace(',', '')
-        medicine.price = price
+        price = float(price)
+
+    disc_element = soup.select_one('span.final-price')
+    discounted_price = None
+    if disc_element:
+        price_strike = disc_element.text.strip()
+        discounted_price = price_strike.replace('₹', '')
+        discounted_price = discounted_price.replace(',', '')
+        discounted_price = discounted_price.replace('Best Price*  ', '')
+        discounted_price = discounted_price.replace('*', '')
+        discounted_price = discounted_price.replace('Best', '')
+        discounted_price = discounted_price.replace('Price', '')
+        discounted_price = float(discounted_price)
     name = soup.find("h1", class_="black-txt")
     name = name.text.strip()
     element = soup.select_one('button[title="ADD TO CART"]')
-    exists = element is not None
+    is_available = element is not None
+    #
+    # print(name)
+    # print(salt_name)
+    # print(price)
+    # print(discounted_price)
+    # print(is_available)
     medicine.salt_name = salt_name
     medicine.name = name
-    medicine.is_available = exists
+    medicine.is_available = is_available
+    medicine.price = price
+    medicine.discounted_price = discounted_price
     medicine.last_updated = datetime.datetime.now()
     medicine.save()
     return "DONE!"
