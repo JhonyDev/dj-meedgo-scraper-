@@ -252,6 +252,7 @@ def update_medicine_1mg(self, med_pk):
             discounted_price = None
     is_available = True if original_price or discounted_price else False
     print("------------------------------  1 MG MEDICINE UPDATE ------------------------------------------")
+    print(medicine.med_url)
     print(name)
     print(salt_name)
     print(original_price or discounted_price)
