@@ -90,7 +90,7 @@ def update_medicine(self, med_pk):
     if limit_threading:
         if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
             return "Medicine already updated today!"
-    response = requests.get("https://www.netmeds.com/non-prescriptions/mamypoko-pants-m-12s")
+    response = requests.get(medicine.med_url)
     soup = BeautifulSoup(response.content, "html.parser")
     drug_conf = soup.find("div", class_="drug-conf")
     salt_name = drug_conf.text.strip() if drug_conf else None
