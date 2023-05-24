@@ -23,11 +23,10 @@ limit_threading = False
 @shared_task(bind=True)
 def scrape_netmeds(self, param):
     print("SEARCHING IN NETMEDS")
-    encoded_string = urllib.parse.quote(param)
-    encoded_string = encoded_string.replace('/', '')
-    print(encoded_string)
     if param is None:
         return "DONE!"
+    param = urllib.parse.quote(param)
+    param = param.replace('/', '')
     url = f"https://www.netmeds.com/catalogsearch/result/{param}/all"
     options = Options()
     options.add_argument('--headless')
@@ -147,11 +146,11 @@ def update_medicine(self, med_pk):
 
 @shared_task(bind=True)
 def scrape_1mg(self, param):
-    encoded_string = urllib.parse.quote(param)
-    encoded_string = encoded_string.replace('/', '')
-    print(encoded_string)
     if param is None:
         return "DONE!"
+    param = urllib.parse.quote(param)
+    param = param.replace('/', '')
+    print(param)
     url = f"https://www.1mg.com/search/all?name={param}"
     options = Options()
     options.add_argument('--headless')
@@ -271,11 +270,12 @@ def update_medicine_1mg(self, med_pk):
 # PHARM-EASY
 @shared_task(bind=True)
 def scrape_pharmeasy(self, param):
-    encoded_string = urllib.parse.quote(param)
-    encoded_string = encoded_string.replace('/', '')
-    print(encoded_string)
     if param is None:
         return "DONE!"
+    param = urllib.parse.quote(param)
+    param = param.replace('/', '')
+    print(param)
+
     base_url = 'https://pharmeasy.in'
     url = f"{base_url}/search/all?name={param}"
     response = requests.get(url)
