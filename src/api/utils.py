@@ -1,5 +1,3 @@
-import statistics
-
 NET_MEDS = 'Netmeds'
 ONE_MG = '1Mg'
 PHARM_EASY = 'PharmEasy'
@@ -51,8 +49,8 @@ def get_similarity_queryset(queryset, param1, is_salt=False):
     for word in similar_words:
         ratio_salt = fuzz.ratio(param1, word['salt_name'])
         ratio_name = fuzz.ratio(param1, word['name'])
-        net_ratio = statistics.mean([ratio_name, ratio_salt])
-        if net_ratio > 60:
+        net_ratio = ratio_salt + ratio_name / 2
+        if net_ratio > 50:
             similar_words_.append(word['pk'])
             similarities.append(net_ratio)
             similarities_map[net_ratio] = word['pk']
