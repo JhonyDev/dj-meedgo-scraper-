@@ -36,7 +36,7 @@ def balance_medicines(instance):
             MedicineOfferBridge.objects.create(order_grab=instance, medicine=medicine)
 
 
-def get_similarity_queryset(queryset, param1, is_salt=False):
+def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     from django.db import models
     from fuzzywuzzy import fuzz
     if is_salt:
@@ -47,9 +47,13 @@ def get_similarity_queryset(queryset, param1, is_salt=False):
     similarities = []
     similarities_map = {}
     for word in similar_words:
-        ratio_salt = fuzz.ratio(param1, word['salt_name'])
         ratio_name = fuzz.ratio(param1, word['name'])
-        net_ratio = ratio_salt + ratio_name / 2
+        if is_salt:
+            ratio_salt = fuzz.ratio(salt_name, word['salt_name'])
+            net_ratio = ratio_salt + ratio_name / 2
+            print(f'{word["name"]} - {word["salt_name"]} = {net_ratio}')
+        else:
+            net_ratio = ratio_name
         if net_ratio > 50:
             similar_words_.append(word['pk'])
             similarities.append(net_ratio)
