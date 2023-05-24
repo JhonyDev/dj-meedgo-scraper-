@@ -187,11 +187,10 @@ class MedicineOfferUpdateView(generics.RetrieveUpdateAPIView):
 
 def custom_method_view(request, object_id):
     med = Medicine.objects.get(pk=object_id)
-    if not med.salt_name and med.med_url:
-        if med.platform == get_platform_dict()[PHARM_EASY]:
-            update_medicine_pharmeasy.delay(med.pk)
-        if med.platform == get_platform_dict()[NET_MEDS]:
-            update_medicine.delay(med.pk)
-        if med.platform == get_platform_dict()[ONE_MG]:
-            update_medicine_1mg.delay(med.pk)
+    if med.platform == get_platform_dict()[PHARM_EASY]:
+        update_medicine_pharmeasy.delay(med.pk)
+    if med.platform == get_platform_dict()[NET_MEDS]:
+        update_medicine.delay(med.pk)
+    if med.platform == get_platform_dict()[ONE_MG]:
+        update_medicine_1mg.delay(med.pk)
     return redirect('admin:api_medicine_change', object_id)
