@@ -212,9 +212,8 @@ def scrape_1mg(self, param):
 def update_medicine_1mg(self, med_pk):
     print("UPDATING MEDICINE IN ONEMG")
     medicine = Medicine.objects.get(id=med_pk)
-    if limit_threading:
-        if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
-            return "Medicine already updated today!"
+    if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
+        return "Medicine already updated today!"
     options = Options()
     options.add_argument('--headless')
     options.add_argument("--force-device-scale-factor=0.5")
