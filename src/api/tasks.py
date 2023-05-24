@@ -166,7 +166,7 @@ def scrape_1mg(self, param):
             original_price = None
 
         try:
-            is_available = True if ul_.find_element(By.CLASS_NAME, "style__not-available___ADBvR") else False
+            is_available = False if ul_.find_element(By.CLASS_NAME, "style__not-available___ADBvR") else True
         except:
             is_available = True
         print("SCRAPPING ONE MG FOR MEDICINES")
