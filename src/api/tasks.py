@@ -13,8 +13,9 @@ from selenium.webdriver.common.by import By
 from src.api.models import Medicine
 from src.api.utils import get_platform_dict, NET_MEDS, PHARM_EASY, ONE_MG
 
-
 # NET-MEDS
+limit_threading = False
+
 
 @shared_task(bind=True)
 def scrape_netmeds(self, param):
@@ -36,14 +37,15 @@ def scrape_netmeds(self, param):
         name = li_tag.find_element(By.XPATH, ".//span[@class='clsgetname']").text
         price = li_tag.find_element(By.ID, "price").text
         price = price.replace('MRP Rs.', '')
-        if check_med:
-            if check_med and check_med.last_updated \
-                    and check_med.last_updated > timezone.now() - datetime.timedelta(days=1):
-                print("INNER LOOP! Medicine already updated today!")
-                continue
-            if not check_med.name or not check_med.salt_name or not check_med.price:
-                update_medicine.delay(check_med.id)
-                continue
+        if limit_threading:
+            if check_med:
+                if check_med and check_med.last_updated \
+                        and check_med.last_updated > timezone.now() - datetime.timedelta(days=1):
+                    print("INNER LOOP! Medicine already updated today!")
+                    continue
+                if not check_med.name or not check_med.salt_name or not check_med.price:
+                    update_medicine.delay(check_med.id)
+                    continue
 
         if not price:
             price = None
@@ -79,8 +81,9 @@ def scrape_netmeds(self, param):
 def update_medicine(self, med_pk):
     print("UPDATING MEDICINE IN NETMEDS")
     medicine = Medicine.objects.get(id=med_pk)
-    if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
-        return "Medicine already updated today!"
+    if limit_threading:
+        if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
+            return "Medicine already updated today!"
     response = requests.get("https://www.netmeds.com/non-prescriptions/mamypoko-pants-m-12s")
     soup = BeautifulSoup(response.content, "html.parser")
     drug_conf = soup.find("div", class_="drug-conf")
@@ -192,8 +195,9 @@ def scrape_1mg(self, param):
 def update_medicine_1mg(self, med_pk):
     print("UPDATING MEDICINE IN ONEMG")
     medicine = Medicine.objects.get(id=med_pk)
-    if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
-        return "Medicine already updated today!"
+    if limit_threading:
+        if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
+            return "Medicine already updated today!"
     options = Options()
     options.add_argument('--headless')
     options.add_argument("--force-device-scale-factor=0.5")
@@ -332,8 +336,9 @@ def scrape_pharmeasy(self, param):
 def update_medicine_pharmeasy(self, med_pk):
     medicine = Medicine.objects.get(id=med_pk)
     print("UPDATING MEDICINE IN PHARMEASY")
-    if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
-        return "Medicine already updated today!"
+    if limit_threading:
+        if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
+            return "Medicine already updated today!"
     response = requests.get(medicine.med_url)
     soup = BeautifulSoup(response.text, 'html.parser')
     firsts = soup.find_all('td', {'class': 'DescriptionTable_field__l5jJ3'})
