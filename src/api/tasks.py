@@ -193,8 +193,8 @@ def scrape_1mg(self, param):
             medicine = Medicine.objects.filter(med_url=a_tag).first()
             medicine.is_available = is_available
             medicine.discounted_price = original_price or discounted_price
-            medicine.price = original_price
-            medicine.name = medicine_name
+            medicine.price = original_price or medicine.price
+            medicine.name = medicine_name or medicine.name
             medicine.save()
         else:
             medicine = Medicine.objects.create(
