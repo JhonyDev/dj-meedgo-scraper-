@@ -128,8 +128,8 @@ def update_medicine(self, med_pk):
     medicine.salt_name = salt_name
     medicine.name = name
     medicine.is_available = is_available
-    medicine.price = price
-    medicine.discounted_price = discounted_price
+    medicine.price = price or medicine.price
+    medicine.discounted_price = discounted_price or medicine.discounted_price
     medicine.last_updated = datetime.datetime.now()
     medicine.save()
     return "DONE!"
