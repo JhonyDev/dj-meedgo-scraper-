@@ -51,6 +51,7 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
         if is_salt:
             ratio_salt = fuzz.ratio(salt_name, word['salt_name'])
             net_ratio = ratio_salt + ratio_name / 2
+            print(f'{param1} - {salt_name} COMPARING TO')
             print(f'{word["name"]} - {word["salt_name"]} = {net_ratio}')
         else:
             net_ratio = ratio_name
