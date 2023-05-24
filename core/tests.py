@@ -1,39 +1,40 @@
 from __future__ import absolute_import, unicode_literals
 
-import requests
-from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
 
-response = requests.get("https://www.netmeds.com/non-prescriptions/mamypoko-pants-m-12s")
-soup = BeautifulSoup(response.content, "html.parser")
-drug_conf = soup.find("div", class_="drug-conf")
-salt_name = drug_conf.text.strip() if drug_conf else None
-element = soup.select_one('span.price')
-price = None
-if element:
-    price_strike = element.find('strike').text.strip()
-    price = price_strike.split()[1]
-    price = price.replace('₹', '')
-    price = price.replace(',', '')
-    price = float(price)
+url = f"https://www.netmeds.com/catalogsearch/result/pana/all"
+options = Options()
+# options.add_argument('--headless')
+# options.add_argument("--force-device-scale-factor=0.5")
+driver = webdriver.Chrome(options=options)
+driver.get(url)
+ul_tag = driver.find_element(By.TAG_NAME, "ol")
+for li_tag in ul_tag.find_elements(By.TAG_NAME, "li"):
+    category_name = li_tag.find_element(By.XPATH, ".//a[@class='category_name']")
+    med_url = li_tag.find_element(By.XPATH, ".//a[@class='category_name']").get_attribute("href")
+    med_image = category_name.find_element(By.XPATH, ".//img[@class='product-image-photo']").get_attribute("src")
+    name = li_tag.find_element(By.XPATH, ".//span[@class='clsgetname']").text
+    price = li_tag.find_element(By.ID, "price").text
+    price = price.replace('MRP Rs.', '')
+    if not price:
+        price = None
 
-disc_element = soup.select_one('span.final-price')
-discounted_price = None
-if disc_element:
-    price_strike = disc_element.text.strip()
-    discounted_price = price_strike.replace('₹', '')
-    discounted_price = discounted_price.replace(',', '')
-    discounted_price = discounted_price.replace('Best Price*  ', '')
-    discounted_price = discounted_price.replace('*', '')
-    discounted_price = discounted_price.replace('Best', '')
-    discounted_price = discounted_price.replace('Price', '')
-    discounted_price = float(discounted_price)
-name = soup.find("h1", class_="black-txt")
-name = name.text.strip()
-element = soup.select_one('button[title="ADD TO CART"]')
-is_available = element is not None
+    discounted_price = li_tag.find_element(By.ID, "final_price").text
+    discounted_price = discounted_price.replace('MRP Rs.', '')
+    discounted_price = discounted_price.replace('₹', '')
+    if not discounted_price:
+        discounted_price = None
 
-print(name)
-print(salt_name)
-print(price)
-print(discounted_price)
-print(is_available)
+    try:
+        is_available = not li_tag.find_element(By.CLASS_NAME, "notify_me").text
+    except:
+        is_available = True
+
+    print(med_url)
+    print(med_image)
+    print(name)
+    print(price)
+    print(discounted_price)
+    print(is_available)

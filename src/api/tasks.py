@@ -59,6 +59,12 @@ def scrape_netmeds(self, param):
         discounted_price = discounted_price.replace('₹', '')
         if not discounted_price:
             discounted_price = None
+        print(med_url)
+        print(med_image)
+        print(name)
+        print(price)
+        print(discounted_price)
+        print(is_available)
 
         if Medicine.objects.filter(med_url=med_url).exists():
             medicine = Medicine.objects.filter(med_url=med_url).first()
@@ -112,12 +118,12 @@ def update_medicine(self, med_pk):
     name = name.text.strip()
     element = soup.select_one('button[title="ADD TO CART"]')
     is_available = element is not None
-    #
-    # print(name)
-    # print(salt_name)
-    # print(price)
-    # print(discounted_price)
-    # print(is_available)
+
+    print(name)
+    print(salt_name)
+    print(price)
+    print(discounted_price)
+    print(is_available)
     medicine.salt_name = salt_name
     medicine.name = name
     medicine.is_available = is_available
@@ -305,11 +311,11 @@ def scrape_pharmeasy(self, param):
             disc_price = disc_price.replace('*', '')
             disc_price = disc_price.replace('MRP', '')
             disc_price = float(disc_price)
-        #
-        # print(medicine_name)
-        # print(medicine_price)
-        # print(disc_price)
-        # print(image_url)
+
+        print(medicine_name)
+        print(medicine_price)
+        print(disc_price)
+        print(image_url)
 
         medicine = Medicine.objects.filter(med_url=a_url).first()
         if medicine:
@@ -380,11 +386,11 @@ def update_medicine_pharmeasy(self, med_pk):
     is_available = True if price or disc_price else False
     salt_name = seconds[generic_name].text.strip()
 
-    # print(name)
-    # print(price or disc_price)
-    # print(disc_price or price)
-    # print(salt_name)
-    # print(is_available)
+    print(name)
+    print(price or disc_price)
+    print(disc_price or price)
+    print(salt_name)
+    print(is_available)
 
     medicine.name = name or medicine.name
     medicine.price = price or disc_price if price is not None and disc_price is not None else medicine.price
