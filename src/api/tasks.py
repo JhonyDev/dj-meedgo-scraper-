@@ -1,6 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 
 import datetime
+import urllib.parse
 
 import requests
 from bs4 import BeautifulSoup
@@ -20,6 +21,9 @@ limit_threading = False
 @shared_task(bind=True)
 def scrape_netmeds(self, param):
     print("SEARCHING IN NETMEDS")
+    encoded_string = urllib.parse.quote(param)
+    encoded_string = encoded_string.replace('/', '')
+    print(encoded_string)
     if param is None:
         return "DONE!"
     url = f"https://www.netmeds.com/catalogsearch/result/{param}/all"
@@ -139,6 +143,9 @@ def update_medicine(self, med_pk):
 
 @shared_task(bind=True)
 def scrape_1mg(self, param):
+    encoded_string = urllib.parse.quote(param)
+    encoded_string = encoded_string.replace('/', '')
+    print(encoded_string)
     if param is None:
         return "DONE!"
     url = f"https://www.1mg.com/search/all?name={param}"
@@ -260,6 +267,9 @@ def update_medicine_1mg(self, med_pk):
 # PHARM-EASY
 @shared_task(bind=True)
 def scrape_pharmeasy(self, param):
+    encoded_string = urllib.parse.quote(param)
+    encoded_string = encoded_string.replace('/', '')
+    print(encoded_string)
     if param is None:
         return "DONE!"
     base_url = 'https://pharmeasy.in'
