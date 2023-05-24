@@ -10,6 +10,8 @@ from django.utils import timezone
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 from src.api.models import Medicine
 from src.api.utils import get_platform_dict, NET_MEDS, PHARM_EASY, ONE_MG
@@ -32,6 +34,8 @@ def scrape_netmeds(self, param):
     options.add_argument("--force-device-scale-factor=0.5")
     driver = webdriver.Chrome(options=options)
     driver.get(url)
+    wait = WebDriverWait(driver, 10)
+    wait.until(EC.presence_of_element_located((By.TAG_NAME, "ol")))
     ul_tag = driver.find_element(By.TAG_NAME, "ol")
     for li_tag in ul_tag.find_elements(By.TAG_NAME, "li"):
         category_name = li_tag.find_element(By.XPATH, ".//a[@class='category_name']")

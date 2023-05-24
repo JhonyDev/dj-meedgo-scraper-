@@ -19,7 +19,6 @@ options = Options()
 # options.add_argument("--force-device-scale-factor=0.5")
 driver = webdriver.Chrome(options=options)
 driver.get(url)
-sleep(100)
 ul_tag = driver.find_element(By.TAG_NAME, "ol")
 for li_tag in ul_tag.find_elements(By.TAG_NAME, "li"):
     category_name = li_tag.find_element(By.XPATH, ".//a[@class='category_name']")
