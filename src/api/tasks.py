@@ -19,6 +19,7 @@ limit_threading = False
 
 @shared_task(bind=True)
 def scrape_netmeds(self, param):
+    print("SEARCHING IN NETMEDS")
     if param is None:
         return "DONE!"
     url = f"https://www.netmeds.com/catalogsearch/result/{param}/all"
