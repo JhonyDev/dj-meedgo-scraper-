@@ -57,6 +57,7 @@ def add_medicine_to_card(self, request):
         total_cost = 0
         for medicine in cart.medicines.all():
             # query_set = platform_medicines.filter(salt_name__icontains=medicine.salt_name)
+            platform_medicines = platform_medicines.filter(price=medicine.price)
             query_set = get_similarity_queryset(platform_medicines, medicine.salt_name, is_salt=True)
             if not query_set.exists():
                 missing_count += 1
