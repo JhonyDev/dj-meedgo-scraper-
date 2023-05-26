@@ -188,9 +188,9 @@ class MedicineOfferUpdateView(generics.RetrieveUpdateAPIView):
 def custom_method_view(request, object_id):
     med = Medicine.objects.get(pk=object_id)
     if med.platform == get_platform_dict()[PHARM_EASY]:
-        update_medicine_pharmeasy(med.pk)
+        update_medicine_pharmeasy(med.pk, is_forced=True)
     if med.platform == get_platform_dict()[NET_MEDS]:
-        update_medicine(med.pk)
+        update_medicine(med.pk, is_forced=True)
     if med.platform == get_platform_dict()[ONE_MG]:
-        update_medicine_1mg(med.pk)
+        update_medicine_1mg(med.pk, is_forced=True)
     return redirect('admin:api_medicine_change', object_id)
