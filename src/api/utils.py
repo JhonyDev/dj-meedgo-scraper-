@@ -40,10 +40,11 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     print("||" * 100)
     from django.db import models
     from fuzzywuzzy import fuzz
-    if is_salt:
-        similar_words = queryset.exclude(salt_name=None).values('pk', 'name', 'salt_name')
-    else:
-        similar_words = queryset.values('pk', 'name', 'salt_name')
+    # if is_salt:
+    #     similar_words = queryset.exclude(salt_name=None).values('pk', 'name', 'salt_name')
+    # else:
+    #     similar_words = queryset.values('pk', 'name', 'salt_name')
+    similar_words = queryset.values('pk', 'name', 'salt_name')
     similar_words_ = []
     similarities = []
     similarities_map = {}
