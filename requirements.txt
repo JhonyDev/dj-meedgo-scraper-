@@ -24,3 +24,5 @@ celery_progress
 redis
 drf-yasg
 fuzzywuzzy
+pandas==1.3.5
+Scrapy==2.8.0
