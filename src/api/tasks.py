@@ -402,8 +402,10 @@ def update_medicine_pharmeasy(self, med_pk, is_forced=False):
             break
         generic_name += 1
     is_available = True if price or disc_price else False
-    salt_name = seconds[generic_name].text.strip()
-
+    try:
+        salt_name = seconds[generic_name].text.strip()
+    except:
+        salt_name = None
     print(name)
     print(price or disc_price)
     print(disc_price or price)
