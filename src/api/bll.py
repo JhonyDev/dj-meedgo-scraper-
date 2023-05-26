@@ -60,6 +60,7 @@ def add_medicine_to_card(self, request):
             print(f'{"-" * 15} PLATFORM - {platform}')
             # query_set = platform_medicines.filter(salt_name__icontains=medicine.salt_name)
             platform_medicines = platform_medicines.filter(price=medicine.price)
+            print(f'{"-" * 15} Medicine Price - {medicine.price}')
             print(f'{"-" * 15} Medicines - {platform_medicines}')
             query_set = get_similarity_queryset(
                 platform_medicines, medicine.name, medicine.salt_name, True)
