@@ -37,6 +37,7 @@ def balance_medicines(instance):
 
 
 def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
+    print("||" * 100)
     from django.db import models
     from fuzzywuzzy import fuzz
     if is_salt:
