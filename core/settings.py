@@ -98,7 +98,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
+SCRAPY_SETTINGS_MODULE = 'healthplus_medicine_parent.healthplus_medicine.settings'
 """ TEMPLATES -------------------------------------------------------------------------------"""
 TEMPLATES = [
     {

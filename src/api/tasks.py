@@ -1,6 +1,8 @@
 from __future__ import absolute_import, unicode_literals
 
 import datetime
+import json
+import os
 import urllib.parse
 
 import requests
@@ -14,7 +16,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 from src.api.models import Medicine
-from src.api.utils import get_platform_dict, NET_MEDS, PHARM_EASY, ONE_MG
+from src.api.utils import get_platform_dict, NET_MEDS, PHARM_EASY, ONE_MG, FLIPCART
 
 # NET-MEDS
 limit_threading = False
@@ -406,6 +408,7 @@ def update_medicine_pharmeasy(self, med_pk, is_forced=False):
         salt_name = seconds[generic_name].text.strip()
     except:
         salt_name = None
+
     print(name)
     print(price or disc_price)
     print(disc_price or price)
@@ -420,3 +423,48 @@ def update_medicine_pharmeasy(self, med_pk, is_forced=False):
     medicine.last_updated = datetime.datetime.now()
     medicine.save()
     return "DONE!"
+
+
+# Flipkart Health
+@shared_task(bind=True)
+def scrape_flipkart(self, param):
+    import subprocess
+    file_name = f"temp/temp_flip.json"
+    command = ["scrapy", "crawl", "health_plus", "-a", f"input={param}", "-O", file_name, "-s",
+               "CLOSESPIDER_ITEMCOUNT=30",
+               "-L", "WARN"]
+    subprocess.run(command, check=True, capture_output=True, text=True)
+    with open('temp/temp_flip.json', "r", encoding="utf-8") as f:
+        data_output = json.load(f)
+    os.remove('temp/temp_flip.json')
+    data_output = data_output[:38]
+    for x in data_output:
+        product_image = x['ProductImage']
+        if product_image:
+            product_image = f"https://res.fkhealthplus.com/incom/images/product/{x['ProductImage']}" if "http" not in product_image else product_image
+        else:
+            product_image = 'https://assets.pharmeasy.in/web-assets/_next/icons/capsule.svg'
+        try:
+            print(f'ProductName : ', x['ProductName'])
+            print(f'Is Available : ', x['IsOutOfStock'] != 'Y')
+            print(f'Salts : ', x.get('Salts').get('SaltStrengthRaw'))
+            print(f'MRP : ', x['MRP'])
+            print(f'Discounted Price : ', x['OfferPrice'])
+            print(f'product_url : ', x['product_url'])
+            print(f'ProductImage : ', product_image)
+            print("==" * 20)
+            medicine = Medicine.objects.filter(med_url=x['product_url']).first()
+            if not medicine:
+                medicine = Medicine.objects.create(platform=get_platform_dict()[FLIPCART])
+            medicine.med_image = product_image or medicine.med_image
+            medicine.med_url = x['product_url'] or medicine.med_url
+            medicine.name = x['ProductName'] or medicine.name
+            medicine.price = x['MRP'] or medicine.price
+            medicine.discounted_price = x['OfferPrice'] or medicine.discounted_price
+            medicine.salt_name = x.get('Salts').get('SaltStrengthRaw') or medicine.salt_name
+            medicine.is_available = x['IsOutOfStock'] != 'Y'
+            medicine.last_updated = datetime.datetime.now()
+            medicine.save()
+        except:
+            pass
+    return "Done"

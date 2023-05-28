@@ -12,7 +12,8 @@ from .serializers import MedicineSerializer, MedicineToCartSerializer, \
     OrderRequestListSerializer, OrderRequestCreateSerializer, GrabbedOrderRequestsListSerializer, \
     GrabbedOrderRequestsCreateSerializer, GrabbedOrderRequestsUpdateSerializer, MedicineOfferSerializer, \
     MedicineOfferUpdateSerializer
-from .tasks import scrape_pharmeasy, update_medicine_pharmeasy, scrape_1mg, scrape_netmeds, update_medicine, \
+from .tasks import scrape_pharmeasy, update_medicine_pharmeasy, scrape_1mg, scrape_flipkart, scrape_netmeds, \
+    update_medicine, \
     update_medicine_1mg
 from .utils import get_platform_dict, PHARM_EASY, balance_medicines, NET_MEDS, ONE_MG
 from ..accounts.authentication import JWTAuthentication
@@ -51,10 +52,10 @@ class MedicineSearchView(generics.ListAPIView):
         if param:
             similar_words = Medicine.objects.all()
             queryset = utils.get_similarity_queryset(similar_words, param)
-
             if not queryset:
                 med_list = scrape_pharmeasy(param)
                 queryset = Medicine.objects.filter(pk__in=med_list)
+            scrape_flipkart.delay(param)
             scrape_netmeds.delay(param)
             scrape_pharmeasy.delay(param)
             scrape_1mg.delay(param)
