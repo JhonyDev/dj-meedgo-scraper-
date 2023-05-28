@@ -432,13 +432,12 @@ def scrape_flipkart(self, param):
     print("SCRAPING FLIPKART - " * 10)
     import subprocess
     file_name = f"temp/temp_flip.json"
-    command = ["scrapy", "crawl", "health_plus", "-a", f"input={param}", "-O", file_name, "-s",
+    command = ["scrapy", "crawl", "health_plus", "-a", f"input={param}", "-o", file_name, "-s",
                "CLOSESPIDER_ITEMCOUNT=30",
                "-L", "WARN"]
     try:
         result = subprocess.run(command, check=True, capture_output=True, text=True)
     except subprocess.CalledProcessError as e:
-        # Handle specific errors from the subprocess
         print(f"Subprocess error: {e}")
         print("Return Code:", e.returncode)
         return "EXCEPTION THROWN"
