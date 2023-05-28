@@ -460,6 +460,7 @@ def scrape_flipkart(self, param):
         else:
             product_image = 'https://assets.pharmeasy.in/web-assets/_next/icons/capsule.svg'
         try:
+            x['product_url'] = f'{x["product_url"]}{x["ProductId"]}'
             print(f'ProductName : ', x['ProductName'])
             print(f'Is Available : ', x['IsOutOfStock'] != 'Y')
             print(f'Salts : ', x.get('Salts').get('SaltStrengthRaw'))
