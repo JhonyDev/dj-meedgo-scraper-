@@ -216,7 +216,7 @@ def update_medicine_1mg(self, med_pk, is_forced=False):
     print("UPDATING MEDICINE IN ONEMG")
     medicine = Medicine.objects.get(id=med_pk)
     if not is_forced:
-        if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
+        if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=15):
             return "Medicine already updated today!"
     options = Options()
     options.add_argument('--headless')
