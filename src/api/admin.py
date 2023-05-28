@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 from . import models
+from .utils import get_platform_dict, FLIPCART
 
 
 class MedicineView(admin.ModelAdmin):
@@ -11,6 +12,8 @@ class MedicineView(admin.ModelAdmin):
     list_filter = ['platform', 'is_available']
 
     def Scrape(self, obj):
+        if obj.platform == get_platform_dict()[FLIPCART]:
+            return format_html(f'<a class="button" disabled>Scrape</a>')
         return format_html(f'<a class="button" href="/api/run-task/{obj.pk}/">Scrape</a>')
 
     Scrape.short_description = 'Scrape Again'
