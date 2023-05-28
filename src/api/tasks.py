@@ -19,7 +19,7 @@ from src.api.models import Medicine
 from src.api.utils import get_platform_dict, NET_MEDS, PHARM_EASY, ONE_MG, FLIPCART
 
 # NET-MEDS
-limit_threading = False
+limit_threading = True
 
 
 @shared_task(bind=True)
