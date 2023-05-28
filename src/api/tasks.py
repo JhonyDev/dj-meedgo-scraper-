@@ -428,6 +428,8 @@ def update_medicine_pharmeasy(self, med_pk, is_forced=False):
 # Flipkart Health
 @shared_task(bind=True)
 def scrape_flipkart(self, param):
+    print("*" * 1000)
+    print("SCRAPING FLIPKART - " * 10)
     import subprocess
     file_name = f"temp/temp_flip.json"
     command = ["scrapy", "crawl", "health_plus", "-a", f"input={param}", "-O", file_name, "-s",
