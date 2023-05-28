@@ -435,7 +435,15 @@ def scrape_flipkart(self, param):
     command = ["scrapy", "crawl", "health_plus", "-a", f"input={param}", "-O", file_name, "-s",
                "CLOSESPIDER_ITEMCOUNT=30",
                "-L", "WARN"]
-    subprocess.run(command, check=True, capture_output=True, text=True)
+    result = subprocess.run(command, check=True, capture_output=True, text=True)
+    output = result.stdout
+    error = result.stderr
+    print("Output:")
+    print(output)
+    if error:
+        print("Error:")
+        print(error)
+
     with open('temp/temp_flip.json', "r", encoding="utf-8") as f:
         data_output = json.load(f)
     os.remove('temp/temp_flip.json')
