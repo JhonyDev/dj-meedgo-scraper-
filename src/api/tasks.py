@@ -435,7 +435,13 @@ def scrape_flipkart(self, param):
     command = ["scrapy", "crawl", "health_plus", "-a", f"input={param}", "-O", file_name, "-s",
                "CLOSESPIDER_ITEMCOUNT=30",
                "-L", "WARN"]
-    result = subprocess.run(command, check=True, capture_output=True, text=True)
+    try:
+        result = subprocess.run(command, check=True, capture_output=True, text=True)
+    except subprocess.CalledProcessError as e:
+        # Handle specific errors from the subprocess
+        print(f"Subprocess error: {e}")
+        print("Return Code:", e.returncode)
+        return "EXCEPTION THROWN"
     output = result.stdout
     error = result.stderr
     print("Output:")
