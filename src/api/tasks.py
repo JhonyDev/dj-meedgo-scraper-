@@ -480,6 +480,6 @@ def scrape_flipkart(self, param):
             medicine.is_available = x['IsOutOfStock'] != 'Y'
             medicine.last_updated = datetime.datetime.now()
             medicine.save()
-        except:
-            pass
+        except Exception as e:
+            print(f"EXCEPTION - {e}")
     return "Done"
