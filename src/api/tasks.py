@@ -279,7 +279,6 @@ def scrape_pharmeasy(self, param):
     param = urllib.parse.quote(param)
     param = param.replace('/', '')
     print(param)
-
     base_url = 'https://pharmeasy.in'
     url = f"{base_url}/search/all?name={param}"
     response = requests.get(url)
@@ -371,33 +370,42 @@ def update_medicine_pharmeasy(self, med_pk, is_forced=False):
     seconds = soup.find_all('td', {'class': 'DescriptionTable_value__0GUMC'})
     generic_name = 0
     price = None
+
     try:
         name = soup.find('h1', {'class': 'MedicineOverviewSection_medicineName__dHDQi'}).text.strip()
     except:
         name = None
+
     try:
-        price = soup.find('div', {'class': 'PriceInfo_ourPrice__jFYXr'}).text.strip()
+        disc_price = soup.find('div', {'class': 'PriceInfo_ourPrice__jFYXr'}).text.strip()
+        price = soup.find('span', {'class': 'PriceInfo_striked__Hk2U_'}).text.strip()
     except:
+        disc_price = None
+        price = None
+
+    if price is None and disc_price is None:
         try:
-            price = soup.find('span', {'class': 'PriceInfo_striked__Hk2U_'}).text.strip()
+            price = soup.find('div', {'class': 'PriceInfo_ourPrice__jFYXr'}).text.strip()
+        except:
+            try:
+                price = soup.find('span', {'class': 'PriceInfo_striked__Hk2U_'}).text.strip()
+            except:
+                pass
+        try:
+            disc_price = soup.find('div', class_='PriceInfo_gcdDiscountContainer__hr0YD').find('span').text
         except:
             pass
+
     if price:
         price = price.replace('MRP', '')
         price = price.replace('*', '')
         price = price.replace('₹', '')
         price = float(price)
-
-    disc_price = None
-    try:
-        disc_price = soup.find('div', class_='PriceInfo_gcdDiscountContainer__hr0YD').find('span').text
-        if disc_price:
-            disc_price = disc_price.replace('MRP', '')
-            disc_price = disc_price.replace('*', '')
-            disc_price = disc_price.replace('₹', '')
-            disc_price = float(disc_price)
-    except:
-        pass
+    if disc_price:
+        disc_price = disc_price.replace('MRP', '')
+        disc_price = disc_price.replace('*', '')
+        disc_price = disc_price.replace('₹', '')
+        disc_price = float(disc_price)
 
     for first in firsts:
         if first.text.strip() == 'Contains':
@@ -414,7 +422,6 @@ def update_medicine_pharmeasy(self, med_pk, is_forced=False):
     print(disc_price or price)
     print(salt_name)
     print(is_available)
-
     medicine.name = name or medicine.name
     medicine.price = price or disc_price if price is not None and disc_price is not None else medicine.price
     medicine.discounted_price = disc_price or price if price is not None and disc_price is not None else medicine.price
