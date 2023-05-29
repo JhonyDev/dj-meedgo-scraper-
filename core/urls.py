@@ -16,13 +16,13 @@ Including another URLconf
 
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 
 from src.accounts.views import CustomRegisterAccountView, CustomLoginView
 from .settings import DEBUG, MEDIA_ROOT, MEDIA_URL
-
+from src.api.routing import websocket_urlpatterns
 schema_view = get_schema_view(
     openapi.Info(
         title='Meedgo API',
@@ -42,9 +42,9 @@ swagger_patterns = [
 # urls.py
 
 from django.urls import path
-from . import consumers
 
 urlpatterns = [
+                  re_path(r'', include(websocket_urlpatterns)),
                   # ADMIN/ROOT APPLICATION
                   path('admin/', admin.site.urls),
 
