@@ -44,7 +44,6 @@ swagger_patterns = [
 from django.urls import path
 
 urlpatterns = [
-                  re_path(r'', include(websocket_urlpatterns)),
                   # ADMIN/ROOT APPLICATION
                   path('admin/', admin.site.urls),
 
