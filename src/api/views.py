@@ -1,10 +1,11 @@
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from rest_framework import generics, permissions, status
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
+from core.consumers import send_message_to_group
 from . import utils
 from .bll import add_medicine_to_card
 from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge
@@ -77,6 +78,7 @@ class MedicineToCartView(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
+        send_message_to_group('15100', "CHECKING MESSAGE")
         return Response({'message': 'Please use POST Method. Provide "cart_id" to get Cart Data '
                                     'or Provide "medicine_id" to create new cart and add medicine'},
                         status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -195,3 +197,7 @@ def custom_method_view(request, object_id):
     if med.platform == get_platform_dict()[ONE_MG]:
         update_medicine_1mg(med.pk, is_forced=True)
     return redirect('admin:api_medicine_change', object_id)
+
+
+def lobby(request):
+    return render(request, 'api/lobby.html')

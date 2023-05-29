@@ -47,6 +47,7 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
+
 """ APPS ---------------------------------------------------------------------------------------"""
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -56,6 +57,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'channels',
 
     # REQUIRED_APPLICATIONS
     'crispy_forms',
@@ -85,7 +87,12 @@ INSTALLED_APPS = [
 SWAGGER_SETTINGS = {
     'DEFAULT_INFO': 'core.urls.swagger_info',
 }
-# Replace 'myapp' with your Django app name
+# Replace 'myapp' with your Django app namea
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 """ MIDDLE WARES ----------------------------------------------------------------------------"""
 MIDDLEWARE = [
@@ -146,6 +153,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
+ASGI_APPLICATION = 'core.asgi.application'
 
 """ DATABASES ------------------------------------------------------------------------------------"""
 
