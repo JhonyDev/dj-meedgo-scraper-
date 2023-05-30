@@ -7,7 +7,7 @@ from src.api.utils import PLATFORMS
 
 class Medicine(models.Model):
     name = models.CharField(max_length=1000, null=True, default=None)
-    salt_name = models.CharField(max_length=1000, null=True, default=None)
+    salt_name = models.TextField(null=True, default=None)
     price = models.FloatField(null=True, blank=True, default=None)
     discounted_price = models.FloatField(null=True, blank=True, default=None)
     med_image = models.URLField(null=True, blank=True, default=None)
