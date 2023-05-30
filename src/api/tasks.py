@@ -279,8 +279,9 @@ def scrape_pharmeasy(self, param):
     param = urllib.parse.quote(param)
     param = param.replace('/', '')
     print(param)
+
     base_url = 'https://pharmeasy.in'
-    url = f"{base_url}/search/all?name={param}"
+    url = f"{base_url}/search/all?name=Petril MD"
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
     parent_div = soup.find('div', {'class': 'Search_fullWidthLHS__mteti'})
@@ -291,19 +292,28 @@ def scrape_pharmeasy(self, param):
             medicine_name = menuitem.find('h1', {'class': 'ProductCard_medicineName__8Ydfq'}).text.strip()
         except:
             continue
-        try:
-            medicine_price = menuitem.find('div', {'class': 'ProductCard_ourPrice__yDytt'}).text.strip()
-        except:
-            try:
-                medicine_price = menuitem.find('span', {'class': 'ProductCard_striked__jkSiD'}).text.strip()
-            except:
-                medicine_price = None
 
         try:
-            disc_price = menuitem.find('div', {'class': 'ProductCard_gcdDiscountContainer__CCi51'}).find(
-                'span').text.strip()
+            disc_price = menuitem.find('div', {'class': 'ProductCard_ourPrice__yDytt'}).text.strip()
+            medicine_price = menuitem.find('span', {'class': 'ProductCard_striked__jkSiD'}).text.strip()
         except:
             disc_price = None
+            medicine_price = None
+
+        if medicine_price is None and disc_price is None:
+            try:
+                medicine_price = menuitem.find('div', {'class': 'ProductCard_ourPrice__yDytt'}).text.strip()
+            except:
+                try:
+                    medicine_price = menuitem.find('span', {'class': 'ProductCard_striked__jkSiD'}).text.strip()
+                except:
+                    medicine_price = None
+
+            try:
+                disc_price = menuitem.find('div', {'class': 'ProductCard_gcdDiscountContainer__CCi51'}).find(
+                    'span').text.strip()
+            except:
+                disc_price = None
         div_element = menuitem.find('div', {'class': 'ProductCard_productWarningAndCta__kKe3q'})
         is_available = False
         if "Out of Stock" not in div_element.text:
@@ -329,6 +339,9 @@ def scrape_pharmeasy(self, param):
             disc_price = disc_price.replace('*', '')
             disc_price = disc_price.replace('MRP', '')
             disc_price = float(disc_price)
+
+        if is_available:
+            is_available = True if medicine_price or disc_price else False
 
         print(medicine_name)
         print(medicine_price)
@@ -370,42 +383,33 @@ def update_medicine_pharmeasy(self, med_pk, is_forced=False):
     seconds = soup.find_all('td', {'class': 'DescriptionTable_value__0GUMC'})
     generic_name = 0
     price = None
-
     try:
         name = soup.find('h1', {'class': 'MedicineOverviewSection_medicineName__dHDQi'}).text.strip()
     except:
         name = None
-
     try:
-        disc_price = soup.find('div', {'class': 'PriceInfo_ourPrice__jFYXr'}).text.strip()
-        price = soup.find('span', {'class': 'PriceInfo_striked__Hk2U_'}).text.strip()
+        price = soup.find('div', {'class': 'PriceInfo_ourPrice__jFYXr'}).text.strip()
     except:
-        disc_price = None
-        price = None
-
-    if price is None and disc_price is None:
         try:
-            price = soup.find('div', {'class': 'PriceInfo_ourPrice__jFYXr'}).text.strip()
-        except:
-            try:
-                price = soup.find('span', {'class': 'PriceInfo_striked__Hk2U_'}).text.strip()
-            except:
-                pass
-        try:
-            disc_price = soup.find('div', class_='PriceInfo_gcdDiscountContainer__hr0YD').find('span').text
+            price = soup.find('span', {'class': 'PriceInfo_striked__Hk2U_'}).text.strip()
         except:
             pass
-
     if price:
         price = price.replace('MRP', '')
         price = price.replace('*', '')
         price = price.replace('₹', '')
         price = float(price)
-    if disc_price:
-        disc_price = disc_price.replace('MRP', '')
-        disc_price = disc_price.replace('*', '')
-        disc_price = disc_price.replace('₹', '')
-        disc_price = float(disc_price)
+
+    disc_price = None
+    try:
+        disc_price = soup.find('div', class_='PriceInfo_gcdDiscountContainer__hr0YD').find('span').text
+        if disc_price:
+            disc_price = disc_price.replace('MRP', '')
+            disc_price = disc_price.replace('*', '')
+            disc_price = disc_price.replace('₹', '')
+            disc_price = float(disc_price)
+    except:
+        pass
 
     for first in firsts:
         if first.text.strip() == 'Contains':
@@ -422,6 +426,7 @@ def update_medicine_pharmeasy(self, med_pk, is_forced=False):
     print(disc_price or price)
     print(salt_name)
     print(is_available)
+
     medicine.name = name or medicine.name
     medicine.price = price or disc_price if price is not None and disc_price is not None else medicine.price
     medicine.discounted_price = disc_price or price if price is not None and disc_price is not None else medicine.price
