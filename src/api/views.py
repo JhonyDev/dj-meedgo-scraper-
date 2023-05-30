@@ -51,7 +51,6 @@ class MedicineSearchView(generics.ListAPIView):
     def get_queryset(self):
         param = self.request.query_params.get('search')
         queryset = Medicine.objects.exclude(price=None, discounted_price=None)
-        Medicine.objects.filter(salt_name=None, name=None, price=None, discounted_price=None).delete()
         param_contains_name = queryset.filter(name__icontains=param)
         param_contains_salt = queryset.filter(salt_name__icontains=param)
         if param:
@@ -218,6 +217,10 @@ def custom_method_view(request, object_id):
     if med.platform == get_platform_dict()[PHARM_EASY]:
         update_medicine_pharmeasy(med.pk, is_forced=True)
     if med.platform == get_platform_dict()[NET_MEDS]:
+        all_meds = Medicine.objects.filter(platform=get_platform_dict()[NET_MEDS], salt_name=None,
+                                           price=None, discounted_price=None).values_list('pk')
+        for med_ in all_meds:
+            update_medicine.delay(med_, is_forced=True)
         update_medicine(med.pk, is_forced=True)
     if med.platform == get_platform_dict()[ONE_MG]:
         update_medicine_1mg(med.pk, is_forced=True)
