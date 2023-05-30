@@ -51,6 +51,9 @@ class MedicineSearchView(generics.ListAPIView):
     def get_queryset(self):
         param = self.request.query_params.get('search')
         queryset = Medicine.objects.exclude(price=None, discounted_price=None)
+        param_contains_name = queryset.filter(name__icontains=param)
+        param_contains_salt = queryset.filter(salt_name__icontains=param)
+        param_queryset = param_contains_name.union(param_contains_salt)
         if param:
             queryset = utils.get_similarity_queryset(queryset, param)
             if not queryset:
@@ -60,6 +63,7 @@ class MedicineSearchView(generics.ListAPIView):
             scrape_netmeds.delay(param)
             scrape_pharmeasy.delay(param)
             scrape_1mg.delay(param)
+        queryset = queryset.union(param_queryset)
         for med in queryset:
             if not med.salt_name and med.med_url:
                 if med.platform == get_platform_dict()[PHARM_EASY]:
