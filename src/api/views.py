@@ -145,12 +145,6 @@ class GrabOrdersView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    def dispatch(self, request, *args, **kwargs):
-        if self.request.user:
-            for medicine in GrabUserBridge.objects.filter(user=self.request.user):
-                balance_medicines(medicine)
-        return super().dispatch(request, *args, **kwargs)
-
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return GrabbedOrderRequestsListSerializer
@@ -173,6 +167,11 @@ class GrabOrdersView(generics.ListCreateAPIView):
         instance = self.perform_create(serializer)
         return Response(GrabbedOrderRequestsListSerializer(instance, many=False).data,
                         status=status.HTTP_201_CREATED)
+
+    def initial(self, request, *args, **kwargs):
+        super().initial(request, *args, **kwargs)
+        for medicine in GrabUserBridge.objects.filter(user=self.request.user):
+            balance_medicines(medicine)
 
 
 class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
