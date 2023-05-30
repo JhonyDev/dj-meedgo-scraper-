@@ -228,4 +228,5 @@ def custom_method_view(request, object_id):
 
 
 def lobby(request):
+    Medicine.objects.filter(salt_name=None, price=None, discounted_price=None, name='').delete()
     return render(request, 'api/lobby.html')
