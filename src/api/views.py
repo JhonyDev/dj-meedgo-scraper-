@@ -63,7 +63,7 @@ class MedicineSearchView(generics.ListAPIView):
             scrape_netmeds.delay(param)
             scrape_pharmeasy.delay(param)
             scrape_1mg.delay(param)
-        queryset = queryset.union(param_queryset)
+        queryset = param_queryset.union(queryset)
         for med in queryset:
             if not med.salt_name and med.med_url:
                 if med.platform == get_platform_dict()[PHARM_EASY]:
