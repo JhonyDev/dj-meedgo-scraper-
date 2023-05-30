@@ -44,6 +44,7 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     #     similar_words = queryset.exclude(salt_name=None).values('pk', 'name', 'salt_name')
     # else:
     #     similar_words = queryset.values('pk', 'name', 'salt_name')
+
     similar_words = queryset.values('pk', 'name', 'salt_name')
     similar_words_ = []
     similarities = []
@@ -56,7 +57,8 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
             print(f'{param1} - {salt_name} COMPARING TO')
             print(f'{word["name"]} - {word["salt_name"]} = {net_ratio}')
         else:
-            net_ratio = ratio_name
+            ratio_salt = fuzz.ratio(param1, word['salt_name'])
+            net_ratio = (ratio_salt + ratio_name) / 2
         if net_ratio > 50:
             similar_words_.append(word['pk'])
             similarities.append(net_ratio)

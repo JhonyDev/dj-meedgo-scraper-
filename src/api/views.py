@@ -52,8 +52,7 @@ class MedicineSearchView(generics.ListAPIView):
         param = self.request.query_params.get('search')
         queryset = Medicine.objects.exclude(price=None, discounted_price=None)
         if param:
-            similar_words = Medicine.objects.all()
-            queryset = utils.get_similarity_queryset(similar_words, param)
+            queryset = utils.get_similarity_queryset(queryset, param)
             if not queryset:
                 med_list = scrape_pharmeasy(param)
                 queryset = Medicine.objects.filter(pk__in=med_list)
