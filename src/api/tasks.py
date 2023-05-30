@@ -8,30 +8,14 @@ import urllib.parse
 import requests
 from bs4 import BeautifulSoup
 from celery import shared_task
-from django.core.cache import cache
 from django.utils import timezone
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 from src.api.models import Medicine
+from src.api.singletons import WebDriverCache
 from src.api.utils import get_platform_dict, NET_MEDS, PHARM_EASY, ONE_MG, FLIPCART
-
-
-class WebDriverCache:
-    _cached_webdriver = None
-
-    @classmethod
-    def get_webdriver(cls):
-        if cls._cached_webdriver is None:
-            options = Options()
-            options.add_argument('--headless')
-            options.add_argument("--force-device-scale-factor=0.5")
-            cls._cached_webdriver = webdriver.Chrome(options=options)
-        return cls._cached_webdriver
-
 
 # NET-MEDS
 limit_threading = True
