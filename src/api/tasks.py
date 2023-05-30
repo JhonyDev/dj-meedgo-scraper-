@@ -46,7 +46,12 @@ def scrape_netmeds(self, param):
     param = param.replace('/', '')
     url = f"https://www.netmeds.com/catalogsearch/result/{param}/all"
     driver = WebDriverCache.get_webdriver()
-    driver.get(url)
+    try:
+        driver.get(url)
+    except:
+        WebDriverCache._cached_webdriver = None
+        driver = WebDriverCache.get_webdriver()
+        driver.get(url)
     wait = WebDriverWait(driver, 10)
     wait.until(EC.presence_of_element_located((By.TAG_NAME, "ol")))
     ul_tag = driver.find_element(By.TAG_NAME, "ol")
@@ -168,6 +173,12 @@ def scrape_1mg(self, param):
     print(param)
     url = f"https://www.1mg.com/search/all?name={param}"
     driver = WebDriverCache.get_webdriver()
+    try:
+        driver.get(url)
+    except:
+        WebDriverCache._cached_webdriver = None
+        driver = WebDriverCache.get_webdriver()
+        driver.get(url)
     driver.get(url)
     ul_tag = driver.find_elements(By.CLASS_NAME, "style__container___cTDz0")
     default_image = 'https://onemg.gumlet.io/w_150,c_fit,h_150,f_auto,q_auto/hx2gxivwmeoxxxsc1hix.png'
