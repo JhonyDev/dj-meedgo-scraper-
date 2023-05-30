@@ -65,11 +65,13 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
             similarities_map[net_ratio] = word['pk']
     similarities.sort()
     similarities.reverse()
-    sorted_similar_words = [similarities_map[x] for x in similarities]
-    queryset = queryset.filter(pk__in=sorted_similar_words)
-    order_dict = {word: index for index, word in enumerate(sorted_similar_words)}
-    queryset = queryset.annotate(custom_order=models.Case(
-        *[models.When(pk=pk, then=models.Value(order)) for pk, order in order_dict.items()],
-        default=models.Value(len(order_dict))
-    ))
-    return queryset.order_by('custom_order')
+    # sorted_similar_words = [similarities_map[x] for x in similarities]
+    queryset = queryset.filter(pk__in=similar_words_)
+    # order_dict = {word: index for index, word in enumerate(sorted_similar_words)}
+    # queryset = queryset.annotate(custom_order=models.Case(
+    #     *[models.When(pk=pk, then=models.Value(order)) for pk, order in order_dict.items()],
+    #     default=models.Value(len(order_dict))
+    # ))
+    #
+    # return queryset.order_by('custom_order')
+    return queryset
