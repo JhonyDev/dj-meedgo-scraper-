@@ -1,4 +1,4 @@
-from django.db.models import Sum
+from django.db.models import Sum, Q, F
 from django.shortcuts import redirect, render
 from rest_framework import generics, permissions, status
 from rest_framework.filters import SearchFilter
@@ -229,18 +229,25 @@ def custom_method_view(request, object_id):
 
 def custom_method_all_view(request, object_id):
     med = Medicine.objects.get(pk=object_id)
+    queryset = Medicine.objects.filter(
+        Q(name='') |
+        Q(salt_name__isnull=True) |
+        Q(price__isnull=True) |
+        Q(discounted_price__isnull=True) |
+        Q(price=F('discounted_price'))
+    )
     if med.platform == get_platform_dict()[PHARM_EASY]:
-        for med_ in Medicine.objects.filter(
+        for med_ in queryset.filter(
                 platform=get_platform_dict()[PHARM_EASY]).values_list('pk', flat=True):
             update_medicine_pharmeasy.delay(med_, is_forced=True)
         update_medicine_pharmeasy(med.pk, is_forced=True)
     if med.platform == get_platform_dict()[NET_MEDS]:
-        for med_ in Medicine.objects.filter(
+        for med_ in queryset.filter(
                 platform=get_platform_dict()[NET_MEDS]).values_list('pk', flat=True):
             update_medicine.delay(med_, is_forced=True)
         update_medicine(med.pk, is_forced=True)
     if med.platform == get_platform_dict()[ONE_MG]:
-        for med_ in Medicine.objects.filter(
+        for med_ in queryset.filter(
                 platform=get_platform_dict()[ONE_MG]).values_list('pk', flat=True):
             update_medicine_1mg.delay(med_, is_forced=True)
         update_medicine_1mg(med.pk, is_forced=True)
