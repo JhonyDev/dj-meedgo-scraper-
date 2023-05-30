@@ -125,6 +125,8 @@ def update_medicine(self, med_pk, is_forced=False):
         discounted_price = discounted_price.replace('*', '')
         discounted_price = discounted_price.replace('Best', '')
         discounted_price = discounted_price.replace('Price', '')
+        discounted_price = discounted_price.replace('MRP', '')
+        discounted_price = discounted_price.replace(' ', '')
         discounted_price = float(discounted_price)
     name = soup.find("h1", class_="black-txt")
     name = name.text.strip()
@@ -136,8 +138,8 @@ def update_medicine(self, med_pk, is_forced=False):
     print(price)
     print(discounted_price)
     print(is_available)
-    medicine.salt_name = salt_name
-    medicine.name = name
+    medicine.salt_name = salt_name or medicine.salt_name
+    medicine.name = name or medicine.name
     medicine.is_available = is_available
     medicine.price = price or medicine.price
     medicine.discounted_price = discounted_price or medicine.discounted_price
