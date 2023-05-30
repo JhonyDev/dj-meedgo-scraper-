@@ -4,9 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from src.accounts import authentication
-from src.accounts.models import User
 from src.accounts.serializers import CustomRegisterAccountSerializer, CustomLoginSerializer
-from src.api import utils
 from src.api.serializers import UserSerializer
 
 
@@ -20,7 +18,8 @@ class CustomRegisterAccountView(APIView):
 
         if serializer.is_valid():
             user = serializer.save()
-            EmailAddress.objects.create(user=user, email=user.email, primary=True, verified=False)
+            if user.email:
+                EmailAddress.objects.create(user=user, email=user.email, primary=True, verified=False)
             access_token = authentication.create_access_token(UserSerializer(user).data)
             refresh_token = authentication.create_refresh_token(user.pk)
             data = {
@@ -38,21 +37,12 @@ class CustomLoginView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        username = request.data.get('username')
-        email = request.data.get('email')
-        password = request.data['password']
-
-        user = User.objects.filter(username=username).first()
-
-        if user is None:
-            raise utils.get_api_exception('Invalid credential User invalid', status.HTTP_400_BAD_REQUEST)
-
-        if not user.check_password(password):
-            raise utils.get_api_exception('Invalid credential', status.HTTP_400_BAD_REQUEST)
-
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
         response = Response()
-        serializer = UserSerializer(user)
-        access_token = authentication.create_access_token(serializer.data)
+        user_serializer = UserSerializer(user)
+        access_token = authentication.create_access_token(user_serializer.data)
         refresh_token = authentication.create_refresh_token(user.pk)
         response.data = {
             'access_token': access_token,

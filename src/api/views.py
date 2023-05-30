@@ -1,3 +1,4 @@
+from django.db.models import Sum
 from django.shortcuts import redirect, render
 from rest_framework import generics, permissions, status
 from rest_framework.filters import SearchFilter
@@ -120,6 +121,12 @@ class OrderRequestsView(generics.ListCreateAPIView):
         instance = serializer.save()
         instance.user = self.request.user
         instance.save()
+        order_request = {
+            'total_medicines': instance.medicine_cart.medicines.all().count(),
+            'total_price': instance.medicine_cart.medicines.aggregate(total=Sum('price'))['total'],
+            'order_id': instance.id
+        }
+        send_message_to_group(self.request.user.postal_code, order_request)
 
 
 class OrderRequestsLocalityView(generics.ListAPIView):

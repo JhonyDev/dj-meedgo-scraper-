@@ -1,10 +1,47 @@
-from allauth.account.models import EmailAddress
 from dj_rest_auth.registration.serializers import RegisterSerializer
+from django.contrib.auth import authenticate
 from django.db import transaction
 from rest_framework import serializers
-
 from src.accounts.models import User
 
+
+#
+# class CustomRegisterAccountSerializer(serializers.ModelSerializer):
+#     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
+#
+#     class Meta:
+#         model = User
+#         fields = [
+#             'pk', 'username', 'email', 'postal_code', 'password', 'password2'
+#         ]
+#         read_only_fields = [
+#             'type'
+#         ]
+#         extra_kwargs = {
+#             'password': {'write_only': True},
+#         }
+#
+#     def save(self):
+#         user = User(
+#             # first_name=self.validated_data['first_name'],
+#             # last_name=self.validated_data['last_name'],
+#             email=self.validated_data['email'],
+#             postal_code=self.validated_data['postal_code'],
+#             username=self.validated_data['username'],
+#         )
+#         password = self.validated_data['password']
+#         password2 = self.validated_data['password2']
+#         email = self.validated_data['email']
+#
+#         if password != password2:
+#             raise serializers.ValidationError({'password': 'Passwords must be matched'})
+#         if EmailAddress.objects.filter(email=email):
+#             raise serializers.ValidationError({'email': 'Email is already registered'})
+#
+#         user.set_password(password)
+#         user.save()
+#         return user
+#
 
 class CustomRegisterAccountSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
@@ -12,7 +49,7 @@ class CustomRegisterAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'pk', 'username', 'email', 'postal_code', 'password', 'password2', 'type'
+            'pk', 'username', 'email', 'postal_code', 'phone_number', 'password', 'password2'
         ]
         read_only_fields = [
             'type'
@@ -21,40 +58,67 @@ class CustomRegisterAccountSerializer(serializers.ModelSerializer):
             'password': {'write_only': True},
         }
 
-    def save(self):
-        user = User(
-            # first_name=self.validated_data['first_name'],
-            # last_name=self.validated_data['last_name'],
-            email=self.validated_data['email'],
-            postal_code=self.validated_data['postal_code'],
-            username=self.validated_data['username'],
-        )
-        password = self.validated_data['password']
-        password2 = self.validated_data['password2']
-        email = self.validated_data['email']
+    def validate(self, attrs):
+        email = attrs.get('email')
+        username = attrs.get('username')
+        phone_number = attrs.get('phone_number')
+        password = attrs.get('password')
+        password2 = attrs.get('password2')
+
+        if not email and not username and not phone_number:
+            raise serializers.ValidationError('Either email or username or phone_number must be provided.')
+
+        if email and User.objects.filter(email=email).exists():
+            raise serializers.ValidationError({'email': 'Email is already registered.'})
+
+        if username and User.objects.filter(username=username).exists():
+            raise serializers.ValidationError({'username': 'Username is already registered.'})
+
+        if phone_number and User.objects.filter(phone_number=phone_number).exists():
+            raise serializers.ValidationError({'phone_number': 'Phone Number is already registered.'})
 
         if password != password2:
-            raise serializers.ValidationError({'password': 'Passwords must be matched'})
-        if EmailAddress.objects.filter(email=email):
-            raise serializers.ValidationError({'email': 'Email is already registered'})
+            raise serializers.ValidationError({'password': 'Passwords must match.'})
 
+        return attrs
+
+    def save(self, **kwargs):
+        user = User(
+            email=self.validated_data.get('email'),
+            postal_code=self.validated_data.get('postal_code'),
+            username=self.validated_data.get('username'),
+            phone_number=self.validated_data.get('phone_number'),
+        )
+        password = self.validated_data.get('password')
         user.set_password(password)
         user.save()
         return user
 
 
-class CustomLoginSerializer(serializers.ModelSerializer):
-    email = serializers.CharField(style={'input_type': 'email'})
-    password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
+class CustomLoginSerializer(serializers.Serializer):
+    username = serializers.CharField(required=False)
+    email = serializers.EmailField(required=False)
+    phone_number = serializers.CharField(required=False)
+    password = serializers.CharField(style={'input_type': 'password'})
 
-    class Meta:
-        model = User
-        fields = [
-            'username', 'email', 'password'
-        ]
-        extra_kwargs = {
-            'password': {'write_only': True}
-        }
+    def validate(self, attrs):
+        username = attrs.get('username')
+        email = attrs.get('email')
+        phone_number = attrs.get('phone_number')
+        password = attrs.get('password')
+
+        if not username and not email and not phone_number:
+            raise serializers.ValidationError('Either email or username or phone_number must be provided.')
+
+        user = authenticate(username=username, email=email, phone_number=phone_number, password=password)
+        if user is None:
+            raise serializers.ValidationError('Invalid credentials.')
+
+        if not user.is_active:
+            raise serializers.ValidationError('User account is disabled.')
+
+        attrs['user'] = user
+        return attrs
 
 
 class RegisterSerializerRestAPI(RegisterSerializer):

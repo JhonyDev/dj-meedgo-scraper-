@@ -13,5 +13,7 @@ urlpatterns = [
     path('grab-orders/', views.GrabOrdersView.as_view()),
     path('grab-orders/<int:pk>/', views.GrabOrderDetailView.as_view()),
     path('medicine-offer/<int:pk>/', views.MedicineOfferUpdateView.as_view()),
+
+    # ADMIN PANEL SCRAPE TASK
     path('run-task/<int:object_id>/', views.custom_method_view, name='object-celery'),
 ]

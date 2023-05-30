@@ -18,6 +18,7 @@ jobs:
             python manage.py makemigrations
             python manage.py migrate
             sudo systemctl restart gunicorn.service
+            sudo systemctl restart gunicorn.socket
             sudo systemctl restart celery.service
             python manage.py collectstatic --noinput
           host: ${{ secrets.REMOTE_HOST }}

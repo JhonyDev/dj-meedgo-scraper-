@@ -47,7 +47,6 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
-
 """ APPS ---------------------------------------------------------------------------------------"""
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -148,6 +147,7 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 }
 
 AUTHENTICATION_BACKENDS = [
+    'src.accounts.backends.CustomAuthBackend',
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
