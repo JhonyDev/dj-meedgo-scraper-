@@ -146,8 +146,9 @@ class GrabOrdersView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def dispatch(self, request, *args, **kwargs):
-        for medicine in self.get_queryset():
-            balance_medicines(medicine)
+        if self.request.user:
+            for medicine in GrabUserBridge.objects.filter(user=self.request.user):
+                balance_medicines(medicine)
         return super().dispatch(request, *args, **kwargs)
 
     def get_serializer_class(self):
