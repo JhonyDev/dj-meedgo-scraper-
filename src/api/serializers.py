@@ -162,6 +162,12 @@ class GrabbedOrderRequestsListSerializer(serializers.ModelSerializer):
         model = GrabUserBridge
         fields = ['pk', 'order_request', 'cost_comparisons', 'medicine_offers', 'offered_total_price', 'is_active']
 
+    def get_fields(self):
+        fields = super().get_fields()
+        fields['order_request'].read_only = True
+        fields['is_active'].read_only = True
+        return fields
+
 
 """ SIMPLE SERIALIZERS """
 

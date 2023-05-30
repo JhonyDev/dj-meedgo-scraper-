@@ -161,6 +161,14 @@ class GrabOrdersView(generics.ListCreateAPIView):
         instance = serializer.save()
         instance.user = self.request.user
         instance.save()
+        return instance
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance = self.perform_create(serializer)
+        return Response(GrabbedOrderRequestsListSerializer(instance, many=False).data,
+                        status=status.HTTP_201_CREATED)
 
 
 class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -179,6 +187,13 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
     def dispatch(self, request, *args, **kwargs):
         balance_medicines(self.get_object())
         return super().dispatch(request, *args, **kwargs)
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        if instance.is_active:
+            data = GrabbedOrderRequestsListSerializer(instance).data
+            send_message_to_group(f'order_request-{instance.order_request.pk}', data)
+            print(data)
 
 
 class MedicineOfferUpdateView(generics.RetrieveUpdateAPIView):
