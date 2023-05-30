@@ -6,7 +6,8 @@ from .utils import get_platform_dict, FLIPCART
 
 
 class MedicineView(admin.ModelAdmin):
-    list_display = ['pk', 'Scrape', 'name', 'salt_name', 'price', 'discounted_price', 'is_available', 'platform',
+    list_display = ['pk', 'Scrape', 'scrape_all', 'name', 'salt_name', 'price', 'discounted_price', 'is_available',
+                    'platform',
                     'last_updated']
     search_fields = ['name', 'salt_name']
     list_filter = ['platform', 'is_available']
@@ -15,6 +16,11 @@ class MedicineView(admin.ModelAdmin):
         if obj.platform == get_platform_dict()[FLIPCART]:
             return format_html(f'<a class="button" disabled>Scrape</a>')
         return format_html(f'<a class="button" href="/api/run-task/{obj.pk}/">Scrape</a>')
+
+    def scrape_all(self, obj):
+        if obj.platform == get_platform_dict()[FLIPCART]:
+            return format_html(f'<a class="button" disabled>Scrape All</a>')
+        return format_html(f'<a class="button" href="/api/run-task/{obj.pk}/?all=True">Scrape All</a>')
 
     Scrape.short_description = 'Scrape Again'
 

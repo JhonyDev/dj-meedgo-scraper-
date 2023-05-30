@@ -227,6 +227,26 @@ def custom_method_view(request, object_id):
     return redirect('admin:api_medicine_change', object_id)
 
 
+def custom_method_all_view(request, object_id):
+    med = Medicine.objects.get(pk=object_id)
+    if med.platform == get_platform_dict()[PHARM_EASY]:
+        for med_ in Medicine.objects.filter(
+                platform=get_platform_dict()[PHARM_EASY]).values_list('pk', flat=True):
+            update_medicine_pharmeasy.delay(med_, is_forced=True)
+        update_medicine_pharmeasy(med.pk, is_forced=True)
+    if med.platform == get_platform_dict()[NET_MEDS]:
+        for med_ in Medicine.objects.filter(
+                platform=get_platform_dict()[NET_MEDS]).values_list('pk', flat=True):
+            update_medicine.delay(med_, is_forced=True)
+        update_medicine(med.pk, is_forced=True)
+    if med.platform == get_platform_dict()[ONE_MG]:
+        for med_ in Medicine.objects.filter(
+                platform=get_platform_dict()[ONE_MG]).values_list('pk', flat=True):
+            update_medicine_1mg.delay(med_, is_forced=True)
+        update_medicine_1mg(med.pk, is_forced=True)
+    return redirect('admin:api_medicine_change', object_id)
+
+
 def lobby(request):
     Medicine.objects.filter(salt_name=None, price=None, discounted_price=None, name='').delete()
     return render(request, 'api/lobby.html')
