@@ -8,6 +8,7 @@ import urllib.parse
 import requests
 from bs4 import BeautifulSoup
 from celery import shared_task
+from django.core.cache import cache
 from django.utils import timezone
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -17,6 +18,20 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from src.api.models import Medicine
 from src.api.utils import get_platform_dict, NET_MEDS, PHARM_EASY, ONE_MG, FLIPCART
+
+
+class WebDriverCache:
+    _cached_webdriver = None
+
+    @classmethod
+    def get_webdriver(cls):
+        if cls._cached_webdriver is None:
+            options = Options()
+            options.add_argument('--headless')
+            options.add_argument("--force-device-scale-factor=0.5")
+            cls._cached_webdriver = webdriver.Chrome(options=options)
+        return cls._cached_webdriver
+
 
 # NET-MEDS
 limit_threading = True
@@ -30,10 +45,7 @@ def scrape_netmeds(self, param):
     param = urllib.parse.quote(param)
     param = param.replace('/', '')
     url = f"https://www.netmeds.com/catalogsearch/result/{param}/all"
-    options = Options()
-    options.add_argument('--headless')
-    options.add_argument("--force-device-scale-factor=0.5")
-    driver = webdriver.Chrome(options=options)
+    driver = WebDriverCache.get_webdriver()
     driver.get(url)
     wait = WebDriverWait(driver, 10)
     wait.until(EC.presence_of_element_located((By.TAG_NAME, "ol")))
@@ -155,10 +167,7 @@ def scrape_1mg(self, param):
     param = param.replace('/', '')
     print(param)
     url = f"https://www.1mg.com/search/all?name={param}"
-    options = Options()
-    options.add_argument('--headless')
-    options.add_argument("--force-device-scale-factor=0.5")
-    driver = webdriver.Chrome(options=options)
+    driver = WebDriverCache.get_webdriver()
     driver.get(url)
     ul_tag = driver.find_elements(By.CLASS_NAME, "style__container___cTDz0")
     default_image = 'https://onemg.gumlet.io/w_150,c_fit,h_150,f_auto,q_auto/hx2gxivwmeoxxxsc1hix.png'
@@ -218,11 +227,14 @@ def update_medicine_1mg(self, med_pk, is_forced=False):
     if not is_forced:
         if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=15):
             return "Medicine already updated today!"
-    options = Options()
-    options.add_argument('--headless')
-    options.add_argument("--force-device-scale-factor=0.5")
-    driver = webdriver.Chrome(options=options)
-    driver.get(medicine.med_url)
+    driver = WebDriverCache.get_webdriver()
+    try:
+        driver.get(medicine.med_url)
+    except:
+        WebDriverCache._cached_webdriver = None
+        driver = WebDriverCache.get_webdriver()
+        driver.get(medicine.med_url)
+
     try:
         name = driver.find_element(By.CLASS_NAME, "DrugHeader__title-content___2ZaPo").text
     except:

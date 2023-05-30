@@ -236,6 +236,7 @@ def custom_method_all_view(request, object_id):
         Q(discounted_price__isnull=True) |
         Q(price=F('discounted_price'))
     )
+    print(queryset)
     if med.platform == get_platform_dict()[PHARM_EASY]:
         for med_ in queryset.filter(
                 platform=get_platform_dict()[PHARM_EASY]).values_list('pk', flat=True):
@@ -247,7 +248,7 @@ def custom_method_all_view(request, object_id):
             update_medicine.delay(med_, is_forced=True)
         update_medicine(med.pk, is_forced=True)
     if med.platform == get_platform_dict()[ONE_MG]:
-        for med_ in queryset.filter(
+        for med_ in Medicine.objects.filter(
                 platform=get_platform_dict()[ONE_MG]).values_list('pk', flat=True):
             update_medicine_1mg.delay(med_, is_forced=True)
         update_medicine_1mg(med.pk, is_forced=True)
