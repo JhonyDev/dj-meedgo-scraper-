@@ -21,7 +21,7 @@ class MedicineView(admin.ModelAdmin):
     def scrape_all_medicines_in(self, obj):
         if obj.platform == get_platform_dict()[FLIPCART]:
             return format_html(f'<a class="button" disabled>Scrape All</a>')
-        return format_html(f'<a class="button" href="/api/run-task/{obj.pk}/?all=True">{obj.get_platform()}</a>')
+        return format_html(f'<a class="button" href="/api/run-task/{obj.pk}/all/">{obj.get_platform()}</a>')
 
     Scrape.short_description = 'Scrape Again'
 

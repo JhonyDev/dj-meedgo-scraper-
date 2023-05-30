@@ -226,8 +226,10 @@ def update_medicine_1mg(self, med_pk, is_forced=False):
     try:
         name = driver.find_element(By.CLASS_NAME, "DrugHeader__title-content___2ZaPo").text
     except:
-        name = None
-
+        try:
+            name = driver.find_element(By.CLASS_NAME, "ProductTitle__product-title___3QMYH").text
+        except:
+            name = None
     try:
         salt_name = driver.find_element(By.CSS_SELECTOR, '.saltInfo.DrugHeader__meta-value___vqYM0').text
     except:
