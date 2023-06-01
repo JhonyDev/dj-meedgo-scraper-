@@ -64,6 +64,7 @@ def send_message_to_group(group_name, message):
     #         'type': 'send_message',
     #         'message': message
     #     })
+    print("SINGLETON CONSUMER")
     print(ConsumerSingleton.get_consumer())
     ConsumerSingleton.get_consumer().send(text_data=json.dumps({
         'type': 'message',
