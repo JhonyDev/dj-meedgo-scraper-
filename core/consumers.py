@@ -1,38 +1,38 @@
 import json
 
-from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.generic.websocket import WebsocketConsumer
 
 from src.api.singletons import ConsumerSingleton
 
 
-class NotificationConsumer(AsyncWebsocketConsumer):
-
-    async def connect(self):
+class NotificationConsumer(WebsocketConsumer):
+    def connect(self):
         if self.scope.get('is_encoded') is None:
             group_name = self.scope['query_string'].decode('utf-8')
         else:
             group_name = self.scope['query_string']
         group_name = str(group_name).replace('group_name=', '')
         self.room_group_name = group_name
-        await self.channel_layer.group_add(
+        self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
 
-        await self.accept()
+        self.accept()
         print("Connection accepted")
         ConsumerSingleton.set_consumer(self)
-        await self.send(text_data=json.dumps({
+        print(self)
+        self.send(json.dumps({
             'type': 'message',
             'message': "CONNECTION ESTABLISHED WITH NEW SOCKET"
         }))
 
-    async def receive(self, text_data):
+    def receive(self, text_data):
         text_data_json = json.loads(text_data)
         try:
             message = text_data_json['message']
             print(f"Message: {message}")
-            await self.channel_layer.group_send(
+            self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     'type': 'send_message',
@@ -42,9 +42,9 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         except:
             pass
 
-    async def send_message(self, event):
+    def send_message(self, event):
         message = event['message']
-        await self.send(text_data=json.dumps({
+        self.send(json.dumps({
             'type': 'object',
             'body': message
         }))
@@ -60,6 +60,7 @@ def send_message_to_group(group_name, message):
     #         'type': 'send_message',
     #         'message': message
     #     })
+    print(ConsumerSingleton.get_consumer())
     ConsumerSingleton.get_consumer().send(text_data=json.dumps({
         'type': 'message',
         'message': "CHECK FROM SINGLETON"
