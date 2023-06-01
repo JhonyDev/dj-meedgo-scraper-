@@ -81,7 +81,7 @@ class MedicineToCartView(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
-        send_message_to_group('15100', "CHECKING MESSAGE")
+        # send_message_to_group('15100', "CHECKING MESSAGE")
         return Response({'message': 'Please use POST Method. Provide "cart_id" to get Cart Data '
                                     'or Provide "medicine_id" to create new cart and add medicine'},
                         status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -117,6 +117,8 @@ class OrderRequestsView(generics.ListCreateAPIView):
         return super().get_serializer_class()
 
     def get_queryset(self):
+        send_message_to_group('15100', "asjdlksadjl")
+        print("asdjlkasjdl")
         return OrderRequest.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
@@ -128,7 +130,10 @@ class OrderRequestsView(generics.ListCreateAPIView):
             'total_price': instance.medicine_cart.medicines.aggregate(total=Sum('price'))['total'],
             'order_id': instance.id
         }
-        send_message_to_group(self.request.user.postal_code, order_request)
+        print(f"Postal Code - {self.request.user.postal_code}")
+        from core.consumers import NotificationConsumer
+        notification_consumer = NotificationConsumer()
+        notification_consumer.send_message_to_group(self.request.user.postal_code, order_request)
 
 
 class OrderRequestsLocalityView(generics.ListAPIView):
@@ -194,7 +199,7 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = serializer.save()
         if instance.is_active:
             data = GrabbedOrderRequestsListSerializer(instance).data
-            send_message_to_group(f'order_request-{instance.order_request.pk}', data)
+            # send_message_to_group(f'order_request-{instance.order_request.pk}', data)
             print(data)
 
 
