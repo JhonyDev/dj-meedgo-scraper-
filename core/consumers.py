@@ -39,13 +39,14 @@ class NotificationConsumer(WebsocketConsumer):
 
     def send_message(self, event):
         message = event['message']
+        group = event['group']
         self.send(text_data=json.dumps({
             'type': 'object',
             'body': message
         }))
         self.send(text_data=json.dumps({
             'type': 'message',
-            'body': 'THIS IS DEBUG TEST'
+            'body': f'THIS IS DEBUG TEST - {group} - {message}'
         }))
 
         print("Message Sent")
@@ -57,6 +58,8 @@ def send_message_to_group(group_name, message):
         group_name,
         {
             'type': 'send_message',
-            'message': message
+            'message': message,
+            'group': group_name
+
         }
     )
