@@ -117,8 +117,8 @@ class OrderRequestsView(generics.ListCreateAPIView):
         return super().get_serializer_class()
 
     def get_queryset(self):
+        send_message_to_group("15100", "asdkjsahdasd")
         print(f"Postal Code - {self.request.user.postal_code}")
-        send_message_to_group(f'{self.request.user.postal_code}', "asjdlksadjl")
         return OrderRequest.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
@@ -130,8 +130,8 @@ class OrderRequestsView(generics.ListCreateAPIView):
             'total_price': instance.medicine_cart.medicines.aggregate(total=Sum('price'))['total'],
             'order_id': instance.id
         }
-        print(f"Postal Code - {self.request.user.postal_code}")
         send_message_to_group(f'{self.request.user.postal_code}', order_request)
+        print(f"Postal Code - {self.request.user.postal_code}")
 
 
 class OrderRequestsLocalityView(generics.ListAPIView):
@@ -197,7 +197,7 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = serializer.save()
         if instance.is_active:
             data = GrabbedOrderRequestsListSerializer(instance).data
-            # send_message_to_group(f'order_request-{instance.order_request.pk}', data)
+            send_message_to_group(f'order_request-{instance.order_request.pk}', data)
             print(data)
 
 

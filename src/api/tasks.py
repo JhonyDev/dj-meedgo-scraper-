@@ -13,6 +13,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
+from core.consumers import send_message_to_group
 from src.api.models import Medicine
 from src.api.singletons import WebDriverCache
 from src.api.utils import get_platform_dict, NET_MEDS, PHARM_EASY, ONE_MG, FLIPCART
@@ -514,3 +515,4 @@ def scrape_flipkart(self, param):
         except Exception as e:
             print(f"EXCEPTION - {e}")
     return "Done"
+

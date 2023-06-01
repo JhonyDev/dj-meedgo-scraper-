@@ -28,3 +28,4 @@ pandas==1.3.5
 Scrapy==2.8.0
 websocket
 websocket-client
+PyExecJS
