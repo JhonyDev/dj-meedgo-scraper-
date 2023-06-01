@@ -17,7 +17,6 @@ class WebDriverCache:
 
 
 class ConsumerSingleton:
-    cached_consumer = None
 
     @classmethod
     def get_consumer(cls):
