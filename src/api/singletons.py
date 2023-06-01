@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -20,8 +21,8 @@ class ConsumerSingleton:
 
     @classmethod
     def get_consumer(cls):
-        return cls.cached_consumer
+        return cache.get('my_object')
 
     @classmethod
     def set_consumer(cls, consumer):
-        cls.cached_consumer = consumer
+        cache.set('my_object', consumer)
