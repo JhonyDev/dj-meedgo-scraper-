@@ -128,6 +128,7 @@ class OrderRequestsView(generics.ListCreateAPIView):
             'total_price': instance.medicine_cart.medicines.aggregate(total=Sum('price'))['total'],
             'order_id': instance.id
         }
+        print("Notifying The Group")
         send_message_to_group(self.request.user.postal_code, order_request)
 
 
