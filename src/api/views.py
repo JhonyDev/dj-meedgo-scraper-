@@ -117,8 +117,8 @@ class OrderRequestsView(generics.ListCreateAPIView):
         return super().get_serializer_class()
 
     def get_queryset(self):
-        send_message_to_group('15100', "asjdlksadjl")
-        print("asdjlkasjdl")
+        print(f"Postal Code - {self.request.user.postal_code}")
+        send_message_to_group(f'{self.request.user.postal_code}', "asjdlksadjl")
         return OrderRequest.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
@@ -131,9 +131,7 @@ class OrderRequestsView(generics.ListCreateAPIView):
             'order_id': instance.id
         }
         print(f"Postal Code - {self.request.user.postal_code}")
-        from core.consumers import NotificationConsumer
-        notification_consumer = NotificationConsumer()
-        notification_consumer.send_message_to_group(self.request.user.postal_code, order_request)
+        send_message_to_group(f'{self.request.user.postal_code}', order_request)
 
 
 class OrderRequestsLocalityView(generics.ListAPIView):
