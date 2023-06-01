@@ -27,6 +27,10 @@ class NotificationConsumer(WebsocketConsumer):
             'message': "CONNECTION ESTABLISHED WITH NEW SOCKET"
         }))
 
+    def disconnect(self, close_code):
+        # Override the disconnect method to prevent closing
+        pass
+
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
         try:
