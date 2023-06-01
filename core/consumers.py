@@ -54,13 +54,10 @@ class NotificationConsumer(WebsocketConsumer):
 
 
 def send_message_to_group(group_name, message):
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
+    async_to_sync(get_channel_layer().group_send)(
         group_name,
         {
             'type': 'send_message',
-            'message': message,
-            'group': group_name
-
+            'message': message
         }
     )
