@@ -1,42 +1,39 @@
 import json
 
-from channels.generic.websocket import WebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.layers import get_channel_layer
 
 from src.api.singletons import ConsumerSingleton
 
 
-class NotificationConsumer(WebsocketConsumer):
-    def connect(self):
+class NotificationConsumer(AsyncWebsocketConsumer):
+
+    async def connect(self):
         if self.scope.get('is_encoded') is None:
             group_name = self.scope['query_string'].decode('utf-8')
         else:
             group_name = self.scope['query_string']
         group_name = str(group_name).replace('group_name=', '')
         self.room_group_name = group_name
-        self.channel_layer.group_add(
+        await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
 
-        self.accept()
+        await self.accept()
         print("Connection accepted")
         ConsumerSingleton.set_consumer(self)
-        print(self)
-        self.send(json.dumps({
+        await self.send(text_data=json.dumps({
             'type': 'message',
             'message': "CONNECTION ESTABLISHED WITH NEW SOCKET"
         }))
 
-    def disconnect(self, close_code):
-        # Override the disconnect method to prevent closing
-        pass
-
-    def receive(self, text_data):
+    async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         try:
             message = text_data_json['message']
             print(f"Message: {message}")
-            self.channel_layer.group_send(
+            await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     'type': 'send_message',
@@ -46,9 +43,9 @@ class NotificationConsumer(WebsocketConsumer):
         except:
             pass
 
-    def send_message(self, event):
+    async def send_message(self, event):
         message = event['message']
-        self.send(json.dumps({
+        await self.send(text_data=json.dumps({
             'type': 'object',
             'body': message
         }))
@@ -56,19 +53,14 @@ class NotificationConsumer(WebsocketConsumer):
 
 
 def send_message_to_group(group_name, message):
-    # from asgiref.sync import async_to_sync
-    # channel_layer = get_channel_layer()
-    # async_to_sync(channel_layer.group_send)(
-    #     group_name,
-    #     {
-    #         'type': 'send_message',
-    #         'message': message
-    #     })
-    print("SINGLETON CONSUMER")
+    from asgiref.sync import async_to_sync
     print(ConsumerSingleton.get_consumer())
-    ConsumerSingleton.get_consumer().send(text_data=json.dumps({
-        'type': 'message',
-        'message': "CHECK FROM SINGLETON"
-    }))
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        group_name,
+        {
+            'type': 'send_message',
+            'message': message
+        })
 
     print("MESSAGE SHOULD BE SENT")
