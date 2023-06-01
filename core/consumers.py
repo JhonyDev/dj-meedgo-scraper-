@@ -39,7 +39,10 @@ class NotificationConsumer(WebsocketConsumer):
 
     def send_message(self, event):
         message = event['message']
-        group = event['group']
+        try:
+            group = event['group']
+        except:
+            group = "None"
         self.send(text_data=json.dumps({
             'type': 'object',
             'body': message
@@ -48,7 +51,6 @@ class NotificationConsumer(WebsocketConsumer):
             'type': 'message',
             'body': f'THIS IS DEBUG TEST - {group} - {message}'
         }))
-
         print("Message Sent")
 
 
