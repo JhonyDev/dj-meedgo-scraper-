@@ -165,7 +165,6 @@ def scrape_1mg(self, param):
         WebDriverCache._cached_webdriver = None
         driver = WebDriverCache.get_webdriver()
         driver.get(url)
-    driver.get(url)
     ul_tag = driver.find_elements(By.CLASS_NAME, "style__container___cTDz0")
     default_image = 'https://onemg.gumlet.io/w_150,c_fit,h_150,f_auto,q_auto/hx2gxivwmeoxxxsc1hix.png'
     for ul_ in ul_tag:

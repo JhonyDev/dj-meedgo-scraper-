@@ -24,15 +24,18 @@ class NotificationConsumer(WebsocketConsumer):
 
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        message = text_data_json['message']
-        print(f"Message: {message}")
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
-            {
-                'type': 'send_message',
-                'message': message
-            }
-        )
+        try:
+            message = text_data_json['message']
+            print(f"Message: {message}")
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'send_message',
+                    'message': message
+                }
+            )
+        except:
+            pass
 
     def send_message(self, event):
         message = event['message']
