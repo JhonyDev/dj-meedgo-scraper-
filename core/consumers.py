@@ -43,6 +43,11 @@ class NotificationConsumer(WebsocketConsumer):
             'type': 'object',
             'body': message
         }))
+        self.send(text_data=json.dumps({
+            'type': 'message',
+            'body': 'THIS IS DEBUG TEST'
+        }))
+
         print("Message Sent")
 
 
