@@ -39,6 +39,9 @@ class MedicineCart(models.Model):
     def __str__(self):
         return str(self.pk)
 
+    class Meta:
+        ordering = ['-pk']
+
 
 class OrderRequest(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, default=None)
@@ -67,6 +70,9 @@ class MedicineOfferBridge(models.Model):
     def __str__(self):
         return str(self.pk)
 
+    class Meta:
+        ordering = ['-pk']
+
 
 class GrabUserBridge(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, default=None)
@@ -76,6 +82,9 @@ class GrabUserBridge(models.Model):
     def __str__(self):
         return str(self.pk)
 
+    class Meta:
+        ordering = ['-pk']
+
 
 class MedicineCartBridge(models.Model):
     medicine = models.ForeignKey(Medicine, null=True, blank=True, default=None, on_delete=models.CASCADE)
@@ -84,6 +93,9 @@ class MedicineCartBridge(models.Model):
 
     def __str__(self):
         return str(self.pk)
+
+    class Meta:
+        ordering = ['-pk']
 
 
 """======CHATTING-SEQUENCE======="""
@@ -96,3 +108,6 @@ class ConversationHistory(models.Model):
 
     def __str__(self):
         return str(self.pk)
+
+    class Meta:
+        ordering = ['-pk']
