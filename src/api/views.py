@@ -13,7 +13,7 @@ from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, Medici
 from .serializers import MedicineSerializer, MedicineToCartSerializer, \
     OrderRequestListSerializer, OrderRequestCreateSerializer, GrabbedOrderRequestsListSerializer, \
     GrabbedOrderRequestsCreateSerializer, GrabbedOrderRequestsUpdateSerializer, MedicineOfferSerializer, \
-    MedicineOfferUpdateSerializer
+    MedicineOfferUpdateSerializer, LocalityOrderRequestListSerializer
 from .tasks import scrape_pharmeasy, update_medicine_pharmeasy, scrape_1mg, scrape_flipkart, scrape_netmeds, \
     update_medicine, \
     update_medicine_1mg
@@ -145,10 +145,11 @@ class OrderRequestsView(generics.ListCreateAPIView):
 class OrderRequestsLocalityView(generics.ListAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = OrderRequestListSerializer
+    serializer_class = LocalityOrderRequestListSerializer
 
     def get_queryset(self):
-        return OrderRequest.objects.filter(user__postal_code=self.request.user.postal_code)
+        grabs = GrabUserBridge.objects.filter(user=self.request.user).values_list('order_request__pk', flat=True)
+        return OrderRequest.objects.filter(user__postal_code=self.request.user.postal_code).exclude(pk__in=grabs)
 
 
 class GrabOrdersView(generics.ListCreateAPIView):

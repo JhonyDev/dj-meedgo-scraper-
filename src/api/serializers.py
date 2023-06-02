@@ -1,3 +1,4 @@
+from django.db.models import Sum
 from rest_framework import serializers
 
 from src.accounts.models import User
@@ -94,6 +95,17 @@ class OrderRequestListSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderRequest
         fields = ['pk', 'medicine_cart']
+
+
+class LocalityOrderRequestListSerializer(serializers.ModelSerializer):
+    total = serializers.SerializerMethodField('get_total_cost')
+
+    def get_total_cost(self, q):
+        return q.medicine_cart.medicines.aggregate(total=Sum('price'))['total']
+
+    class Meta:
+        model = OrderRequest
+        fields = ['pk', 'total']
 
 
 class GrabbedOrderRequestsCreateSerializer(serializers.ModelSerializer):
