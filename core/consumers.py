@@ -1,5 +1,4 @@
 import json
-from time import sleep
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
@@ -53,14 +52,11 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 def send_message_to_group(group_name, message):
     from asgiref.sync import async_to_sync
     channel_layer = get_channel_layer()
-
-    for x in range(10):
-        async_to_sync(channel_layer.group_send)(
-            group_name,
-            {
-                'type': 'send_message',
-                'message': message
-            })
-        sleep(.1)
+    async_to_sync(channel_layer.group_send)(
+        group_name,
+        {
+            'type': 'send_message',
+            'message': message
+        })
 
     print("MESSAGE SHOULD BE SENT")
