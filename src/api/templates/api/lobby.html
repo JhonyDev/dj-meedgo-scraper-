@@ -17,8 +17,8 @@
 <div id="messages"></div>
 
 <script type="text/javascript">
-    {#let url = `ws://127.0.0.1:8000/ws/socket-server/?group_name=15100`;#}
-    let url = `wss://meedgo.jhonydev.com/ws/socket-server/?group_name=15100`;
+    let url = `ws://127.0.0.1:8000/ws/socket-server/?group_name=15100`;
+    {#let url = `wss://meedgo.jhonydev.com/ws/socket-server/?group_name=15100`;#}
     const chatSocket = new WebSocket(url);
     chatSocket.onmessage = function (e) {
         let data = JSON.parse(e.data);

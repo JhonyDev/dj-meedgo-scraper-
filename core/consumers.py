@@ -1,9 +1,8 @@
 import json
+from time import sleep
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
-
-from src.api.singletons import ConsumerSingleton
 
 
 class NotificationConsumer(AsyncWebsocketConsumer):
@@ -22,7 +21,6 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
         print("Connection accepted")
-        ConsumerSingleton.set_consumer(self)
         await self.send(text_data=json.dumps({
             'type': 'message',
             'message': "CONNECTION ESTABLISHED WITH NEW SOCKET"
@@ -54,115 +52,15 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
 def send_message_to_group(group_name, message):
     from asgiref.sync import async_to_sync
-    print(ConsumerSingleton.get_consumer())
     channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            'type': 'send_message',
-            'message': message
-        })
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            'type': 'send_message',
-            'message': message
-        })
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            'type': 'send_message',
-            'message': message
-        })
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            'type': 'send_message',
-            'message': message
-        })
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            'type': 'send_message',
-            'message': message
-        })
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            'type': 'send_message',
-            'message': message
-        })
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            'type': 'send_message',
-            'message': message
-        })
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            'type': 'send_message',
-            'message': message
-        })
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            'type': 'send_message',
-            'message': message
-        })
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            'type': 'send_message',
-            'message': message
-        })
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            'type': 'send_message',
-            'message': message
-        })
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            'type': 'send_message',
-            'message': message
-        })
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            'type': 'send_message',
-            'message': message
-        })
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            'type': 'send_message',
-            'message': message
-        })
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            'type': 'send_message',
-            'message': message
-        })
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            'type': 'send_message',
-            'message': message
-        })
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            'type': 'send_message',
-            'message': message
-        })
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            'type': 'send_message',
-            'message': message
-        })
+
+    for x in range(10):
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {
+                'type': 'send_message',
+                'message': message
+            })
+        sleep(.1)
 
     print("MESSAGE SHOULD BE SENT")
