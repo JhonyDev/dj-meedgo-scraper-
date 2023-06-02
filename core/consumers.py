@@ -28,7 +28,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         try:
-            message = text_data_json['message']
+            message = text_data_json.get('message')
             print(f"Message: {message}")
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -41,7 +41,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             pass
 
     async def send_message(self, event):
-        message = event['message']
+        message = event.get('message')
         await self.send(text_data=json.dumps({
             'type': 'object',
             'body': message
