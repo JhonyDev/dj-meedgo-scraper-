@@ -1,4 +1,3 @@
-from channels.layers import get_channel_layer
 from django.db.models import Sum, Q, F
 from django.shortcuts import redirect, render
 from rest_framework import generics, permissions, status
@@ -132,7 +131,14 @@ class OrderRequestsView(generics.ListCreateAPIView):
             'order_id': instance.id
         }
         send_message_to_group(f'{self.request.user.postal_code}', order_request)
-        print(f"Postal Code - {self.request.user.postal_code}")
+        return instance
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance = self.perform_create(serializer)
+        return Response(OrderRequestListSerializer(instance, many=False).data,
+                        status=status.HTTP_201_CREATED)
 
 
 class OrderRequestsLocalityView(generics.ListAPIView):
