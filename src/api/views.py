@@ -261,14 +261,3 @@ def custom_method_all_view(request, object_id):
 def lobby(request):
     Medicine.objects.filter(salt_name=None, price=None, discounted_price=None, name='').delete()
     return render(request, 'api/lobby.html')
-
-
-async def async_method(request):
-    channel_layer = get_channel_layer()
-    await channel_layer.group_send(
-        '15100',
-        {
-            'type': 'send_message',
-            'message': "message"
-        })
-    return render(request, 'api/lobby.html')

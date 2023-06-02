@@ -17,5 +17,4 @@ urlpatterns = [
     # ADMIN PANEL SCRAPE TASK
     path('run-task/<int:object_id>/', views.custom_method_view, name='object-celery'),
     path('run-task/<int:object_id>/all/', views.custom_method_all_view, name='object-celery-all'),
-    path('run-async/', views.async_method),
 ]

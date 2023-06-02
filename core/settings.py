@@ -87,11 +87,12 @@ SWAGGER_SETTINGS = {
     'DEFAULT_INFO': 'core.urls.swagger_info',
 }
 # Replace 'myapp' with your Django app namea
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
-    },
-}
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels.layers.InMemoryChannelLayer',
+#     },
+# }
+
 
 """ MIDDLE WARES ----------------------------------------------------------------------------"""
 MIDDLEWARE = [
@@ -152,9 +153,17 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application'
+# WSGI_APPLICATION = 'core.wsgi.application'
 ASGI_APPLICATION = 'core.asgi.application'
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+    },
+}
 """ DATABASES ------------------------------------------------------------------------------------"""
 
 if not SERVER:
