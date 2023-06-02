@@ -148,8 +148,10 @@ class OrderRequestsLocalityView(generics.ListAPIView):
     serializer_class = LocalityOrderRequestListSerializer
 
     def get_queryset(self):
-        grabs = GrabUserBridge.objects.filter(user=self.request.user).values_list('order_request__pk', flat=True)
-        return OrderRequest.objects.filter(user__postal_code=self.request.user.postal_code).exclude(pk__in=grabs)
+        if self.request.GET.get('scope') == 'missed':
+            grabs = GrabUserBridge.objects.filter(user=self.request.user).values_list('order_request__pk', flat=True)
+            return OrderRequest.objects.filter(user__postal_code=self.request.user.postal_code).exclude(pk__in=grabs)
+        return OrderRequest.objects.filter(user__postal_code=self.request.user.postal_code)
 
 
 class GrabOrdersView(generics.ListCreateAPIView):
