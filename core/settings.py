@@ -155,15 +155,12 @@ AUTHENTICATION_BACKENDS = [
 
 # WSGI_APPLICATION = 'core.wsgi.application'
 ASGI_APPLICATION = 'core.asgi.application'
-
 CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("localhost", 6379)],
-        },
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }
+
 """ DATABASES ------------------------------------------------------------------------------------"""
 
 if not SERVER:

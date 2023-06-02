@@ -7,12 +7,14 @@ from channels.layers import get_channel_layer
 class NotificationConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
-        if self.scope.get('is_encoded') is None:
-            group_name = self.scope['query_string'].decode('utf-8')
-        else:
-            group_name = self.scope['query_string']
-        group_name = str(group_name).replace('group_name=', '')
-        self.room_group_name = group_name
+        # if self.scope.get('is_encoded') is None:
+        #     group_name = self.scope['query_string'].decode('utf-8')
+        # else:
+        #     group_name = self.scope['query_string']
+        # group_name = str(group_name).replace('group_name=', '')
+        #
+        self.room_group_name = "15100"
+
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
@@ -30,6 +32,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         try:
             message = text_data_json.get('message')
             print(f"Message: {message}")
+
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
