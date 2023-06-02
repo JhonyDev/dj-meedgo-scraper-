@@ -86,13 +86,6 @@ INSTALLED_APPS = [
 SWAGGER_SETTINGS = {
     'DEFAULT_INFO': 'core.urls.swagger_info',
 }
-# Replace 'myapp' with your Django app namea
-# CHANNEL_LAYERS = {
-#     'default': {
-#         'BACKEND': 'channels.layers.InMemoryChannelLayer',
-#     },
-# }
-
 
 """ MIDDLE WARES ----------------------------------------------------------------------------"""
 MIDDLEWARE = [
@@ -156,14 +149,10 @@ AUTHENTICATION_BACKENDS = [
 # WSGI_APPLICATION = 'core.wsgi.application'
 ASGI_APPLICATION = 'core.asgi.application'
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": ["redis://127.0.0.1:6379"],
-        },
-    },
-}
+
+# Replace 'myapp' with your Django app namea
+
+
 """ DATABASES ------------------------------------------------------------------------------------"""
 
 if not SERVER:
@@ -172,6 +161,14 @@ if not SERVER:
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         }
+    }
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": ["redis://127.0.0.1:6379"],
+            },
+        },
     }
 else:
     DATABASES = {
@@ -184,6 +181,12 @@ else:
             'PORT': '',
         }
     }
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        },
+    }
+
 
 """ VALIDATORS ------------------------------------------------------------------------------------"""
 

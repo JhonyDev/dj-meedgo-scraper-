@@ -13,7 +13,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-from core.consumers import send_message_to_group
 from src.api.models import Medicine
 from src.api.singletons import WebDriverCache
 from src.api.utils import get_platform_dict, NET_MEDS, PHARM_EASY, ONE_MG, FLIPCART
@@ -367,11 +366,13 @@ def scrape_pharmeasy(self, param):
             medicine.save()
             return_list.append(medicine.pk)
             update_medicine_pharmeasy.delay(medicine.id)
+            print("MEDICINE UPDATED")
             continue
         try:
             medicine = Medicine.objects.create(
                 is_available=is_available, name=medicine_name, price=medicine_price, med_url=a_url,
                 med_image=image_url, platform=get_platform_dict()[PHARM_EASY])
+            print("MEDICINE CREATED")
             if medicine_name:
                 update_medicine_pharmeasy.delay(medicine.id)
         except Exception as e:
@@ -515,4 +516,3 @@ def scrape_flipkart(self, param):
         except Exception as e:
             print(f"EXCEPTION - {e}")
     return "Done"
-
