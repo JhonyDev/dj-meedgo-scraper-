@@ -2,6 +2,7 @@ from dj_rest_auth.registration.serializers import RegisterSerializer
 from django.contrib.auth import authenticate
 from django.db import transaction
 from rest_framework import serializers
+
 from src.accounts.models import User
 
 
@@ -49,7 +50,7 @@ class CustomRegisterAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'pk', 'username', 'email', 'postal_code', 'phone_number', 'password', 'password2'
+            'pk', 'full_name', 'username', 'email', 'postal_code', 'phone_number', 'password', 'password2'
         ]
         read_only_fields = [
             'type'
@@ -84,6 +85,7 @@ class CustomRegisterAccountSerializer(serializers.ModelSerializer):
 
     def save(self, **kwargs):
         user = User(
+            full_name=self.validated_data.get('full_name'),
             email=self.validated_data.get('email'),
             postal_code=self.validated_data.get('postal_code'),
             username=self.validated_data.get('username'),

@@ -6,10 +6,31 @@ from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, Medici
 
 
 class UserSerializer(serializers.ModelSerializer):
+
+    def create(self, validated_data):
+        user = User(
+            full_name=self.validated_data['full_name'],
+            email=self.validated_data['email'],
+            username=self.validated_data['username'],
+        )
+        password = self.validated_data['password']
+        user.set_password(password)
+        user.save()
+        return user
+
+    def update(self, instance, validated_data):
+        instance.full_name = validated_data['full_name']
+        instance.email = validated_data['email']
+        instance.username = validated_data['username']
+        password = validated_data['password']
+        instance.set_password(password)
+        instance.save()
+        return instance
+
     class Meta:
         model = User
         fields = [
-            'pk', 'first_name', 'last_name', 'username', 'email', 'phone_number',
+            'pk', 'full_name', 'username', 'email', 'phone_number',
             'is_staff', 'postal_code', 'password'
         ]
 
@@ -21,40 +42,18 @@ class UserSerializer(serializers.ModelSerializer):
             'date_joined', 'type', 'is_superuser', 'is_staff', 'user_password'
         ]
 
-    def create(self, validated_data):
-        user = User(
-            first_name=self.validated_data['first_name'],
-            last_name=self.validated_data['last_name'],
-            email=self.validated_data['email'],
-            username=self.validated_data['username'],
-        )
-        password = self.validated_data['password']
-        user.set_password(password)
-        user.save()
-        return user
-
-    def update(self, instance, validated_data):
-        instance.first_name = validated_data['first_name']
-        instance.last_name = validated_data['last_name']
-        instance.email = validated_data['email']
-        instance.username = validated_data['username']
-        password = validated_data['password']
-        instance.set_password(password)
-        instance.save()
-        return instance
-
 
 class MedicineSerializer(serializers.ModelSerializer):
     platform = serializers.SerializerMethodField()
     price = serializers.SerializerMethodField('get_price')
 
+    def get_price(self, obj):
+        return obj.price if obj.price is not None else obj.discounted_price
+
     class Meta:
         model = Medicine
         fields = ['pk', 'name', 'salt_name', 'price', 'discounted_price', 'med_image', 'med_url', 'platform',
                   'is_available']
-
-    def get_price(self, obj):
-        return obj.price if obj.price is not None else obj.discounted_price
 
     def get_platform(self, obj):
         return obj.get_platform()
