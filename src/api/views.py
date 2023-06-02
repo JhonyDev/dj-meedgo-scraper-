@@ -128,7 +128,8 @@ class OrderRequestsView(generics.ListCreateAPIView):
         order_request = {
             'total_medicines': instance.medicine_cart.medicines.all().count(),
             'total_price': instance.medicine_cart.medicines.aggregate(total=Sum('price'))['total'],
-            'order_id': instance.id
+            'order_id': instance.id,
+            'chemist_id': instance.user.pk
         }
         send_message_to_group(f'{self.request.user.postal_code}', order_request)
         return instance
