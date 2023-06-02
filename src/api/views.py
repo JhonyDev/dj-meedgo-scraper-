@@ -117,9 +117,7 @@ class OrderRequestsView(generics.ListCreateAPIView):
         return super().get_serializer_class()
 
     def get_queryset(self):
-        send_message_to_group("15100", "asdkjsahdasd")
-        print(f"Postal Code - {self.request.user.postal_code}")
-        return OrderRequest.objects.filter(user=self.request.user)
+        return OrderRequest.objects.filter(user=self.request.user).order_by('-pk')
 
     def perform_create(self, serializer):
         instance = serializer.save()
