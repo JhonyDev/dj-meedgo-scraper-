@@ -81,3 +81,15 @@ class MedicineCartBridge(models.Model):
 
     def __str__(self):
         return str(self.pk)
+
+
+"""======CHATTING-SEQUENCE======="""
+
+
+class ConversationHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, default=None)
+    order_request = models.ForeignKey('OrderRequest', on_delete=models.CASCADE, null=True, blank=True, default=None)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return str(self.pk)

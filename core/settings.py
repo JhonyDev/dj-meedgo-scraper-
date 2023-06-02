@@ -149,7 +149,6 @@ AUTHENTICATION_BACKENDS = [
 # WSGI_APPLICATION = 'core.wsgi.application'
 ASGI_APPLICATION = 'core.asgi.application'
 
-
 # Replace 'myapp' with your Django app namea
 
 
@@ -163,13 +162,11 @@ if not SERVER:
         }
     }
     CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {
-                "hosts": ["redis://127.0.0.1:6379"],
-            },
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer',
         },
     }
+
 else:
     DATABASES = {
         'default': {
@@ -182,11 +179,13 @@ else:
         }
     }
     CHANNEL_LAYERS = {
-        'default': {
-            'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": ["redis://127.0.0.1:6379"],
+            },
         },
     }
-
 
 """ VALIDATORS ------------------------------------------------------------------------------------"""
 
