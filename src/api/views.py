@@ -204,7 +204,7 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = serializer.save()
         if instance.is_active:
             data = GrabbedOrderRequestsListSerializer(instance).data
-            send_message_to_group(f'order_request-{instance.order_request.pk}', data)
+            send_message_to_group(f'order-request-{instance.order_request.pk}', data)
             print(data)
 
 
