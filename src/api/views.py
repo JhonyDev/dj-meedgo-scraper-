@@ -7,7 +7,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 from core.consumers import send_message_to_group
-from core.settings import PHARM_EASY, NET_MEDS, ONE_MG
+from core.settings import PHARM_EASY, NET_MEDS, ONE_MG, FIRST_MESSAGE_WHEN_ORDER_ACCEPTED
 from . import utils
 from .bll import add_medicine_to_card
 from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge, ConversationHistory, \
@@ -214,7 +214,6 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
             print(data)
 
         if instance.is_accepted:
-            # MessageListSerializer(instance, many=False).data
             chemist = instance.user
             customer = self.request.user
             conversation_history = ConversationHistory.objects.filter(
@@ -226,7 +225,7 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
                     sending_user=customer, receiving_user=chemist)
             message = Message.objects.create(
                 conversation_history=conversation_history, author=self.request.user,
-                message=f'Hi, I have accepted your offer.')
+                message=FIRST_MESSAGE_WHEN_ORDER_ACCEPTED)
             send_message_to_group(f'receiver-{customer.pk}', MessageListSerializer(message, many=False).data)
             send_message_to_group(f'receiver-{chemist.pk}', MessageListSerializer(message, many=False).data)
             print(message)

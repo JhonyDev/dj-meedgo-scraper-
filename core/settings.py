@@ -44,6 +44,7 @@ NET_MEDS = 'Netmeds'
 ONE_MG = '1Mg'
 PHARM_EASY = 'PharmEasy'
 FLIPCART = 'Flipkart Health'
+FIRST_MESSAGE_WHEN_ORDER_ACCEPTED = 'Hi, I have accepted your offer.'
 
 LIST_PLATFORMS = [NET_MEDS, ONE_MG, PHARM_EASY, FLIPCART]
 
