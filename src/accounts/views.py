@@ -1,11 +1,23 @@
 from allauth.account.models import EmailAddress
-from rest_framework import permissions, status
+from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from src.accounts import authentication
-from src.accounts.serializers import CustomRegisterAccountSerializer, CustomLoginSerializer
-from src.api.serializers import UserSerializer
+from src.accounts.authentication import JWTAuthentication
+from src.accounts.models import License, LicenseEntry
+from src.accounts.serializers import CustomRegisterAccountSerializer, CustomLoginSerializer, LicenseSerializer, \
+    LicenseEntrySerializer
+from src.api.serializers import UserSerializer, UserProfileSerializer
+
+
+class UserUpdateView(generics.RetrieveUpdateAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UserProfileSerializer
+
+    def get_object(self):
+        return self.request.user
 
 
 class CustomRegisterAccountView(APIView):
@@ -49,3 +61,28 @@ class CustomLoginView(APIView):
             'refresh_token': refresh_token
         }
         return response
+
+
+class LicensesListView(generics.ListAPIView):
+    serializer_class = LicenseSerializer
+    queryset = License.objects.all()
+    permission_classes = [permissions.AllowAny]
+
+
+class LicenseEntryListCreateView(generics.ListCreateAPIView):
+    authentication_classes = [JWTAuthentication]
+    serializer_class = LicenseEntrySerializer
+    queryset = LicenseEntry.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        instance.user = self.request.user
+        instance.save()
+
+
+class LicenseEntryRUDView(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = [JWTAuthentication]
+    serializer_class = LicenseEntrySerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = LicenseEntry.objects.all()

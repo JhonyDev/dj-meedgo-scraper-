@@ -5,6 +5,14 @@ from src.accounts.models import User
 from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge, MedicineCartBridge
 
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        exclude = (
+            'password', 'first_name', 'last_name', 'type', 'date_joined', 'username', 'groups', 'is_superuser',
+            'is_staff', 'is_active', 'user_permissions')
+
+
 class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):

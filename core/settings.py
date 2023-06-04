@@ -33,6 +33,27 @@ DEBUG = env('DEBUG') == 'True'
 
 BASE_URL = "https://hotelelites.jhonydev.com/"
 
+SOLE_PROPRIETORSHIP = 'SP'
+PARTNERSHIP = 'P'
+LIMITED_LIABILITY_PARTNERSHIP = 'LLP'
+ONE_PERSON_COMPANY = 'OPC'
+PRIVATE_LIMITED = 'PL'
+PUBLIC_LIMITED = 'PPL'
+HINDU_UNDIVIDED_FAMILY = 'HUF'
+NET_MEDS = 'Netmeds'
+ONE_MG = '1Mg'
+PHARM_EASY = 'PharmEasy'
+FLIPCART = 'Flipkart Health'
+
+LIST_PLATFORMS = [NET_MEDS, ONE_MG, PHARM_EASY, FLIPCART]
+
+PLATFORMS = (
+    ('1', NET_MEDS),
+    ('2', ONE_MG),
+    ('3', PHARM_EASY),
+    ('4', FLIPCART),
+)
+
 if SERVER:
     SITE_ID = 4
     GOOGLE_CALLBACK_ADDRESS = ""
@@ -119,7 +140,6 @@ TEMPLATES = [
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    "DATE_INPUT_FORMATS": ["%d/%m/%Y"],
 
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
@@ -274,7 +294,6 @@ ACCOUNT_USERNAME_REQUIRED = False
 OLD_PASSWORD_FIELD_ENABLED = True
 LOGOUT_ON_PASSWORD_CHANGE = False
 ACCOUNT_EMAIL_VERIFICATION = 'none'
-DATE_INPUT_FORMATS = ('%d-%m-%Y', '%Y-%m-%d')
 
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
 CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'

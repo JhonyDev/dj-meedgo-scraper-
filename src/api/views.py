@@ -7,6 +7,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 from core.consumers import send_message_to_group
+from core.settings import PHARM_EASY, NET_MEDS, ONE_MG
 from . import utils
 from .bll import add_medicine_to_card
 from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge
@@ -17,7 +18,7 @@ from .serializers import MedicineSerializer, MedicineToCartSerializer, \
 from .tasks import scrape_pharmeasy, update_medicine_pharmeasy, scrape_1mg, scrape_flipkart, scrape_netmeds, \
     update_medicine, \
     update_medicine_1mg
-from .utils import get_platform_dict, PHARM_EASY, balance_medicines, NET_MEDS, ONE_MG
+from .utils import get_platform_dict, balance_medicines
 from ..accounts.authentication import JWTAuthentication
 
 """

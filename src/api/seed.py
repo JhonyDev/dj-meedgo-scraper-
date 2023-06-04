@@ -1,6 +1,7 @@
 from django_seed import Seed
 
-from .models import Medicine, PLATFORMS
+from .models import Medicine
+from core.settings import PLATFORMS
 
 
 def seed_data():

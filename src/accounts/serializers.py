@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate
 from django.db import transaction
 from rest_framework import serializers
 
-from src.accounts.models import User
+from src.accounts.models import User, License, LicenseEntry
 
 
 #
@@ -140,3 +140,15 @@ class RegisterSerializerRestAPI(RegisterSerializer):
         # user.profile_image = self.data.get('profile_image')
         user.save()
         return user
+
+
+class LicenseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = License
+        fields = '__all__'
+
+
+class LicenseEntrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LicenseEntry
+        exclude = ('user',)

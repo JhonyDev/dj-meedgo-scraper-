@@ -1,8 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from core.settings import PLATFORMS
 from src.accounts.models import User
-from src.api.utils import PLATFORMS
 
 
 class Medicine(models.Model):

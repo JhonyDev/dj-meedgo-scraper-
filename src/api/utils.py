@@ -1,17 +1,3 @@
-NET_MEDS = 'Netmeds'
-ONE_MG = '1Mg'
-PHARM_EASY = 'PharmEasy'
-FLIPCART = 'Flipkart Health'
-
-LIST_PLATFORMS = [NET_MEDS, ONE_MG, PHARM_EASY, FLIPCART]
-
-PLATFORMS = (
-    ('1', NET_MEDS),
-    ('2', ONE_MG),
-    ('3', PHARM_EASY),
-    ('4', FLIPCART),
-)
-
 
 def get_api_exception(detail, code):
     from rest_framework.exceptions import APIException
@@ -23,6 +9,7 @@ def get_api_exception(detail, code):
 
 
 def get_platform_dict():
+    from core.settings import PLATFORMS
     return {name: num for num, name in PLATFORMS}
 
 

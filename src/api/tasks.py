@@ -13,9 +13,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
+from core.settings import NET_MEDS, PHARM_EASY, ONE_MG, FLIPCART
 from src.api.models import Medicine
 from src.api.singletons import WebDriverCache
-from src.api.utils import get_platform_dict, NET_MEDS, PHARM_EASY, ONE_MG, FLIPCART
+from src.api.utils import get_platform_dict
 
 # NET-MEDS
 limit_threading = True

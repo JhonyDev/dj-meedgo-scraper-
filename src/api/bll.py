@@ -3,10 +3,11 @@ from collections import defaultdict
 from rest_framework import status
 from rest_framework.response import Response
 
+from core.settings import LIST_PLATFORMS
 from src.api.models import Medicine, MedicineCartBridge
 from src.api.models import MedicineCart
 from src.api.serializers import MedicineCartSerializer
-from src.api.utils import LIST_PLATFORMS, get_platform_dict
+from src.api.utils import get_platform_dict
 from .utils import get_api_exception, get_similarity_queryset
 
 

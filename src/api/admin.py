@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
+from core.settings import FLIPCART
 from . import models
-from .utils import get_platform_dict, FLIPCART
+from .utils import get_platform_dict
 
 
 class MedicineView(admin.ModelAdmin):
