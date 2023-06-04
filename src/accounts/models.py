@@ -37,15 +37,22 @@ class User(AbstractUser):
         upload_to='accounts/images/pan_cards/', null=True, blank=True, quality=60, force_format='PNG',
         help_text='Format must be png image file', crop=['middle', 'center']
     )
+    is_store_photo_approved = models.BooleanField(default=False)
 
     full_name = models.CharField(max_length=150, null=True, blank=True)
     username = models.CharField(max_length=150, null=True, blank=True)
+
+    aadhar_card = models.CharField(max_length=150, null=True, blank=True)
+    is_aadhar_card_approved = models.BooleanField(default=False)
+
     email = models.EmailField(null=True, blank=True)
     type = models.CharField(max_length=25, null=False, blank=False, default='Admin', choices=USER_TYPES)
     phone_number = models.CharField(max_length=50, default=None, null=True, blank=True)
     type_of_ownership = models.CharField(max_length=25, null=True, blank=True, default=None, choices=TYPES_OF_OWNERSHIP)
+
     pan_number = models.CharField(max_length=100, null=True, blank=True, default=None)
     business_name = models.CharField(max_length=100, null=True, blank=True, default=None)
+    is_pan_card_approved = models.BooleanField(default=False)
 
     postal_code = models.CharField(
         max_length=10, null=False, blank=False,
@@ -65,7 +72,8 @@ class User(AbstractUser):
     state_name = models.CharField(max_length=150, null=True, blank=True, default=None)
     country = models.CharField(max_length=150, null=True, blank=True, default=None)
     pin_code = models.PositiveIntegerField(null=True, blank=True, default=None)
-    shop_name = models.PositiveIntegerField(null=True, blank=True, default=None)
+    shop_name = models.CharField(max_length=150, null=True, blank=True, default=None)
+    gst_number = models.PositiveIntegerField(null=True, blank=True, default=None)
 
     def clean(self):
         if self.username is None and self.email is None and self.phone_number:
