@@ -2,7 +2,14 @@ from django.db.models import Sum
 from rest_framework import serializers
 
 from src.accounts.models import User
-from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge, MedicineCartBridge
+from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge, MedicineCartBridge, \
+    ConversationHistory, Message
+
+
+class UserGeneralSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('pk', 'username', 'full_name', 'email', 'postal_code', 'profile_image')
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -148,7 +155,7 @@ class GrabbedOrderRequestsListSerializer(serializers.ModelSerializer):
     cost_comparisons = serializers.SerializerMethodField('get_cost_comparisons')
 
     def get_cost_comparisons(self, q):
-        from src.api.utils import LIST_PLATFORMS
+        from core.settings import LIST_PLATFORMS
         from src.api.utils import get_platform_dict
         platforms_list = []
         for platform in LIST_PLATFORMS:
@@ -204,3 +211,40 @@ class MedicineToCartSerializer(serializers.Serializer):
 
 class AlternateMedicineSerializer(serializers.Serializer):
     medicine_id = serializers.IntegerField(required=False)
+
+
+class ConversationHistoryListSerializer(serializers.ModelSerializer):
+    target_user = UserGeneralSerializer()
+    last_message = serializers.SerializerMethodField('get_last_message')
+
+    def get_last_message(self, q):
+        last_message = Message.objects.filter(conversation_history=q).order_by('-pk').first()
+        return MessageGeneralSerializer(last_message, many=False).data
+
+    class Meta:
+        model = ConversationHistory
+        fields = ['pk', 'target_user', 'last_message']
+
+
+class ConversationHistoryCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConversationHistory
+        fields = '__all__'
+
+
+class MessageListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ('message', 'created_on', 'author')
+
+
+class MessageCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        exclude = ('author', 'conversation_history')
+
+
+class MessageGeneralSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ('message', 'created_on')

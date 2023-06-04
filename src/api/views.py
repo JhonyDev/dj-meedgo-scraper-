@@ -1,4 +1,4 @@
-from django.db.models import Sum, Q, F
+from django.db.models import Sum, Q, F, OuterRef, Subquery
 from django.shortcuts import redirect, render
 from rest_framework import generics, permissions, status
 from rest_framework.filters import SearchFilter
@@ -10,11 +10,14 @@ from core.consumers import send_message_to_group
 from core.settings import PHARM_EASY, NET_MEDS, ONE_MG
 from . import utils
 from .bll import add_medicine_to_card
-from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge
+from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge, ConversationHistory, \
+    Message
 from .serializers import MedicineSerializer, MedicineToCartSerializer, \
     OrderRequestListSerializer, OrderRequestCreateSerializer, GrabbedOrderRequestsListSerializer, \
     GrabbedOrderRequestsCreateSerializer, GrabbedOrderRequestsUpdateSerializer, MedicineOfferSerializer, \
-    MedicineOfferUpdateSerializer, LocalityOrderRequestListSerializer
+    MedicineOfferUpdateSerializer, LocalityOrderRequestListSerializer, \
+    ConversationHistoryListSerializer, ConversationHistoryCreateSerializer, MessageCreateSerializer, \
+    MessageListSerializer
 from .tasks import scrape_pharmeasy, update_medicine_pharmeasy, scrape_1mg, scrape_flipkart, scrape_netmeds, \
     update_medicine, \
     update_medicine_1mg
@@ -210,6 +213,24 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
             send_message_to_group(f'order-request-{instance.order_request.pk}', data)
             print(data)
 
+        if instance.is_accepted:
+            # MessageListSerializer(instance, many=False).data
+            chemist = instance.user
+            customer = self.request.user
+            conversation_history = ConversationHistory.objects.filter(
+                Q(sending_user=customer, receiving_user=chemist) | Q(receiving_user=customer, sending_user=chemist))
+            if conversation_history.exists():
+                conversation_history = conversation_history.first()
+            else:
+                conversation_history = ConversationHistory.objects.filter(
+                    sending_user=customer, receiving_user=chemist)
+            message = Message.objects.create(
+                conversation_history=conversation_history, author=self.request.user,
+                message=f'Hi, I have accepted your offer.')
+            send_message_to_group(f'receiver-{customer.pk}', MessageListSerializer(message, many=False).data)
+            send_message_to_group(f'receiver-{chemist.pk}', MessageListSerializer(message, many=False).data)
+            print(message)
+
 
 class MedicineOfferUpdateView(generics.RetrieveUpdateAPIView):
     authentication_classes = [JWTAuthentication]
@@ -223,6 +244,72 @@ class MedicineOfferUpdateView(generics.RetrieveUpdateAPIView):
         elif self.request.method == 'UPDATE':
             return MedicineOfferUpdateSerializer
         return super().get_serializer_class()
+
+
+class ConversationHistoryListView(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = ConversationHistoryListSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return ConversationHistoryListSerializer
+        elif self.request.method == 'POST':
+            return ConversationHistoryCreateSerializer
+        return super().get_serializer_class()
+
+    def get_queryset(self):
+        last_message_subquery = Message.objects.filter(conversation_history=OuterRef('pk')).order_by('-pk')
+        conversations = ConversationHistory.objects.filter(
+            Q(sending_user=self.request.user) | Q(receiving_user=self.request.user)).annotate(
+            created_on=Subquery(last_message_subquery.values('created_on')[:1])
+        ).order_by('-created_on')
+        for conversation in conversations:
+            conversation.target_user = conversation.get_target_user(self.request.user)
+        return conversations
+
+
+class MessageListView(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = MessageListSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return MessageListSerializer
+        elif self.request.method == 'POST':
+            return MessageCreateSerializer
+        return super().get_serializer_class()
+
+    def get_queryset(self):
+        return Message.objects.filter(conversation_history__pk=self.kwargs.get('pk')).order_by('-pk')
+
+    def perform_create(self, serializer):
+        conversation_history = ConversationHistory.objects.get(pk=self.kwargs.get('pk'))
+        instance = serializer.save()
+        instance.author = self.request.user
+        instance.conversation_history = conversation_history
+        instance.save()
+        return instance
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance = self.perform_create(serializer)
+        send_message_to_group(f'receiving-{instance.conversation_history.get_target_user(self.request.user).pk}',
+                              MessageListSerializer(instance, many=False).data)
+        send_message_to_group(f'receiving-{self.request.user.pk}',
+                              MessageListSerializer(instance, many=False).data)
+
+        print("SENDING MESSAGE TO FOLLOWING GROUPS")
+        print(
+            f'receiving-{instance.conversation_history.get_target_user(self.request.user).pk} :: {MessageListSerializer(instance, many=False).data}')
+        print(
+            f'receiving-{self.request.user.pk} :: {MessageListSerializer(instance, many=False).data}')
+
+        return Response(MessageListSerializer(self.get_queryset(), many=True).data,
+                        status=status.HTTP_201_CREATED)
+
+
+"""ADMIN-TASKS"""
 
 
 def custom_method_view(request, object_id):

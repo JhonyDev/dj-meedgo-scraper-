@@ -78,6 +78,7 @@ class GrabUserBridge(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, default=None)
     order_request = models.ForeignKey('OrderRequest', on_delete=models.CASCADE, null=True, blank=True, default=None)
     is_active = models.BooleanField(default=True)
+    is_accepted = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.pk)
@@ -102,9 +103,36 @@ class MedicineCartBridge(models.Model):
 
 
 class ConversationHistory(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, default=None)
-    order_request = models.ForeignKey('OrderRequest', on_delete=models.CASCADE, null=True, blank=True, default=None)
-    is_active = models.BooleanField(default=True)
+    receiving_user = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=True, blank=True, default=None, related_name="+")
+    sending_user = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=True, blank=True, default=None, related_name="+")
+
+    def get_target_user(self, current_user):
+        if self.receiving_user != current_user:
+            self.target_user = self.receiving_user
+        else:
+            self.target_user = self.sending_user
+        return self.target_user
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.target_user = None
+
+    def __str__(self):
+        return str(self.pk)
+
+    class Meta:
+        ordering = ['-pk']
+
+
+class Message(models.Model):
+    conversation_history = models.ForeignKey(
+        ConversationHistory, on_delete=models.CASCADE, null=True, blank=True, default=None)
+    message = models.TextField(max_length=500)
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=True, blank=True, default=None, related_name="+")
+    created_on = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.pk)
