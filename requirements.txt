@@ -29,3 +29,5 @@ Scrapy==2.8.0
 websocket
 websocket-client
 PyExecJS
+django-otp
+twilio

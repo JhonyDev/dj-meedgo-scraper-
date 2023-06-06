@@ -39,6 +39,10 @@ class User(AbstractUser):
     )
     is_store_photo_approved = models.BooleanField(default=False)
 
+    otp_secret = models.CharField(max_length=16, blank=True, null=True, default=None)
+    otp_created = models.DateTimeField(null=True, blank=True, default=None)
+    otp_sent = models.BooleanField(default=False)
+
     full_name = models.CharField(max_length=150, null=True, blank=True)
     username = models.CharField(max_length=150, null=True, blank=True)
 

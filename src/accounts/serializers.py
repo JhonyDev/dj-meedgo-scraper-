@@ -152,3 +152,11 @@ class LicenseEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = LicenseEntry
         exclude = ('user',)
+
+
+class PhoneOTPLoginSerializer(serializers.Serializer):
+    phone_number = serializers.CharField()
+
+
+class OTPVerificationSerializer(serializers.Serializer):
+    otp = serializers.CharField()

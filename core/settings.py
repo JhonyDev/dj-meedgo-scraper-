@@ -80,6 +80,10 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'channels',
 
+    # OTP LOGIN
+    'django_otp',
+    'django_otp.plugins.otp_totp',
+
     # REQUIRED_APPLICATIONS
     'crispy_forms',
     'ckeditor',

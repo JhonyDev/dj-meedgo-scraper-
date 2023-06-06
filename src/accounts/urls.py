@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import CustomLoginView, CustomRegisterAccountView, UserUpdateView, LicensesListView, \
-    LicenseEntryListCreateView, LicenseEntryRUDView
+    LicenseEntryListCreateView, LicenseEntryRUDView, PhoneOTPLoginView, OTPVerificationView
 
 app_name = 'accounts'
 urlpatterns = [
@@ -9,8 +9,12 @@ urlpatterns = [
     path('registration/', CustomRegisterAccountView.as_view(), name='account_create_new_user'),
     path('licenses/', LicensesListView.as_view(), name='licenses'),
 
+    path('otp-login/', PhoneOTPLoginView.as_view(), name='phone_otp_login'),
+    path('otp-verification/', OTPVerificationView.as_view(), name='otp_verification'),
+
     path('my/profile/', UserUpdateView.as_view()),
     path('my/licenses/', LicenseEntryListCreateView.as_view(), name='license-entry'),
     path('my/licenses/<int:pk>/', LicenseEntryRUDView.as_view(), name='license-entry-RUD'),
+
 
 ]
