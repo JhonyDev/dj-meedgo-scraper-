@@ -64,7 +64,7 @@ else:
 
 ALLOWED_HOSTS = ['*']
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3030', 'http://localhost:5173',
+    'http://localhost:3030', 'http://localhost:5173','http://meedgo.com/',
 ]
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
