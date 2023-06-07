@@ -143,6 +143,11 @@ class MedicineOfferSerializer(serializers.ModelSerializer):
 
 
 class MedicineOfferUpdateSerializer(serializers.ModelSerializer):
+    customer = serializers.SerializerMethodField('get_customer')
+
+    def get_customer(self, q):
+        return UserGeneralSerializer(q.order_request.user, many=False).data
+
     class Meta:
         model = MedicineOfferBridge
         fields = ['offered_price']
