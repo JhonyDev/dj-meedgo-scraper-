@@ -248,6 +248,7 @@ class MedicineOfferUpdateView(generics.RetrieveUpdateAPIView):
 class ConversationHistoryListView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = ConversationHistoryListSerializer
+    authentication_classes = [JWTAuthentication]
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -270,6 +271,7 @@ class ConversationHistoryListView(generics.ListCreateAPIView):
 class MessageListView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = MessageListSerializer
+    authentication_classes = [JWTAuthentication]
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
