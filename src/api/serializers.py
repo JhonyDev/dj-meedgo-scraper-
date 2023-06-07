@@ -129,10 +129,6 @@ class GrabbedOrderRequestsCreateSerializer(serializers.ModelSerializer):
 
 
 class GrabbedOrderRequestsUpdateSerializer(serializers.ModelSerializer):
-    customer = serializers.SerializerMethodField('get_customer')
-
-    def get_customer(self, q):
-        return UserGeneralSerializer(q.order_request.user, many=False).data
 
     class Meta:
         model = GrabUserBridge
@@ -158,6 +154,10 @@ class GrabbedOrderRequestsListSerializer(serializers.ModelSerializer):
     medicine_offers = serializers.SerializerMethodField('get_medicine_offers')
     offered_total_price = serializers.SerializerMethodField('get_offered_total')
     cost_comparisons = serializers.SerializerMethodField('get_cost_comparisons')
+    customer = serializers.SerializerMethodField('get_customer')
+
+    def get_customer(self, q):
+        return UserGeneralSerializer(q.order_request.user, many=False).data
 
     def get_cost_comparisons(self, q):
         from core.settings import LIST_PLATFORMS
