@@ -129,7 +129,6 @@ class GrabbedOrderRequestsCreateSerializer(serializers.ModelSerializer):
 
 
 class GrabbedOrderRequestsUpdateSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = GrabUserBridge
         fields = ['is_active', 'is_accepted']
@@ -191,7 +190,8 @@ class GrabbedOrderRequestsListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GrabUserBridge
-        fields = ['pk', 'order_request', 'cost_comparisons', 'medicine_offers', 'offered_total_price', 'is_active']
+        fields = ['pk', 'customer', 'order_request', 'cost_comparisons', 'medicine_offers', 'offered_total_price',
+                  'is_active']
 
     def get_fields(self):
         fields = super().get_fields()
