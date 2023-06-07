@@ -222,7 +222,7 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
             if conversation_history.exists():
                 conversation_history = conversation_history.first()
             else:
-                conversation_history = ConversationHistory.objects.filter(
+                conversation_history = ConversationHistory.objects.create(
                     sending_user=customer, receiving_user=chemist)
             message = Message.objects.create(
                 conversation_history=conversation_history, author=self.request.user,
