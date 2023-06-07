@@ -273,7 +273,9 @@ class MessageListView(generics.ListCreateAPIView):
     serializer_class = MessageListSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
-
+    pagination_class = PageNumberPagination
+    pagination_class.page_size = 10
+    
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return MessageListSerializer
