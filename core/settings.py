@@ -178,6 +178,14 @@ ASGI_APPLICATION = 'core.asgi.application'
 
 
 """ DATABASES ------------------------------------------------------------------------------------"""
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": ["redis://127.0.0.1:6379"],
+        },
+    },
+}
 
 if not SERVER:
     DATABASES = {
@@ -185,11 +193,6 @@ if not SERVER:
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         }
-    }
-    CHANNEL_LAYERS = {
-        'default': {
-            'BACKEND': 'channels.layers.InMemoryChannelLayer',
-        },
     }
 
 else:
@@ -202,14 +205,6 @@ else:
             'HOST': 'localhost',
             'PORT': '',
         }
-    }
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {
-                "hosts": ["redis://127.0.0.1:6379"],
-            },
-        },
     }
 
 """ VALIDATORS ------------------------------------------------------------------------------------"""
