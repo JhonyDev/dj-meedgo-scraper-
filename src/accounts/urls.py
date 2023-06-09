@@ -15,6 +15,4 @@ urlpatterns = [
     path('my/profile/', UserUpdateView.as_view()),
     path('my/licenses/', LicenseEntryListCreateView.as_view(), name='license-entry'),
     path('my/licenses/<int:pk>/', LicenseEntryRUDView.as_view(), name='license-entry-RUD'),
-
-
 ]

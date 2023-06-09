@@ -43,6 +43,8 @@ class User(AbstractUser):
     otp_created = models.DateTimeField(null=True, blank=True, default=None)
     otp_sent = models.BooleanField(default=False)
 
+    date_of_birth = models.DateField(default=None, null=True, blank=True)
+
     full_name = models.CharField(max_length=150, null=True, blank=True)
     username = models.CharField(max_length=150, null=True, blank=True)
 
