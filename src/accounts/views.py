@@ -2,9 +2,10 @@ import random
 from datetime import datetime
 
 from allauth.account.models import EmailAddress
+from django.contrib.auth.hashers import check_password
 from django_otp import devices_for_user
 from rest_framework import generics, permissions, status, viewsets
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import GenericAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from twilio.rest import Client
@@ -13,7 +14,8 @@ from src.accounts import authentication
 from src.accounts.authentication import JWTAuthentication
 from src.accounts.models import License, LicenseEntry, User, UserTime
 from src.accounts.serializers import CustomRegisterAccountSerializer, CustomLoginSerializer, LicenseSerializer, \
-    LicenseEntrySerializer, PhoneOTPLoginSerializer, OTPVerificationSerializer, UserTimeSerializer
+    LicenseEntrySerializer, PhoneOTPLoginSerializer, OTPVerificationSerializer, UserTimeSerializer, \
+    ChangePasswordSerializer
 from src.api.serializers import UserSerializer, UserProfileSerializer
 
 
@@ -162,3 +164,25 @@ class OTPVerificationView(GenericAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response({'detail': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangePasswordView(UpdateAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = ChangePasswordSerializer
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            old_password = serializer.validated_data['old_password']
+            new_password = serializer.validated_data['new_password']
+
+            if not check_password(old_password, self.request.user.password):
+                return Response({'message': 'Old password is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            self.request.user.set_password(new_password)
+            self.request.user.save()
+            return Response({'message': 'Password changed successfully.'}, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
