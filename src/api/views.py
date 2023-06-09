@@ -66,6 +66,7 @@ class MedicineSearchView(generics.ListAPIView):
             scrape_netmeds.delay(param)
             scrape_pharmeasy.delay(param)
             scrape_1mg.delay(param)
+
         queryset = param_contains_name.union(param_contains_salt, all=True).union(queryset, all=True)
         for med in queryset:
             if not med.salt_name and med.med_url:
@@ -275,7 +276,7 @@ class MessageListView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = PageNumberPagination
     pagination_class.page_size = 10
-    
+
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return MessageListSerializer
@@ -317,6 +318,16 @@ class MessageListView(generics.ListCreateAPIView):
 
 
 def custom_method_view(request, object_id):
+    import csv
+    with open('med_names.csv', 'r') as file:
+        csv_reader = csv.reader(file)
+        for row in csv_reader:
+            for value in row:
+                scrape_flipkart.delay(value)
+                scrape_netmeds.delay(value)
+                scrape_pharmeasy.delay(value)
+                scrape_1mg.delay(value)
+
     med = Medicine.objects.get(pk=object_id)
     if med.platform == get_platform_dict()[PHARM_EASY]:
         update_medicine_pharmeasy(med.pk, is_forced=True)
