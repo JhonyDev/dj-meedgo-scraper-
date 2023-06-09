@@ -61,7 +61,9 @@ class OrderRequest(models.Model):
 
 
 class MedicineOfferBridge(models.Model):
-    medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE, null=True, blank=True, default=None)
+    medicine = models.ForeignKey(Medicine, on_delete=models.SET_NULL, null=True, blank=True, default=None)
+    # medicine_cart_bridge = models.ForeignKey(
+    #     'MedicineCartBridge', on_delete=models.SET_NULL, null=True, blank=True, default=None)
     order_grab = models.ForeignKey('GrabUserBridge', on_delete=models.CASCADE, null=True, blank=True, default=None)
     offered_price = models.PositiveIntegerField(
         null=True, default=None, blank=True,

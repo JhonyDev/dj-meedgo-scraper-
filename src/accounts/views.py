@@ -24,6 +24,7 @@ class UserTimeViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     queryset = UserTime.objects.all()
     serializer_class = UserTimeSerializer
+    lookup_field = 'day'
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
