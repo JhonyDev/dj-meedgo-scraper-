@@ -3,7 +3,7 @@ from datetime import datetime
 
 from allauth.account.models import EmailAddress
 from django_otp import devices_for_user
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, viewsets
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,10 +11,26 @@ from twilio.rest import Client
 
 from src.accounts import authentication
 from src.accounts.authentication import JWTAuthentication
-from src.accounts.models import License, LicenseEntry, User
+from src.accounts.models import License, LicenseEntry, User, UserTime
 from src.accounts.serializers import CustomRegisterAccountSerializer, CustomLoginSerializer, LicenseSerializer, \
-    LicenseEntrySerializer, PhoneOTPLoginSerializer, OTPVerificationSerializer
+    LicenseEntrySerializer, PhoneOTPLoginSerializer, OTPVerificationSerializer, UserTimeSerializer
 from src.api.serializers import UserSerializer, UserProfileSerializer
+
+
+class UserTimeViewSet(viewsets.ModelViewSet):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = UserTime.objects.all()
+    serializer_class = UserTimeSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def get_queryset(self):
+        return UserTime.objects.filter(user=self.request.user)
 
 
 class UserUpdateView(generics.RetrieveUpdateAPIView):

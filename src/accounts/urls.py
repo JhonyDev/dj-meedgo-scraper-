@@ -1,12 +1,19 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
 from .views import CustomLoginView, CustomRegisterAccountView, UserUpdateView, LicensesListView, \
-    LicenseEntryListCreateView, LicenseEntryRUDView, PhoneOTPLoginView, OTPVerificationView
+    LicenseEntryListCreateView, LicenseEntryRUDView, PhoneOTPLoginView, OTPVerificationView, UserTimeViewSet
 
 app_name = 'accounts'
+router = DefaultRouter()
+router.register(r'user-time', UserTimeViewSet)
+
 urlpatterns = [
+    path('', include(router.urls)),
     path('login/', CustomLoginView.as_view(), name='login-user'),
     path('registration/', CustomRegisterAccountView.as_view(), name='account_create_new_user'),
+    path('licenses/', LicensesListView.as_view(), name='licenses'),
+
     path('licenses/', LicensesListView.as_view(), name='licenses'),
 
     path('otp-login/', PhoneOTPLoginView.as_view(), name='phone_otp_login'),

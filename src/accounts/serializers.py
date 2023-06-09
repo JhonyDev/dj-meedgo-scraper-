@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate
 from django.db import transaction
 from rest_framework import serializers
 
-from src.accounts.models import User, License, LicenseEntry
+from src.accounts.models import User, License, LicenseEntry, UserTime
 
 
 #
@@ -160,3 +160,9 @@ class PhoneOTPLoginSerializer(serializers.Serializer):
 
 class OTPVerificationSerializer(serializers.Serializer):
     otp = serializers.CharField()
+
+
+class UserTimeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserTime
+        exclude = ('user',)
