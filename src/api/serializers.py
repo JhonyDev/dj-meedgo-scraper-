@@ -16,6 +16,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         exclude = (
+            'is_store_photo_approved',
+            'is_aadhar_card_approved',
+            'is_pan_card_approved',
+            'otp_secret',
+            'otp_created',
+            'otp_sent',
             'password', 'first_name', 'last_name', 'type', 'date_joined', 'username', 'groups', 'is_superuser',
             'is_active', 'user_permissions')
 

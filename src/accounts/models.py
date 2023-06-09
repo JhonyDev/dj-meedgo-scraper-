@@ -37,11 +37,6 @@ class User(AbstractUser):
         upload_to='accounts/images/pan_cards/', null=True, blank=True, quality=60, force_format='PNG',
         help_text='Format must be png image file', crop=['middle', 'center']
     )
-    is_store_photo_approved = models.BooleanField(default=False)
-
-    otp_secret = models.CharField(max_length=16, blank=True, null=True, default=None)
-    otp_created = models.DateTimeField(null=True, blank=True, default=None)
-    otp_sent = models.BooleanField(default=False)
 
     date_of_birth = models.DateField(default=None, null=True, blank=True)
 
@@ -49,7 +44,6 @@ class User(AbstractUser):
     username = models.CharField(max_length=150, null=True, blank=True)
 
     aadhar_card = models.CharField(max_length=150, null=True, blank=True)
-    is_aadhar_card_approved = models.BooleanField(default=False)
 
     email = models.EmailField(null=True, blank=True)
     type = models.CharField(max_length=25, null=False, blank=False, default='Admin', choices=USER_TYPES)
@@ -58,7 +52,13 @@ class User(AbstractUser):
 
     pan_number = models.CharField(max_length=100, null=True, blank=True, default=None)
     business_name = models.CharField(max_length=100, null=True, blank=True, default=None)
+
+    is_store_photo_approved = models.BooleanField(default=False)
+    is_aadhar_card_approved = models.BooleanField(default=False)
     is_pan_card_approved = models.BooleanField(default=False)
+    otp_secret = models.CharField(max_length=16, blank=True, null=True, default=None)
+    otp_created = models.DateTimeField(null=True, blank=True, default=None)
+    otp_sent = models.BooleanField(default=False)
 
     postal_code = models.CharField(
         max_length=10, null=False, blank=False,
