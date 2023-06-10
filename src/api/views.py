@@ -325,22 +325,22 @@ def custom_method_view(request, object_id):
         csv_reader = csv.reader(file)
         for row in csv_reader:
             for value in row:
-                scrape_flipkart.delay(value)
-                scrape_netmeds.delay(value)
+                # scrape_1mg.delay(value)
+                # scrape_flipkart.delay(value)
+                # scrape_netmeds.delay(value)
                 scrape_pharmeasy.delay(value)
-                scrape_1mg.delay(value)
 
-    med = Medicine.objects.get(pk=object_id)
-    if med.platform == get_platform_dict()[PHARM_EASY]:
-        update_medicine_pharmeasy(med.pk, is_forced=True)
-    if med.platform == get_platform_dict()[NET_MEDS]:
-        all_meds = Medicine.objects.filter(platform=get_platform_dict()[NET_MEDS], salt_name=None,
-                                           price=None, discounted_price=None).values_list('pk', flat=True)
-        for med_ in all_meds:
-            update_medicine.delay(med_, is_forced=True)
-        update_medicine(med.pk, is_forced=True)
-    if med.platform == get_platform_dict()[ONE_MG]:
-        update_medicine_1mg(med.pk, is_forced=True)
+    # med = Medicine.objects.get(pk=object_id)
+    # if med.platform == get_platform_dict()[PHARM_EASY]:
+    #     update_medicine_pharmeasy(med.pk, is_forced=True)
+    # if med.platform == get_platform_dict()[NET_MEDS]:
+    #     all_meds = Medicine.objects.filter(platform=get_platform_dict()[NET_MEDS], salt_name=None,
+    #                                        price=None, discounted_price=None).values_list('pk', flat=True)
+    #     for med_ in all_meds:
+    #         update_medicine.delay(med_, is_forced=True)
+    #     update_medicine(med.pk, is_forced=True)
+    # if med.platform == get_platform_dict()[ONE_MG]:
+    #     update_medicine_1mg(med.pk, is_forced=True)
     return redirect('admin:api_medicine_change', object_id)
 
 
