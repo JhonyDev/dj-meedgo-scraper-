@@ -52,13 +52,19 @@ class CustomRegisterAccountView(CreateAPIView):
         user = serializer.save()
         if user.email:
             EmailAddress.objects.create(user=user, email=user.email, primary=True, verified=False)
-        # access_token = authentication.create_access_token(UserSerializer(user).data)
-        # refresh_token = authentication.create_refresh_token(user.pk)
-        # data = {
-        #     'access_token': access_token,
-        #     'refresh_token': refresh_token
-        # }
-        # return Response(data=data, status=status.HTTP_201_CREATED)
+        return user
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = self.perform_create(serializer)
+        access_token = authentication.create_access_token(UserSerializer(user).data)
+        refresh_token = authentication.create_refresh_token(user.pk)
+        data = {
+            'access_token': access_token,
+            'refresh_token': refresh_token
+        }
+        return Response(data=data, status=status.HTTP_201_CREATED)
 
 
 class CustomLoginView(APIView):
