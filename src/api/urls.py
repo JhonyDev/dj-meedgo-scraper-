@@ -15,6 +15,7 @@ urlpatterns = [
     path('medicine-offer/<int:pk>/', views.MedicineOfferUpdateView.as_view()),
     path('my/conversations/', views.ConversationHistoryListView.as_view()),
     path('my/conversations/<int:pk>/', views.MessageListView.as_view()),
+
     # ADMIN PANEL SCRAPE TASK
     path('run-task/<int:object_id>/', views.custom_method_view, name='object-celery'),
     path('run-task/<int:object_id>/all/', views.custom_method_all_view, name='object-celery-all'),

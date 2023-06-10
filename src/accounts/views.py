@@ -5,6 +5,7 @@ from allauth.account.models import EmailAddress
 from django.contrib.auth.hashers import check_password
 from django_otp import devices_for_user
 from rest_framework import generics, permissions, status, viewsets
+from rest_framework.generics import CreateAPIView
 from rest_framework.generics import GenericAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -30,9 +31,6 @@ class UserTimeViewSet(viewsets.ModelViewSet):
         if not UserTime.objects.filter(user=self.request.user, day=serializer.validated_data['day']).exists():
             serializer.save(user=self.request.user)
 
-    def perform_update(self, serializer):
-        serializer.save(user=self.request.user)
-
     def get_queryset(self):
         return UserTime.objects.filter(user=self.request.user)
 
@@ -46,28 +44,21 @@ class UserUpdateView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 
-class CustomRegisterAccountView(APIView):
+class CustomRegisterAccountView(CreateAPIView):
     serializer_class = CustomRegisterAccountSerializer
     permission_classes = [permissions.AllowAny]
 
-    def post(self, request):
-        status_code = status.HTTP_400_BAD_REQUEST
-        serializer = CustomRegisterAccountSerializer(data=request.data)
-
-        if serializer.is_valid():
-            user = serializer.save()
-            if user.email:
-                EmailAddress.objects.create(user=user, email=user.email, primary=True, verified=False)
-            access_token = authentication.create_access_token(UserSerializer(user).data)
-            refresh_token = authentication.create_refresh_token(user.pk)
-            data = {
-                'access_token': access_token,
-                'refresh_token': refresh_token
-            }
-            status_code = status.HTTP_201_CREATED
-        else:
-            data = serializer.errors
-        return Response(data=data, status=status_code)
+    def perform_create(self, serializer):
+        user = serializer.save()
+        if user.email:
+            EmailAddress.objects.create(user=user, email=user.email, primary=True, verified=False)
+        # access_token = authentication.create_access_token(UserSerializer(user).data)
+        # refresh_token = authentication.create_refresh_token(user.pk)
+        # data = {
+        #     'access_token': access_token,
+        #     'refresh_token': refresh_token
+        # }
+        # return Response(data=data, status=status.HTTP_201_CREATED)
 
 
 class CustomLoginView(APIView):

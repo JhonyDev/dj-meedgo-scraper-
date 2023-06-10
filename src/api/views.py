@@ -55,6 +55,8 @@ class MedicineSearchView(generics.ListAPIView):
     def get_queryset(self):
         param = self.request.query_params.get('search')
         queryset = Medicine.objects.exclude(price=None, discounted_price=None)
+        if param is None:
+            return queryset
         param_contains_name = queryset.filter(name__icontains=param)
         param_contains_salt = queryset.filter(salt_name__icontains=param)
         if param:
