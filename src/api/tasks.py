@@ -287,12 +287,12 @@ def update_medicine_1mg(self, med_pk, is_forced=False):
 def scrape_pharmeasy(self, param):
     if param is None:
         return "DONE!"
+
     param = urllib.parse.quote(param)
     param = param.replace('/', '')
     print(param)
-
     base_url = 'https://pharmeasy.in'
-    url = f"{base_url}/search/all?name=Petril MD"
+    url = f"{base_url}/search/all?name={param}"
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
     parent_div = soup.find('div', {'class': 'Search_fullWidthLHS__mteti'})
