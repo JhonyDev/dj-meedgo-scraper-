@@ -27,7 +27,8 @@ class UserTimeViewSet(viewsets.ModelViewSet):
     lookup_field = 'day'
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        if not UserTime.objects.filter(user=self.request.user, day=serializer.validated_data['day']).exists():
+            serializer.save(user=self.request.user)
 
     def perform_update(self, serializer):
         serializer.save(user=self.request.user)
