@@ -17,7 +17,7 @@ from .serializers import MedicineSerializer, MedicineToCartSerializer, \
     GrabbedOrderRequestsCreateSerializer, GrabbedOrderRequestsUpdateSerializer, MedicineOfferSerializer, \
     MedicineOfferUpdateSerializer, LocalityOrderRequestListSerializer, \
     ConversationHistoryListSerializer, ConversationHistoryCreateSerializer, MessageCreateSerializer, \
-    MessageListSerializer, UserRatingListSerializer, UserRatingCreateSerializer
+    MessageListSerializer, UserRatingListSerializer, UserRatingCreateSerializer, OrderRequestCompleteSerializer
 from .tasks import scrape_pharmeasy, update_medicine_pharmeasy, scrape_1mg, scrape_flipkart, scrape_netmeds, \
     update_medicine, \
     update_medicine_1mg
@@ -192,6 +192,13 @@ class AlternateMedicineView(generics.ListAPIView):
         return query_set.order_by('price')
 
 
+class OrderRequestUpdateView(generics.RetrieveUpdateAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = OrderRequestCompleteSerializer
+    queryset = OrderRequest.objects.all()
+
+
 class OrderRequestsView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
@@ -294,11 +301,11 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
         if instance.is_active:
             data = GrabbedOrderRequestsListSerializer(instance).data
             send_message_to_group(f'order-request-{instance.order_request.pk}', data)
-            print(data)
 
-        print(f"instance - check for is_accepted - {instance}")
         if instance.is_accepted:
             chemist = instance.user
+            instance.order_request.status = 'Picked'
+            instance.order_request.save()
             customer = self.request.user
             conversation_history = ConversationHistory.objects.filter(
                 Q(sending_user=customer, receiving_user=chemist) | Q(receiving_user=customer, sending_user=chemist))
@@ -312,7 +319,6 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
                 message=FIRST_MESSAGE_WHEN_ORDER_ACCEPTED)
             send_message_to_group(f'receiver-{customer.pk}', MessageListSerializer(message, many=False).data)
             send_message_to_group(f'receiver-{chemist.pk}', MessageListSerializer(message, many=False).data)
-            print(message)
 
 
 class MedicineOfferUpdateView(generics.RetrieveUpdateAPIView):

@@ -117,6 +117,12 @@ class OrderRequestListSerializer(serializers.ModelSerializer):
         fields = ['pk', 'medicine_cart']
 
 
+class OrderRequestCompleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderRequest
+        fields = ['pk', 'order_status']
+
+
 class LocalityOrderRequestListSerializer(serializers.ModelSerializer):
     total = serializers.SerializerMethodField('get_total_cost')
 
@@ -270,7 +276,6 @@ class UserRatingListSerializer(serializers.ModelSerializer):
 
 
 class UserRatingCreateSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = UserRating
         exclude = ('given_by',)
