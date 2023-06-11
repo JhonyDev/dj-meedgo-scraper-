@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from src.accounts.models import User
 from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge, MedicineCartBridge, \
-    ConversationHistory, Message
+    ConversationHistory, Message, UserRating
 
 
 class UserGeneralSerializer(serializers.ModelSerializer):
@@ -259,3 +259,18 @@ class MessageGeneralSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = ('message', 'created_on')
+
+
+class UserRatingListSerializer(serializers.ModelSerializer):
+    pharmacist = UserGeneralSerializer()
+
+    class Meta:
+        model = UserRating
+        exclude = ('given_by',)
+
+
+class UserRatingCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserRating
+        exclude = ('given_by',)

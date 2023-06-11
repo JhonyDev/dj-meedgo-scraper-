@@ -1,9 +1,15 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
 from . import views
+from .views import UserRatingViewSet
 
 app_name = 'api'
+router = DefaultRouter()
+router.register(r'rating', UserRatingViewSet)
+
 urlpatterns = [
+    path('', include(router.urls)),
     path('', views.lobby),
     path('search-medicine/', views.MedicineSearchView.as_view()),
     path('cart/', views.MedicineToCartView.as_view()),
@@ -15,6 +21,8 @@ urlpatterns = [
     path('medicine-offer/<int:pk>/', views.MedicineOfferUpdateView.as_view()),
     path('my/conversations/', views.ConversationHistoryListView.as_view()),
     path('my/conversations/<int:pk>/', views.MessageListView.as_view()),
+
+    path('my/ratings/', views.UserRatingListView.as_view()),
 
     # ADMIN PANEL SCRAPE TASK
     path('run-task/<int:object_id>/', views.custom_method_view, name='object-celery'),

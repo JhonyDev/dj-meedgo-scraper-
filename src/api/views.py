@@ -1,8 +1,8 @@
 from django.db.models import Sum, Q, F, OuterRef, Subquery
 from django.shortcuts import redirect, render
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, viewsets
 from rest_framework.filters import SearchFilter
-from rest_framework.generics import get_object_or_404
+from rest_framework.generics import get_object_or_404, ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
@@ -11,18 +11,78 @@ from core.settings import PHARM_EASY, NET_MEDS, ONE_MG, FIRST_MESSAGE_WHEN_ORDER
 from . import utils
 from .bll import add_medicine_to_card
 from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge, ConversationHistory, \
-    Message
+    Message, UserRating
 from .serializers import MedicineSerializer, MedicineToCartSerializer, \
     OrderRequestListSerializer, OrderRequestCreateSerializer, GrabbedOrderRequestsListSerializer, \
     GrabbedOrderRequestsCreateSerializer, GrabbedOrderRequestsUpdateSerializer, MedicineOfferSerializer, \
     MedicineOfferUpdateSerializer, LocalityOrderRequestListSerializer, \
     ConversationHistoryListSerializer, ConversationHistoryCreateSerializer, MessageCreateSerializer, \
-    MessageListSerializer
+    MessageListSerializer, UserRatingListSerializer, UserRatingCreateSerializer
 from .tasks import scrape_pharmeasy, update_medicine_pharmeasy, scrape_1mg, scrape_flipkart, scrape_netmeds, \
     update_medicine, \
     update_medicine_1mg
 from .utils import get_platform_dict, balance_medicines
 from ..accounts.authentication import JWTAuthentication
+
+"""ADMIN-TASKS"""
+
+
+def custom_method_view(request, object_id):
+    # import csv
+    # with open('med_names.csv', 'r') as file:
+    #     csv_reader = csv.reader(file)
+    #     for row in csv_reader:
+    #         for value in row:
+    #             # scrape_1mg.delay(value)
+    #             # scrape_flipkart.delay(value)
+    #             # scrape_netmeds.delay(value)
+    #             scrape_pharmeasy.delay(value)
+
+    med = Medicine.objects.get(pk=object_id)
+    if med.platform == get_platform_dict()[PHARM_EASY]:
+        update_medicine_pharmeasy(med.pk, is_forced=True)
+    if med.platform == get_platform_dict()[NET_MEDS]:
+        all_meds = Medicine.objects.filter(platform=get_platform_dict()[NET_MEDS], salt_name=None,
+                                           price=None, discounted_price=None).values_list('pk', flat=True)
+        for med_ in all_meds:
+            update_medicine.delay(med_, is_forced=True)
+        update_medicine(med.pk, is_forced=True)
+    if med.platform == get_platform_dict()[ONE_MG]:
+        update_medicine_1mg(med.pk, is_forced=True)
+    return redirect('admin:api_medicine_change', object_id)
+
+
+def custom_method_all_view(request, object_id):
+    med = Medicine.objects.get(pk=object_id)
+    queryset = Medicine.objects.filter(
+        Q(name='') |
+        Q(salt_name__isnull=True) |
+        Q(price__isnull=True) |
+        Q(discounted_price__isnull=True) |
+        Q(price=F('discounted_price'))
+    )
+    if med.platform == get_platform_dict()[PHARM_EASY]:
+        for med_ in queryset.filter(
+                platform=get_platform_dict()[PHARM_EASY]).values_list('pk', flat=True):
+            update_medicine_pharmeasy.delay(med_, is_forced=True)
+        update_medicine_pharmeasy(med.pk, is_forced=True)
+    if med.platform == get_platform_dict()[NET_MEDS]:
+        for med_ in queryset.filter(
+                platform=get_platform_dict()[NET_MEDS]).values_list('pk', flat=True):
+            update_medicine.delay(med_, is_forced=True)
+        update_medicine(med.pk, is_forced=True)
+    if med.platform == get_platform_dict()[ONE_MG]:
+        for med_ in queryset.filter(
+                platform=get_platform_dict()[ONE_MG]).values_list('pk', flat=True):
+            update_medicine_1mg.delay(med_, is_forced=True)
+        update_medicine_1mg(med.pk, is_forced=True)
+    return redirect('admin:api_medicine_change', object_id)
+
+
+def lobby(request):
+    Medicine.objects.filter(salt_name=None, price=None, discounted_price=None, name='').delete()
+    return render(request, 'api/lobby.html')
+
 
 """
 Elastic Search DSL (Domain Specific Language)
@@ -41,6 +101,26 @@ ACID properties
     - Isolation
     - Durability
 """
+
+
+class UserRatingViewSet(viewsets.ModelViewSet):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = UserRating.objects.all()
+    serializer_class = UserRatingListSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return UserRatingListSerializer
+        elif self.request.method == 'POST':
+            return UserRatingCreateSerializer
+        return super().get_serializer_class()
+
+    def perform_create(self, serializer):
+        serializer.save(given_by=self.request.user)
+
+    def get_queryset(self):
+        return UserRating.objects.filter(given_by=self.request.user)
 
 
 class MedicineSearchView(generics.ListAPIView):
@@ -316,61 +396,13 @@ class MessageListView(generics.ListCreateAPIView):
                         status=status.HTTP_201_CREATED)
 
 
-"""ADMIN-TASKS"""
+class UserRatingListView(ListAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = PageNumberPagination
+    pagination_class.page_size = 10
+    queryset = UserRating.objects.all()
+    serializer_class = UserRatingListSerializer
 
-
-def custom_method_view(request, object_id):
-    # import csv
-    # with open('med_names.csv', 'r') as file:
-    #     csv_reader = csv.reader(file)
-    #     for row in csv_reader:
-    #         for value in row:
-    #             # scrape_1mg.delay(value)
-    #             # scrape_flipkart.delay(value)
-    #             # scrape_netmeds.delay(value)
-    #             scrape_pharmeasy.delay(value)
-
-    med = Medicine.objects.get(pk=object_id)
-    if med.platform == get_platform_dict()[PHARM_EASY]:
-        update_medicine_pharmeasy(med.pk, is_forced=True)
-    if med.platform == get_platform_dict()[NET_MEDS]:
-        all_meds = Medicine.objects.filter(platform=get_platform_dict()[NET_MEDS], salt_name=None,
-                                           price=None, discounted_price=None).values_list('pk', flat=True)
-        for med_ in all_meds:
-            update_medicine.delay(med_, is_forced=True)
-        update_medicine(med.pk, is_forced=True)
-    if med.platform == get_platform_dict()[ONE_MG]:
-        update_medicine_1mg(med.pk, is_forced=True)
-    return redirect('admin:api_medicine_change', object_id)
-
-
-def custom_method_all_view(request, object_id):
-    med = Medicine.objects.get(pk=object_id)
-    queryset = Medicine.objects.filter(
-        Q(name='') |
-        Q(salt_name__isnull=True) |
-        Q(price__isnull=True) |
-        Q(discounted_price__isnull=True) |
-        Q(price=F('discounted_price'))
-    )
-    if med.platform == get_platform_dict()[PHARM_EASY]:
-        for med_ in queryset.filter(
-                platform=get_platform_dict()[PHARM_EASY]).values_list('pk', flat=True):
-            update_medicine_pharmeasy.delay(med_, is_forced=True)
-        update_medicine_pharmeasy(med.pk, is_forced=True)
-    if med.platform == get_platform_dict()[NET_MEDS]:
-        for med_ in queryset.filter(
-                platform=get_platform_dict()[NET_MEDS]).values_list('pk', flat=True):
-            update_medicine.delay(med_, is_forced=True)
-        update_medicine(med.pk, is_forced=True)
-    if med.platform == get_platform_dict()[ONE_MG]:
-        for med_ in queryset.filter(
-                platform=get_platform_dict()[ONE_MG]).values_list('pk', flat=True):
-            update_medicine_1mg.delay(med_, is_forced=True)
-        update_medicine_1mg(med.pk, is_forced=True)
-    return redirect('admin:api_medicine_change', object_id)
-
-
-def lobby(request):
-    Medicine.objects.filter(salt_name=None, price=None, discounted_price=None, name='').delete()
-    return render(request, 'api/lobby.html')
+    def get_queryset(self):
+        return UserRating.objects.filter(pharmacist=self.request.user).order_by('-pk')

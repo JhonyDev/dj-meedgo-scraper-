@@ -146,3 +146,9 @@ class Message(models.Model):
 
     class Meta:
         ordering = ['-pk']
+
+
+class UserRating(models.Model):
+    pharmacist = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pharmacist+')
+    given_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user+')
+    comment = models.TextField(null=True, default=None)
