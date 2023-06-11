@@ -268,7 +268,7 @@ class MessageGeneralSerializer(serializers.ModelSerializer):
 
 
 class UserRatingListSerializer(serializers.ModelSerializer):
-    pharmacist = UserGeneralSerializer()
+    given_to = UserGeneralSerializer()
 
     class Meta:
         model = UserRating

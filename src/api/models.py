@@ -158,5 +158,10 @@ class Message(models.Model):
 class UserRating(models.Model):
     given_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pharmacist+')
     given_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user+')
-    rating = models.PositiveIntegerField(default=None, null=True)
+    rating = models.PositiveIntegerField(default=None, null=True, help_text='Rating cannot be greater than 5')
     comment = models.TextField(null=True, default=None)
+
+    def save(self, *args, **kwargs):
+        if self.rating > 5:
+            self.rating = 5
+        super().save(*args, **kwargs)
