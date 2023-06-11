@@ -114,7 +114,7 @@ class OrderRequestListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderRequest
-        fields = ['pk', 'medicine_cart']
+        fields = ['pk', 'medicine_cart', 'order_status']
 
 
 class OrderRequestCompleteSerializer(serializers.ModelSerializer):
