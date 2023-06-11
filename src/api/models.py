@@ -158,4 +158,5 @@ class Message(models.Model):
 class UserRating(models.Model):
     given_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pharmacist+')
     given_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user+')
+    rating = models.PositiveIntegerField(default=None, null=True)
     comment = models.TextField(null=True, default=None)
