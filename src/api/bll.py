@@ -40,7 +40,7 @@ def add_medicine_to_card(self, request):
                 target_med_bridge.quantity = quantity or target_med_bridge.quantity
                 target_med_bridge.save()
             else:
-                MedicineCartBridge.objects.create(medicine=medicine, medicine_card=cart)
+                MedicineCartBridge.objects.create(medicine=medicine, medicine_card=cart, quantity=quantity)
         if action == 'REMOVE':
             target_med_bridge.delete()
 

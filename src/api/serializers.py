@@ -141,11 +141,11 @@ class GrabbedOrderRequestsUpdateSerializer(serializers.ModelSerializer):
 
 
 class MedicineOfferSerializer(serializers.ModelSerializer):
-    medicine = MedicineSerializer()
+    medicine_cart_bridge = MedicineCartBridgeSerializer()
 
     class Meta:
         model = MedicineOfferBridge
-        fields = ['pk', 'medicine', 'offered_price']
+        fields = ['pk', 'offered_price', 'medicine_cart_bridge']
 
 
 class MedicineOfferUpdateSerializer(serializers.ModelSerializer):

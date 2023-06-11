@@ -62,12 +62,17 @@ class OrderRequest(models.Model):
 
 class MedicineOfferBridge(models.Model):
     medicine = models.ForeignKey(Medicine, on_delete=models.SET_NULL, null=True, blank=True, default=None)
-    # medicine_cart_bridge = models.ForeignKey(
-    #     'MedicineCartBridge', on_delete=models.SET_NULL, null=True, blank=True, default=None)
+    medicine_cart_bridge = models.ForeignKey(
+        'MedicineCartBridge', on_delete=models.SET_NULL, null=True, blank=True, default=None)
     order_grab = models.ForeignKey('GrabUserBridge', on_delete=models.CASCADE, null=True, blank=True, default=None)
     offered_price = models.PositiveIntegerField(
         null=True, default=None, blank=True,
         help_text='Positive Integer expected. Mention amount in INR')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # self.medicine_cart_bridge = MedicineCartBridge.objects.filter(
+        #     medicine=self.medicine, medicine_card=self.order_grab.order_request.medicine_cart).first()
 
     def __str__(self):
         return str(self.pk)

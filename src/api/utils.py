@@ -1,3 +1,5 @@
+from src.api.models import MedicineCartBridge
+
 
 def get_api_exception(detail, code):
     from rest_framework.exceptions import APIException
@@ -16,11 +18,12 @@ def get_platform_dict():
 def balance_medicines(instance):
     from django.db import transaction
     from src.api.models import MedicineOfferBridge
-    medicines = MedicineOfferBridge.objects.filter(order_grab=instance).values('medicine__pk')
-    remaining_medicines = instance.order_request.medicine_cart.medicines.exclude(pk__in=medicines)
+    medicines = MedicineOfferBridge.objects.filter(order_grab=instance).values('medicine_cart_bridge__pk')
+    medicine_cart_bridges = MedicineCartBridge.objects.filter(
+        medicine_card=instance.order_request.medicine_cart).exclude(pk__in=medicines)
     with transaction.atomic():
-        for medicine in remaining_medicines:
-            MedicineOfferBridge.objects.create(order_grab=instance, medicine=medicine)
+        for medicine_cart_bridge in medicine_cart_bridges:
+            MedicineOfferBridge.objects.create(medicine_cart_bridge=medicine_cart_bridge, order_grab=instance)
 
 
 def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
