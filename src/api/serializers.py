@@ -1,7 +1,7 @@
 from django.db.models import Sum
 from rest_framework import serializers
 
-from src.accounts.models import User
+from src.accounts.models import User, LicenseEntry
 from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge, MedicineCartBridge, \
     ConversationHistory, Message, UserRating
 
@@ -13,6 +13,18 @@ class UserGeneralSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    is_documentation_complete = serializers.SerializerMethodField('get_documentation')
+
+    def get_documentation(self, obj):
+        return LicenseEntry.objects.filter(user=obj).exists() \
+               and obj.pan_card_image is not None \
+               and obj.store_photo is not None \
+               and obj.profile_image is not None \
+               and obj.type_of_ownership is not None \
+               and obj.pan_number is not None \
+               and obj.business_name is not None \
+               and obj.aadhar_card is not None
+
     class Meta:
         model = User
         exclude = (

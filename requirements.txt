@@ -31,3 +31,4 @@ websocket-client
 PyExecJS
 django-otp
 twilio
+azure-communication-sms

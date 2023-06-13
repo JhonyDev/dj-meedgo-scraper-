@@ -275,8 +275,8 @@ class GrabOrdersView(generics.ListCreateAPIView):
 
     def initial(self, request, *args, **kwargs):
         super().initial(request, *args, **kwargs)
-        for medicine in GrabUserBridge.objects.filter(user=self.request.user):
-            balance_medicines(medicine)
+        for grab_user_bridge in GrabUserBridge.objects.filter(user=self.request.user):
+            balance_medicines(grab_user_bridge)
 
 
 class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):

@@ -99,6 +99,9 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
 
 class License(models.Model):
     license_name = models.CharField(max_length=150, null=False, blank=False)
@@ -112,6 +115,7 @@ class License(models.Model):
 
 class LicenseEntry(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    is_approved = models.BooleanField(default=False)
     license = models.ForeignKey(License, on_delete=models.CASCADE, null=True, blank=True)
     license_number = models.PositiveIntegerField(default=None, null=True, blank=True)
     license_expiry = models.DateField(default=None, null=True, blank=True)
