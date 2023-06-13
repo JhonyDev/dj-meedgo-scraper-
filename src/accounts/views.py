@@ -4,8 +4,9 @@ from datetime import datetime
 
 from allauth.account.models import EmailAddress
 from django.contrib.auth.hashers import check_password
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.shortcuts import render
+from django.template.loader import render_to_string
 from django.views import View
 from django_otp import devices_for_user
 from rest_framework import generics, permissions, status, viewsets
@@ -58,10 +59,16 @@ class CustomRegisterAccountView(CreateAPIView):
         if user.email:
             unique_id = str(uuid.uuid4())
             EmailAddress.objects.create(user=user, email=user.email, primary=True, verified=False)
-            subject = 'Email Verification'
-            message = f'Please click the link below to verify your email address:' \
-                      f'\n\n{settings.BASE_URL}/verify-email/{user.email}/{unique_id}/'
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=True)
+            mail_subject = 'Activate your account'
+            message = render_to_string('accounts/activation_email.html', {
+                'user': user,
+                'domain': settings.BASE_URL,
+                'unique_id': unique_id,
+            })
+            email = EmailMultiAlternatives(mail_subject, message, to=[user.email])
+            email.attach_alternative(message, 'text/html')
+            email.send()
+            send_mail(mail_subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=True)
             AuthenticationToken.objects.create(user=user, auth_token=unique_id)
         return user
 
