@@ -80,6 +80,7 @@ class User(AbstractUser):
     pin_code = models.PositiveIntegerField(null=True, blank=True, default=None)
     shop_name = models.CharField(max_length=150, null=True, blank=True, default=None)
     gst_number = models.PositiveIntegerField(null=True, blank=True, default=None)
+    is_active = models.BooleanField(default=False)
 
     def clean(self):
         if self.username is None and self.email is None and self.phone_number:
