@@ -301,11 +301,3 @@ accept_content = ['application/json']
 task_serializer = 'json'
 result_serializer = 'json'
 timezone = 'Asia/Karachi'
-
-CHANNEL_WEBSOCKET_TIMEOUT = None
-
-asgi_applications = {
-    'channels.routing.application': {
-        'timeout': 10,
-    },
-}
