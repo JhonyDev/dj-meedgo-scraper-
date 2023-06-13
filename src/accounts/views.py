@@ -98,6 +98,9 @@ class LicenseEntryListCreateView(generics.ListCreateAPIView):
     queryset = LicenseEntry.objects.all()
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        return LicenseEntry.objects.filter(user=self.request.user)
+
     def perform_create(self, serializer):
         instance = serializer.save()
         instance.user = self.request.user
