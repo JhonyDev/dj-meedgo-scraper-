@@ -1,8 +1,12 @@
 import random
+import uuid
 from datetime import datetime
 
 from allauth.account.models import EmailAddress
 from django.contrib.auth.hashers import check_password
+from django.core.mail import send_mail
+from django.shortcuts import render
+from django.views import View
 from django_otp import devices_for_user
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.generics import CreateAPIView
@@ -11,9 +15,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from twilio.rest import Client
 
+from core import settings
 from src.accounts import authentication
 from src.accounts.authentication import JWTAuthentication
-from src.accounts.models import License, LicenseEntry, User, UserTime
+from src.accounts.models import License, LicenseEntry, User, UserTime, AuthenticationToken
 from src.accounts.serializers import CustomRegisterAccountSerializer, CustomLoginSerializer, LicenseSerializer, \
     LicenseEntrySerializer, PhoneOTPLoginSerializer, OTPVerificationSerializer, UserTimeSerializer, \
     ChangePasswordSerializer
@@ -51,18 +56,23 @@ class CustomRegisterAccountView(CreateAPIView):
     def perform_create(self, serializer):
         user = serializer.save()
         if user.email:
+            unique_id = str(uuid.uuid4())
             EmailAddress.objects.create(user=user, email=user.email, primary=True, verified=False)
+            subject = 'Email Verification'
+            message = f'Please click the link below to verify your email address:' \
+                      f'\n\n{settings.BASE_URL}/verify-email/{user.email}/{unique_id}/'
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=True)
+            AuthenticationToken.objects.create(user=user, auth_token=unique_id)
         return user
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = self.perform_create(serializer)
-        access_token = authentication.create_access_token(UserSerializer(user).data)
-        refresh_token = authentication.create_refresh_token(user.pk)
+        # access_token = authentication.create_access_token(UserSerializer(user).data)
+        # refresh_token = authentication.create_refresh_token(user.pk)
         data = {
-            'access_token': access_token,
-            'refresh_token': refresh_token
+            'message': f"Sign up successful, Verification email is sent to {user.email}.",
         }
         return Response(data=data, status=status.HTTP_201_CREATED)
 
@@ -75,7 +85,7 @@ class CustomLoginView(APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        response = Response()
+        response = Response(status=status.HTTP_200_OK)
         user_serializer = UserSerializer(user)
         access_token = authentication.create_access_token(user_serializer.data)
         refresh_token = authentication.create_refresh_token(user.pk)
@@ -83,6 +93,7 @@ class CustomLoginView(APIView):
             'access_token': access_token,
             'refresh_token': refresh_token
         }
+
         return response
 
 
@@ -188,3 +199,13 @@ class ChangePasswordView(UpdateAPIView):
             return Response({'message': 'Password changed successfully.'}, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class EmailVerificationView(View):
+    def get(self, request, auth_token):
+        auth_token = AuthenticationToken.objects.filter(auth_token=auth_token).first()
+        if auth_token:
+            auth_token.user.is_active = True
+            auth_token.user.save()
+            return render(request, 'accounts/ver_success.html')
+        return render(request, 'accounts/ver_failed.html')

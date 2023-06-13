@@ -31,7 +31,7 @@ SECRET_KEY = env('SERVER_KEY')
 SERVER = env('SERVER') == 'True'
 DEBUG = env('DEBUG') == 'True'
 
-BASE_URL = "https://hotelelites.jhonydev.com/"
+BASE_URL = "https://meedgo.jhonydev.com/"
 
 SOLE_PROPRIETORSHIP = 'SP'
 PARTNERSHIP = 'P'
@@ -248,10 +248,10 @@ LOGOUT_REDIRECT_URL = '/admin/'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'app.simbo@gmail.com'
-EMAIL_HOST_PASSWORD = 'acaciamateapp'
+EMAIL_HOST_USER = 'care@meedgo.com'
+EMAIL_HOST_PASSWORD = 'ibxdeltbsaokriks'
 EMAIL_PORT = 587
-DEFAULT_FROM_EMAIL = 'SIMBO <app.simbo@gmail.com>'
+DEFAULT_FROM_EMAIL = 'Meedgo <care@meedgo.com>'
 
 """ RESIZER IMAGE --------------------------------------------------------------------------------"""
 DJANGORESIZED_DEFAULT_SIZE = [1920, 1080]

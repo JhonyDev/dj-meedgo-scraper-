@@ -117,7 +117,7 @@ class CustomLoginSerializer(serializers.Serializer):
             raise serializers.ValidationError('Invalid credentials.')
 
         if not user.is_active:
-            raise serializers.ValidationError('User account is disabled.')
+            raise serializers.ValidationError('Please verify your email address before logging in.')
 
         attrs['user'] = user
         return attrs

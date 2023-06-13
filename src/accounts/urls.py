@@ -14,7 +14,9 @@ urlpatterns = [
 
     path('login/', CustomLoginView.as_view(), name='login-user'),
     path('registration/', CustomRegisterAccountView.as_view(), name='account_create_new_user'),
+
     path('licenses/', LicensesListView.as_view(), name='licenses'),
+    path('verify-email/<str:auth_token>/', LicensesListView.as_view(), name='licenses'),
 
     path('change-password/', ChangePasswordView.as_view()),
 

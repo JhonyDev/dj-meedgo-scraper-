@@ -146,3 +146,11 @@ class UserTime(models.Model):
     day = models.CharField(max_length=20, choices=DAYS_OF_WEEK)
     opening_time = models.TimeField()
     closing_time = models.TimeField()
+
+
+class AuthenticationToken(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    auth_token = models.CharField(max_length=100, default=None, null=True, blank=True)
+
+    class Meta:
+        ordering = ['-pk']
