@@ -141,23 +141,24 @@ class MedicineSearchView(generics.ListAPIView):
         param_contains_salt = queryset.filter(salt_name__icontains=param)
         if param:
             queryset = utils.get_similarity_queryset(queryset, param)
-            if not queryset:
-                med_list = scrape_pharmeasy(param)
-                queryset = Medicine.objects.filter(pk__in=med_list)
-            scrape_flipkart.delay(param)
-            scrape_netmeds.delay(param)
-            scrape_pharmeasy.delay(param)
-            scrape_1mg.delay(param)
+            # if not queryset:
+                # med_list = scrape_pharmeasy(param)
+                # queryset = Medicine.objects.filter(pk__in=med_list)
+            # scrape_flipkart.delay(param)
+            # scrape_netmeds.delay(param)
+            # scrape_pharmeasy.delay(param)
+            # scrape_1mg.delay(param)
 
         queryset = param_contains_name.union(param_contains_salt, all=True).union(queryset, all=True)
-        for med in queryset:
-            if not med.salt_name and med.med_url:
-                if med.platform == get_platform_dict()[PHARM_EASY]:
-                    update_medicine_pharmeasy.delay(med.pk)
-                if med.platform == get_platform_dict()[NET_MEDS]:
-                    update_medicine.delay(med.pk)
-                if med.platform == get_platform_dict()[ONE_MG]:
-                    update_medicine_1mg.delay(med.pk)
+        # for med in queryset:
+        #     if not med.salt_name and med.med_url:
+        #         if med.platform == get_platform_dict()[PHARM_EASY]:
+        #             update_medicine_pharmeasy.delay(med.pk)
+        #         if med.platform == get_platform_dict()[NET_MEDS]:
+        #             update_medicine.delay(med.pk)
+        #         if med.platform == get_platform_dict()[ONE_MG]:
+        #             update_medicine_1mg.delay(med.pk)
+        #
         return queryset
 
 
