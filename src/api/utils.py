@@ -28,6 +28,7 @@ def balance_medicines(instance):
 
 def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     print("||" * 100)
+
     from fuzzywuzzy import fuzz
     # if is_salt:
     #     similar_words = queryset.exclude(salt_name=None).values('pk', 'name', 'salt_name')
@@ -43,12 +44,9 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
         if is_salt:
             ratio_salt = fuzz.ratio(salt_name, word['salt_name'])
             net_ratio = (ratio_salt + ratio_name) / 2
-            print(f'{param1} - {salt_name} COMPARING TO')
-            print(f'{word["name"]} - {word["salt_name"]} = {net_ratio}')
         else:
             ratio_salt = fuzz.ratio(param1, word['salt_name'])
             net_ratio = (ratio_salt + ratio_name) / 2
-
         check = 50 if not is_salt else 30
         if net_ratio > check:
             similar_words_.append(word['pk'])
@@ -56,8 +54,9 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
             similarities_map[net_ratio] = word['pk']
     similarities.sort()
     similarities.reverse()
-    # sorted_similar_words = [similarities_map[x] for x in similarities]
     queryset = queryset.filter(pk__in=similar_words_)
+
+    # sorted_similar_words = [similarities_map[x] for x in similarities]
     # order_dict = {word: index for index, word in enumerate(sorted_similar_words)}
     # queryset = queryset.annotate(custom_order=models.Case(
     #     *[models.When(pk=pk, then=models.Value(order)) for pk, order in order_dict.items()],

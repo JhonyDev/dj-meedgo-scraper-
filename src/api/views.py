@@ -139,8 +139,9 @@ class MedicineSearchView(generics.ListAPIView):
             return queryset
         param_contains_name = queryset.filter(name__icontains=param)
         param_contains_salt = queryset.filter(salt_name__icontains=param)
-        if param:
-            queryset = utils.get_similarity_queryset(queryset, param)
+        # if param:
+        #     queryset = utils.get_similarity_queryset(queryset, param)
+        #
             # if not queryset:
                 # med_list = scrape_pharmeasy(param)
                 # queryset = Medicine.objects.filter(pk__in=med_list)
@@ -149,7 +150,8 @@ class MedicineSearchView(generics.ListAPIView):
             # scrape_pharmeasy.delay(param)
             # scrape_1mg.delay(param)
 
-        queryset = param_contains_name.union(param_contains_salt, all=True).union(queryset, all=True)
+        # queryset = param_contains_name.union(param_contains_salt, all=True).union(queryset, all=True)
+        queryset = param_contains_name.union(param_contains_salt, all=True)
         # for med in queryset:
         #     if not med.salt_name and med.med_url:
         #         if med.platform == get_platform_dict()[PHARM_EASY]:
