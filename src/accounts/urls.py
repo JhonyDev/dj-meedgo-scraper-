@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from .views import CustomLoginView, CustomRegisterAccountView, UserUpdateView, LicensesListView, \
     LicenseEntryListCreateView, LicenseEntryRUDView, PhoneOTPLoginView, OTPVerificationView, UserTimeViewSet, \
-    ChangePasswordView
+    ChangePasswordView, EmailVerificationView
 
 app_name = 'accounts'
 router = DefaultRouter()
@@ -16,7 +16,7 @@ urlpatterns = [
     path('registration/', CustomRegisterAccountView.as_view(), name='account_create_new_user'),
 
     path('licenses/', LicensesListView.as_view(), name='licenses'),
-    path('verify-email/<str:auth_token>/', LicensesListView.as_view(), name='licenses'),
+    path('verify-email/<str:auth_token>/', EmailVerificationView.as_view(), name='verification'),
 
     path('change-password/', ChangePasswordView.as_view()),
 
