@@ -7,15 +7,17 @@ User = get_user_model()
 
 class CustomAuthBackend(BaseBackend):
     def authenticate(self, request, username=None, email=None, phone_number=None, password=None):
+        user = None
         if username:
             user = User.objects.filter(
                 Q(username=username)
             ).first()
-        elif email:
+
+        if user is not None and email:
             user = User.objects.filter(
                 Q(email=email)
             ).first()
-        elif phone_number:
+        if user is not None and phone_number:
             user = User.objects.filter(
                 Q(phone_number=phone_number)
             ).first()
