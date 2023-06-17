@@ -77,7 +77,7 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
 
     ranked_medicines = (
         Medicine.objects.annotate(
-            rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.1).order_by('-rank')
+            rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.1).order_by('-rank')[:10]
         # .values('medicine_name', 'rank')
     )
     return ranked_medicines
