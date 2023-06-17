@@ -66,11 +66,3 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     ))
 
     return queryset.order_by('custom_order')
-
-
-def break_into_substrings(string):
-    substrings = []
-    for i in range(0, len(string), 3):
-        substring = string[i:i + 3]
-        substrings.append(substring)
-    return substrings

@@ -18,8 +18,8 @@ from .serializers import MedicineSerializer, MedicineToCartSerializer, \
     ConversationHistoryListSerializer, ConversationHistoryCreateSerializer, MessageCreateSerializer, \
     MessageListSerializer, UserRatingListSerializer, UserRatingCreateSerializer, OrderRequestCompleteSerializer
 from .tasks import update_medicine_pharmeasy, update_medicine, \
-    update_medicine_1mg
-from .utils import get_platform_dict, balance_medicines, break_into_substrings
+    update_medicine_1mg, scrape_pharmeasy
+from .utils import get_platform_dict, balance_medicines, break_into_substrings, get_similarity_queryset
 from ..accounts.authentication import JWTAuthentication
 
 """ADMIN-TASKS"""
@@ -132,23 +132,10 @@ class MedicineSearchView(generics.ListAPIView):
 
     def get_queryset(self):
         param = self.request.query_params.get('search')
-        orig_queryset = Medicine.objects.exclude(price=None, discounted_price=None).order_by(
-            'name', 'salt_name').distinct('name', 'salt_name')
+        orig_queryset = Medicine.objects.exclude(price=None, discounted_price=None)
         if param is None:
             return orig_queryset
-
         queryset = orig_queryset.filter(Q(name__search=param) | Q(salt_name__search=param))
-
-        if not queryset:
-            substrings = break_into_substrings(param)
-            print(substrings)
-            queryset = Medicine.objects.none()
-            for sub_param in substrings:
-                new_queryset = orig_queryset.filter(Q(name__search=sub_param) | Q(salt_name__search=sub_param))
-                queryset = queryset.union(new_queryset)
-                if queryset.count() >= 10:
-                    break
-        print(queryset)
         # scrape_flipkart.delay(param)
         # scrape_netmeds.delay(param)
         # scrape_pharmeasy.delay(param)
@@ -162,11 +149,11 @@ class MedicineSearchView(generics.ListAPIView):
         #             update_medicine.delay(med.pk)
         #         if med.platform == get_platform_dict()[ONE_MG]:
         #             update_medicine_1mg.delay(med.pk)
-        # if param and not queryset:
-        #     # queryset = utils.get_similarity_queryset(orig_queryset, param)
-        #     if not queryset:
-        #         med_list = scrape_pharmeasy(param)
-        #         queryset = Medicine.objects.filter(pk__in=med_list)
+        if param and not queryset:
+            queryset = get_similarity_queryset(orig_queryset, param)
+            if not queryset:
+                med_list = scrape_pharmeasy(param)
+                queryset = Medicine.objects.filter(pk__in=med_list)
         return queryset
 
 
