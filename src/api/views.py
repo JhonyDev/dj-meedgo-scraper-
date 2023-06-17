@@ -1,7 +1,6 @@
 from django.db.models import Sum, Q, F, OuterRef, Subquery
 from django.shortcuts import redirect, render
 from rest_framework import generics, permissions, status, viewsets
-from rest_framework.filters import SearchFilter
 from rest_framework.generics import get_object_or_404, ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
@@ -133,9 +132,11 @@ class MedicineSearchView(generics.ListAPIView):
     def get_queryset(self):
         param = self.request.query_params.get('search')
 
-        queryset = Medicine.objects.filter(salt_name__trigram_similar=param)
+        # queryset = Medicine.objects.filter(salt_name__trigram_similar=param)
+        from django.contrib.postgres.search import TrigramSimilarity
+        queryset = Medicine.objects.annotate(similarity=TrigramSimilarity('salt_name', param), ).filter(
+            similarity__gt=0.0).order_by('-similarity')
         return queryset
-
 
         orig_queryset = Medicine.objects.exclude(price=None, discounted_price=None)
         if param is None:
