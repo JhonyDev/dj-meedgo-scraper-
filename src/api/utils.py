@@ -1,3 +1,5 @@
+from django.db.models import Q
+
 from src.api.models import MedicineCartBridge, Medicine
 
 
@@ -28,7 +30,7 @@ def balance_medicines(instance):
 
 def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     print("||" * 100)
-    #
+
     # from fuzzywuzzy import fuzz
     # # if is_salt:
     # #     similar_words = queryset.exclude(salt_name=None).values('pk', 'name', 'salt_name')
@@ -64,15 +66,14 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     # ))
     #
     # return queryset.order_by('custom_order')
+    # .values('medicine_name', 'rank')
     from django.contrib.postgres.search import SearchVector
     from django.contrib.postgres.search import SearchQuery
     from django.contrib.postgres.search import SearchRank
     search_vector = SearchVector('name', 'salt_name')
     search_query = SearchQuery(param1)
-
-    ranked_medicines = (
-        queryset.annotate(
-            rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.0001).order_by('-rank')
-        # .values('medicine_name', 'rank')
-    )
+    ranked_medicines = Medicine.objects.annotate(
+        rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.0001).order_by('-rank')
+    if not ranked_medicines:
+        ranked_medicines = Medicine.objects.filter(Q(name__search=param1) | Q(salt_name__search=param1))
     return ranked_medicines
