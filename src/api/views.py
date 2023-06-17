@@ -153,12 +153,15 @@ class MedicineSearchView(generics.ListAPIView):
         #         if med.platform == get_platform_dict()[ONE_MG]:
         #             update_medicine_1mg.delay(med.pk)
         if param and not queryset:
-            from django.contrib.postgres.search import TrigramSimilarity
+            from django.db.models.functions import Cast
+            from django.db.models import CharField
             queryset = orig_queryset.annotate(
-                similarity=TrigramSimilarity('name', param)
-            ).order_by('-similarity')
-            for query in queryset:
-                print(query.similarity)
+                similarity=1 - (Cast(F('name'),
+                                     CharField()).levenshtein(param) / Cast(F('name'), CharField()).length()),
+            ).filter(similarity__gte=0.0)
+
+            for obj in queryset:
+                print(f"Name: {obj.name}, Similarity: {obj.similarity}")
             # print(queryset)
             # if not queryset:
             #     med_list = scrape_pharmeasy(param)
