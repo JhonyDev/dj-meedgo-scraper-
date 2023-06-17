@@ -157,7 +157,7 @@ class MedicineSearchView(generics.ListAPIView):
             queryset = orig_queryset.annotate(
                 similarity=Case(
                     When(Q(name__icontains=param), then=Value(1.0)),
-                    When(Q(name__trigram_similar=param), then=TrigramSimilarity('name', search_term)),
+                    When(Q(name__trigram_similar=param), then=TrigramSimilarity('name', param)),
                     default=Value(0.0),
                     output_field=FloatField()
                 )
