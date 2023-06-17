@@ -142,7 +142,7 @@ class MedicineSearchView(generics.ListAPIView):
 
         queryset = orig_queryset.filter(Q(name__trigram_similar=param) | Q(salt_name__trigram_similar=param)).order_by(
             'name', 'salt_name').distinct('name', 'salt_name')
-
+        print(queryset)
         # scrape_flipkart.delay(param)
         # scrape_netmeds.delay(param)
         # scrape_pharmeasy.delay(param)
@@ -156,11 +156,11 @@ class MedicineSearchView(generics.ListAPIView):
         #             update_medicine.delay(med.pk)
         #         if med.platform == get_platform_dict()[ONE_MG]:
         #             update_medicine_1mg.delay(med.pk)
-        if param and not queryset:
-            # queryset = utils.get_similarity_queryset(orig_queryset, param)
-            if not queryset:
-                med_list = scrape_pharmeasy(param)
-                queryset = Medicine.objects.filter(pk__in=med_list)
+        # if param and not queryset:
+        #     # queryset = utils.get_similarity_queryset(orig_queryset, param)
+        #     if not queryset:
+        #         med_list = scrape_pharmeasy(param)
+        #         queryset = Medicine.objects.filter(pk__in=med_list)
         return queryset
 
 
