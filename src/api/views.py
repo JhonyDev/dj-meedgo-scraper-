@@ -132,6 +132,11 @@ class MedicineSearchView(generics.ListAPIView):
 
     def get_queryset(self):
         param = self.request.query_params.get('search')
+
+        queryset = Medicine.objects.filter(name__trigram_similar=param)
+        return queryset
+
+
         orig_queryset = Medicine.objects.exclude(price=None, discounted_price=None)
         if param is None:
             return orig_queryset
