@@ -133,7 +133,7 @@ class MedicineSearchView(generics.ListAPIView):
     def get_queryset(self):
         param = self.request.query_params.get('search')
 
-        queryset = Medicine.objects.filter(name__trigram_similar=param)
+        queryset = Medicine.objects.filter(salt_name__trigram_similar=param)
         return queryset
 
 
