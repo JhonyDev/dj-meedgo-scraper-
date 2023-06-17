@@ -136,8 +136,7 @@ class MedicineSearchView(generics.ListAPIView):
         orig_queryset = Medicine.objects.exclude(price=None, discounted_price=None)
         if param is None:
             return orig_queryset
-        # queryset = orig_queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
-        queryset = None
+        queryset = orig_queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
 
         # scrape_flipkart.delay(param)
         # scrape_netmeds.delay(param)
@@ -155,10 +154,9 @@ class MedicineSearchView(generics.ListAPIView):
         #             update_medicine_1mg.delay(med.pk)
         if param and not queryset:
             queryset = utils.get_similarity_queryset(orig_queryset, param)
-            print(queryset)
-            # if not queryset:
-            # med_list = scrape_pharmeasy(param)
-            #     queryset = Medicine.objects.filter(pk__in=med_list)
+            if not queryset:
+                med_list = scrape_pharmeasy(param)
+                queryset = Medicine.objects.filter(pk__in=med_list)
         return queryset
 
 
