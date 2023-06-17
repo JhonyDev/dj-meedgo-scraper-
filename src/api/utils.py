@@ -1,3 +1,5 @@
+from django.db import models
+
 from src.api.models import MedicineCartBridge
 
 
@@ -26,55 +28,41 @@ def balance_medicines(instance):
             MedicineOfferBridge.objects.create(medicine_cart_bridge=medicine_cart_bridge, order_grab=instance)
 
 
-from django.db.models import Func, Value, IntegerField
-
-
-class FuzzyWuzzyRatio(Func):
-    function = 'fuzzystrmatch.fuzzystrmatch'
-    arity = 2
-    output_field = IntegerField()
-
-
 def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     print("||" * 100)
 
+    from fuzzywuzzy import fuzz
     # if is_salt:
     #     similar_words = queryset.exclude(salt_name=None).values('pk', 'name', 'salt_name')
     # else:
     #     similar_words = queryset.values('pk', 'name', 'salt_name')
 
-    # similar_words = queryset.values('pk', 'name', 'salt_name')
-    # similar_words_ = []
-    # similarities = []
-    # similarities_map = {}
-    # for word in similar_words:
-    #     ratio_name = fuzz.ratio(param1, word['name'])
-    #     if is_salt:
-    #         ratio_salt = fuzz.ratio(salt_name, word['salt_name'])
-    #         net_ratio = (ratio_salt + ratio_name) / 2
-    #     else:
-    #         ratio_salt = fuzz.ratio(param1, word['salt_name'])
-    #         net_ratio = (ratio_salt + ratio_name) / 2
-    #     check = 50 if not is_salt else 30
-    #     if net_ratio > check:
-    #         similar_words_.append(word['pk'])
-    #         similarities.append(net_ratio)
-    #         similarities_map[net_ratio] = word['pk']
-    # similarities.sort()
-    # similarities.reverse()
-    # queryset = queryset.filter(pk__in=similar_words_)
-    # sorted_similar_words = [similarities_map[x] for x in similarities]
-    # order_dict = {word: index for index, word in enumerate(sorted_similar_words)}
-    # queryset = queryset.annotate(custom_order=models.Case(
-    #     *[models.When(pk=pk, then=models.Value(order)) for pk, order in order_dict.items()],
-    #     default=models.Value(len(order_dict))
-    # ))
-    #
-    results = queryset.annotate(
-        fuzzy_ratio=FuzzyWuzzyRatio('name', Value(param1))
-    ).filter(fuzzy_ratio__gte=50)
+    similar_words = queryset.values('pk', 'name', 'salt_name')
+    similar_words_ = []
+    similarities = []
+    similarities_map = {}
+    for word in similar_words:
+        ratio_name = fuzz.ratio(param1, word['name'])
+        if is_salt:
+            ratio_salt = fuzz.ratio(salt_name, word['salt_name'])
+            net_ratio = (ratio_salt + ratio_name) / 2
+        else:
+            ratio_salt = fuzz.ratio(param1, word['salt_name'])
+            net_ratio = (ratio_salt + ratio_name) / 2
+        check = 50 if not is_salt else 30
+        if net_ratio > check:
+            similar_words_.append(word['pk'])
+            similarities.append(net_ratio)
+            similarities_map[net_ratio] = word['pk']
+    similarities.sort()
+    similarities.reverse()
+    queryset = queryset.filter(pk__in=similar_words_)
 
-    for obj in results:
-        print(f"Name: {obj.name}, Fuzzy Ratio: {obj.fuzzy_ratio}")
+    sorted_similar_words = [similarities_map[x] for x in similarities]
+    order_dict = {word: index for index, word in enumerate(sorted_similar_words)}
+    queryset = queryset.annotate(custom_order=models.Case(
+        *[models.When(pk=pk, then=models.Value(order)) for pk, order in order_dict.items()],
+        default=models.Value(len(order_dict))
+    ))
 
     return queryset.order_by('custom_order').values('medicine_name', 'rank')
