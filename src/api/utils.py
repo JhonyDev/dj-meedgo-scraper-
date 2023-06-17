@@ -37,7 +37,7 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     # else:
     #     similar_words = queryset.values('pk', 'name', 'salt_name')
 
-    similar_words = queryset.values('pk', 'name', 'salt_name').distinct('name', 'salt_name')
+    similar_words = queryset.values('pk', 'name', 'salt_name').order_by('name', 'salt_name').distinct('name', 'salt_name')
     print(len(similar_words))
     similar_words_ = []
     similarities = []
