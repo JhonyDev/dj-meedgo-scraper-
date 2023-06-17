@@ -30,6 +30,22 @@ def balance_medicines(instance):
 
 def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     print("/" * 100)
+    from django.db.models import Func, Value, IntegerField
+
+    similarity_threshold = 80  # The threshold for fuzzywuzzy ratio
+
+    class FuzzyWuzzyRatio(Func):
+        function = 'fuzzystrmatch.fuzzystrmatch'
+        arity = 2
+        output_field = IntegerField()
+
+    results = queryset.annotate(
+        fuzzy_ratio=FuzzyWuzzyRatio('name', Value(param1))
+    ).filter(fuzzy_ratio__gte=similarity_threshold)
+
+    for obj in results:
+        print(f"Name: {obj.name}, Fuzzy Ratio: {obj.fuzzy_ratio}")
+    return results
 
     from fuzzywuzzy import fuzz
 
