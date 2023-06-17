@@ -1,8 +1,6 @@
 from django.db import models
-from django.db.models import Value
-from django.db.models.functions import Cast
 
-from src.api.models import MedicineCartBridge, Medicine
+from src.api.models import MedicineCartBridge
 
 
 def get_api_exception(detail, code):
@@ -33,10 +31,6 @@ def balance_medicines(instance):
 def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     print("/" * 100)
     from fuzzywuzzy import fuzz
-    results = Medicine.objects.annotate(
-        similarity=Cast(fuzz.ratio(Value(param1), 'name'), output_field=models.IntegerField())
-    ).filter(similarity__gt=0.0)
-    return results
 
     similar_words = queryset.order_by(
         'name', 'salt_name').distinct('name', 'salt_name').values('pk', 'name', 'salt_name')
