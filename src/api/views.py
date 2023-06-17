@@ -19,7 +19,7 @@ from .serializers import MedicineSerializer, MedicineToCartSerializer, \
     MessageListSerializer, UserRatingListSerializer, UserRatingCreateSerializer, OrderRequestCompleteSerializer
 from .tasks import update_medicine_pharmeasy, update_medicine, \
     update_medicine_1mg, scrape_pharmeasy
-from .utils import get_platform_dict, balance_medicines, break_into_substrings, get_similarity_queryset
+from .utils import get_platform_dict, balance_medicines, get_similarity_queryset
 from ..accounts.authentication import JWTAuthentication
 
 """ADMIN-TASKS"""
