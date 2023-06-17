@@ -64,4 +64,4 @@ def send_message_to_group(group_name, message):
             'message': message
         })
 
-    print("MESSAGE SHOULD BE SENT")
+    print(f"MESSAGE SHOULD BE SENT TO - {group_name}")
