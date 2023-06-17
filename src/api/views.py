@@ -139,7 +139,7 @@ class MedicineSearchView(generics.ListAPIView):
         # queryset = orig_queryset.filter(Q(name__search=param) | Q(salt_name__search=param)).order_by(
         #     'name', 'salt_name').distinct('name', 'salt_name')
 
-        queryset = orig_queryset.filter(name__trigram_similar=param).order_by(
+        queryset = Medicine.objects.filter(name__trigram_similar=param).order_by(
             'name', 'salt_name').distinct('name', 'salt_name')
         print(queryset)
         # scrape_flipkart.delay(param)
