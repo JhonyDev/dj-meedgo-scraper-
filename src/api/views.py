@@ -1,6 +1,7 @@
 from django.db.models import Sum, Q, F, OuterRef, Subquery
 from django.shortcuts import redirect, render
 from rest_framework import generics, permissions, status, viewsets
+from rest_framework.filters import SearchFilter
 from rest_framework.generics import get_object_or_404, ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
@@ -18,7 +19,7 @@ from .serializers import MedicineSerializer, MedicineToCartSerializer, \
     MessageListSerializer, UserRatingListSerializer, UserRatingCreateSerializer, OrderRequestCompleteSerializer
 from .tasks import update_medicine_pharmeasy, update_medicine, \
     update_medicine_1mg
-from .utils import get_platform_dict, balance_medicines
+from .utils import get_platform_dict, balance_medicines, break_into_substrings
 from ..accounts.authentication import JWTAuthentication
 
 """ADMIN-TASKS"""
@@ -124,29 +125,29 @@ class MedicineSearchView(generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
     authentication_classes = [JWTAuthentication]
     queryset = Medicine.objects.all()
-    # pagination_class = PageNumberPagination
-    # pagination_class.page_size = 10
-    # filter_backends = [SearchFilter]
+    pagination_class = PageNumberPagination
+    pagination_class.page_size = 10
+    filter_backends = [SearchFilter]
     serializer_class = MedicineSerializer
 
     def get_queryset(self):
         param = self.request.query_params.get('search')
-
-        # queryset = Medicine.objects.filter(salt_name__trigram_similar=param)
-        from django.contrib.postgres.search import TrigramSimilarity
-        queryset = Medicine.objects.annotate(similarity=TrigramSimilarity('salt_name', param), ).filter(
-            similarity__gt=0.0).order_by('-similarity')
-        return queryset
-
-        orig_queryset = Medicine.objects.exclude(price=None, discounted_price=None)
+        orig_queryset = Medicine.objects.exclude(price=None, discounted_price=None).order_by(
+            'name', 'salt_name').distinct('name', 'salt_name')
         if param is None:
             return orig_queryset
 
-        # queryset = orig_queryset.filter(Q(name__search=param) | Q(salt_name__search=param)).order_by(
-        #     'name', 'salt_name').distinct('name', 'salt_name')
+        queryset = orig_queryset.filter(Q(name__search=param) | Q(salt_name__search=param))
 
-        queryset = Medicine.objects.filter(name__trigram_similar=param).order_by(
-            'name', 'salt_name').distinct('name', 'salt_name')
+        if not queryset:
+            substrings = break_into_substrings(param)
+            print(substrings)
+            queryset = Medicine.objects.none()
+            for sub_param in substrings:
+                new_queryset = orig_queryset.filter(Q(name__search=sub_param) | Q(salt_name__search=sub_param))
+                queryset = queryset.union(new_queryset)
+                if queryset.count() >= 10:
+                    break
         print(queryset)
         # scrape_flipkart.delay(param)
         # scrape_netmeds.delay(param)

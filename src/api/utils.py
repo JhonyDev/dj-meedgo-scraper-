@@ -33,7 +33,8 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
 
     from fuzzywuzzy import fuzz
 
-    similar_words = queryset.values('pk', 'name', 'salt_name').order_by('name', 'salt_name').distinct('name', 'salt_name')
+    similar_words = queryset.values('pk', 'name', 'salt_name').order_by('name', 'salt_name').distinct('name',
+                                                                                                      'salt_name')
     print(len(similar_words))
     similar_words_ = []
     similarities = []
@@ -65,3 +66,11 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     ))
 
     return queryset.order_by('custom_order')
+
+
+def break_into_substrings(string):
+    substrings = []
+    for i in range(0, len(string), 3):
+        substring = string[i:i + 3]
+        substrings.append(substring)
+    return substrings
