@@ -1,6 +1,8 @@
 from django.db import models
+from django.db.models import Value
+from django.db.models.functions import Cast
 
-from src.api.models import MedicineCartBridge
+from src.api.models import MedicineCartBridge, Medicine
 
 
 def get_api_exception(detail, code):
@@ -30,27 +32,14 @@ def balance_medicines(instance):
 
 def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     print("/" * 100)
-    from django.db.models import Func, Value, IntegerField
-
-    similarity_threshold = 80  # The threshold for fuzzywuzzy ratio
-
-    class FuzzyWuzzyRatio(Func):
-        function = 'fuzzystrmatch.fuzzystrmatch'
-        arity = 2
-        output_field = IntegerField()
-
-    results = queryset.annotate(
-        fuzzy_ratio=FuzzyWuzzyRatio('name', Value(param1))
-    ).filter(fuzzy_ratio__gte=similarity_threshold)
-
-    for obj in results:
-        print(f"Name: {obj.name}, Fuzzy Ratio: {obj.fuzzy_ratio}")
+    from fuzzywuzzy import fuzz
+    results = Medicine.objects.annotate(
+        similarity=Cast(fuzz.ratio(Value(param1), 'name'), output_field=models.IntegerField())
+    ).filter(similarity__gt=0.0)
     return results
 
-    from fuzzywuzzy import fuzz
-
-    similar_words = queryset.values('pk', 'name', 'salt_name').order_by('name', 'salt_name').distinct('name',
-                                                                                                      'salt_name')
+    similar_words = queryset.order_by(
+        'name', 'salt_name').distinct('name', 'salt_name').values('pk', 'name', 'salt_name')
     print(len(similar_words))
     similar_words_ = []
     similarities = []
