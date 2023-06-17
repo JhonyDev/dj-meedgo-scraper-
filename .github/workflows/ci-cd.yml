@@ -20,7 +20,6 @@ jobs:
             python manage.py collectstatic --noinput
             sudo systemctl restart gunicorn.service
             sudo systemctl restart gunicorn.socket
-            sudo systemctl restart celery.service
           host: ${{ secrets.REMOTE_HOST }}
           user: ${{ secrets.REMOTE_USER }}
           pass: ${{ secrets.SSH_PASSWORD }}

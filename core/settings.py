@@ -166,9 +166,9 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 }
 
 AUTHENTICATION_BACKENDS = [
-    'src.accounts.backends.CustomAuthBackend',
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
+    'src.accounts.backends.CustomAuthBackend',
 ]
 
 # WSGI_APPLICATION = 'core.wsgi.application'
