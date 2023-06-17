@@ -18,8 +18,7 @@ from .serializers import MedicineSerializer, MedicineToCartSerializer, \
     MedicineOfferUpdateSerializer, LocalityOrderRequestListSerializer, \
     ConversationHistoryListSerializer, ConversationHistoryCreateSerializer, MessageCreateSerializer, \
     MessageListSerializer, UserRatingListSerializer, UserRatingCreateSerializer, OrderRequestCompleteSerializer
-from .tasks import scrape_pharmeasy, update_medicine_pharmeasy, scrape_1mg, scrape_flipkart, scrape_netmeds, \
-    update_medicine, \
+from .tasks import scrape_pharmeasy, update_medicine_pharmeasy, update_medicine, \
     update_medicine_1mg
 from .utils import get_platform_dict, balance_medicines
 from ..accounts.authentication import JWTAuthentication
@@ -139,16 +138,11 @@ class MedicineSearchView(generics.ListAPIView):
             return queryset
         param_contains_name = queryset.filter(name__icontains=param)
         param_contains_salt = queryset.filter(salt_name__icontains=param)
-        # if param:
-        #     queryset = utils.get_similarity_queryset(queryset, param)
-        #
-            # if not queryset:
-                # med_list = scrape_pharmeasy(param)
-                # queryset = Medicine.objects.filter(pk__in=med_list)
-            # scrape_flipkart.delay(param)
-            # scrape_netmeds.delay(param)
-            # scrape_pharmeasy.delay(param)
-            # scrape_1mg.delay(param)
+
+        # scrape_flipkart.delay(param)
+        # scrape_netmeds.delay(param)
+        # scrape_pharmeasy.delay(param)
+        # scrape_1mg.delay(param)
 
         # queryset = param_contains_name.union(param_contains_salt, all=True).union(queryset, all=True)
         queryset = param_contains_name.union(param_contains_salt, all=True)
@@ -160,7 +154,11 @@ class MedicineSearchView(generics.ListAPIView):
         #             update_medicine.delay(med.pk)
         #         if med.platform == get_platform_dict()[ONE_MG]:
         #             update_medicine_1mg.delay(med.pk)
-        #
+        if param and not queryset:
+            queryset = utils.get_similarity_queryset(queryset, param)
+            if not queryset:
+                med_list = scrape_pharmeasy(param)
+                queryset = Medicine.objects.filter(pk__in=med_list)
         return queryset
 
 
