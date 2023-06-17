@@ -65,4 +65,4 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
         default=models.Value(len(order_dict))
     ))
 
-    return queryset.order_by('custom_order').values('medicine_name', 'rank')
+    return queryset.order_by('custom_order')
