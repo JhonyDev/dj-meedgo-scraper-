@@ -8,6 +8,7 @@ from rest_framework.response import Response
 
 from core.consumers import send_message_to_group
 from core.settings import PHARM_EASY, NET_MEDS, ONE_MG, FIRST_MESSAGE_WHEN_ORDER_ACCEPTED
+from . import utils
 from .bll import add_medicine_to_card
 from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge, ConversationHistory, \
     Message, UserRating
@@ -17,7 +18,7 @@ from .serializers import MedicineSerializer, MedicineToCartSerializer, \
     MedicineOfferUpdateSerializer, LocalityOrderRequestListSerializer, \
     ConversationHistoryListSerializer, ConversationHistoryCreateSerializer, MessageCreateSerializer, \
     MessageListSerializer, UserRatingListSerializer, UserRatingCreateSerializer, OrderRequestCompleteSerializer
-from .tasks import update_medicine_pharmeasy, update_medicine, \
+from .tasks import scrape_pharmeasy, update_medicine_pharmeasy, update_medicine, \
     update_medicine_1mg
 from .utils import get_platform_dict, balance_medicines
 from ..accounts.authentication import JWTAuthentication
@@ -152,13 +153,11 @@ class MedicineSearchView(generics.ListAPIView):
         #             update_medicine.delay(med.pk)
         #         if med.platform == get_platform_dict()[ONE_MG]:
         #             update_medicine_1mg.delay(med.pk)
-        from django.contrib.postgres.search import TrigramSimilarity
         if param and not queryset:
-            queryset = orig_queryset.filter(name__trigram_similar=param)
+            queryset = utils.get_similarity_queryset(orig_queryset, param)
             print(queryset)
-            # print(queryset)
             # if not queryset:
-            #     med_list = scrape_pharmeasy(param)
+            # med_list = scrape_pharmeasy(param)
             #     queryset = Medicine.objects.filter(pk__in=med_list)
         return queryset
 

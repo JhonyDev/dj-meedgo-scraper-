@@ -1,6 +1,4 @@
-from django.db.models import Q
-
-from src.api.models import MedicineCartBridge, Medicine
+from src.api.models import MedicineCartBridge
 
 
 def get_api_exception(detail, code):
@@ -28,15 +26,23 @@ def balance_medicines(instance):
             MedicineOfferBridge.objects.create(medicine_cart_bridge=medicine_cart_bridge, order_grab=instance)
 
 
+from django.db.models import Func, Value, IntegerField
+
+
+class FuzzyWuzzyRatio(Func):
+    function = 'fuzzystrmatch.fuzzystrmatch'
+    arity = 2
+    output_field = IntegerField()
+
+
 def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     print("||" * 100)
 
-    # from fuzzywuzzy import fuzz
-    # # if is_salt:
-    # #     similar_words = queryset.exclude(salt_name=None).values('pk', 'name', 'salt_name')
-    # # else:
-    # #     similar_words = queryset.values('pk', 'name', 'salt_name')
-    #
+    # if is_salt:
+    #     similar_words = queryset.exclude(salt_name=None).values('pk', 'name', 'salt_name')
+    # else:
+    #     similar_words = queryset.values('pk', 'name', 'salt_name')
+
     # similar_words = queryset.values('pk', 'name', 'salt_name')
     # similar_words_ = []
     # similarities = []
@@ -57,7 +63,6 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     # similarities.sort()
     # similarities.reverse()
     # queryset = queryset.filter(pk__in=similar_words_)
-
     # sorted_similar_words = [similarities_map[x] for x in similarities]
     # order_dict = {word: index for index, word in enumerate(sorted_similar_words)}
     # queryset = queryset.annotate(custom_order=models.Case(
@@ -65,16 +70,11 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     #     default=models.Value(len(order_dict))
     # ))
     #
-    # return queryset.order_by('custom_order')
-    # .values('medicine_name', 'rank')
-    from django.contrib.postgres.search import SearchVector
-    from django.contrib.postgres.search import SearchQuery
-    from django.contrib.postgres.search import SearchRank
-    search_vector = SearchVector('name', 'salt_name')
-    search_query = SearchQuery(param1)
-    ranked_medicines = Medicine.objects.annotate(
-        rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.0001).order_by('-rank')
-    if not ranked_medicines:
-        ranked_medicines = Medicine.objects.filter(name__trigram_similar=param1)
+    results = queryset.annotate(
+        fuzzy_ratio=FuzzyWuzzyRatio('name', Value(param1))
+    ).filter(fuzzy_ratio__gte=50)
 
-    return ranked_medicines
+    for obj in results:
+        print(f"Name: {obj.name}, Fuzzy Ratio: {obj.fuzzy_ratio}")
+
+    return queryset.order_by('custom_order').values('medicine_name', 'rank')
