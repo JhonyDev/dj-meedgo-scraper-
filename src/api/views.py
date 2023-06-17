@@ -154,7 +154,7 @@ class MedicineSearchView(generics.ListAPIView):
         #         if med.platform == get_platform_dict()[ONE_MG]:
         #             update_medicine_1mg.delay(med.pk)
         if param and not queryset:
-            queryset = utils.get_similarity_queryset(orig_queryset, param)
+            queryset = orig_queryset.filter(name__trigram_similar=param)
             # print(queryset)
             # if not queryset:
             #     med_list = scrape_pharmeasy(param)
