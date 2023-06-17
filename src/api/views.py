@@ -125,9 +125,9 @@ class MedicineSearchView(generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
     authentication_classes = [JWTAuthentication]
     queryset = Medicine.objects.all()
-    pagination_class = PageNumberPagination
-    pagination_class.page_size = 10
-    filter_backends = [SearchFilter]
+    # pagination_class = PageNumberPagination
+    # pagination_class.page_size = 10
+    # filter_backends = [SearchFilter]
     serializer_class = MedicineSerializer
 
     def get_queryset(self):
