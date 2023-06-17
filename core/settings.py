@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'channels',
+    'django.contrib.postgres',
 
     # OTP LOGIN
     'django_otp',

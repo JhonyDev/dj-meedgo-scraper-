@@ -133,11 +133,11 @@ class MedicineSearchView(generics.ListAPIView):
 
     def get_queryset(self):
         param = self.request.query_params.get('search')
-        queryset = Medicine.objects.exclude(price=None, discounted_price=None)
+        orig_queryset = Medicine.objects.exclude(price=None, discounted_price=None)
         if param is None:
-            return queryset
-        param_contains_name = queryset.filter(name__icontains=param)
-        param_contains_salt = queryset.filter(salt_name__icontains=param)
+            return orig_queryset
+        # queryset = orig_queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param))
+        queryset = None
 
         # scrape_flipkart.delay(param)
         # scrape_netmeds.delay(param)
@@ -145,7 +145,6 @@ class MedicineSearchView(generics.ListAPIView):
         # scrape_1mg.delay(param)
 
         # queryset = param_contains_name.union(param_contains_salt, all=True).union(queryset, all=True)
-        new_queryset = param_contains_name.union(param_contains_salt, all=True)
         # for med in queryset:
         #     if not med.salt_name and med.med_url:
         #         if med.platform == get_platform_dict()[PHARM_EASY]:
@@ -154,12 +153,13 @@ class MedicineSearchView(generics.ListAPIView):
         #             update_medicine.delay(med.pk)
         #         if med.platform == get_platform_dict()[ONE_MG]:
         #             update_medicine_1mg.delay(med.pk)
-        if param and not new_queryset:
-            new_queryset = utils.get_similarity_queryset(queryset, param)
-            if not new_queryset:
+        if param and not queryset:
+            queryset = utils.get_similarity_queryset(orig_queryset, param)
+            print(queryset)
+            if not queryset:
                 med_list = scrape_pharmeasy(param)
-                new_queryset = Medicine.objects.filter(pk__in=med_list)
-        return new_queryset
+                queryset = Medicine.objects.filter(pk__in=med_list)
+        return queryset
 
 
 class MedicineToCartView(generics.GenericAPIView):
