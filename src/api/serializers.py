@@ -200,7 +200,7 @@ class GrabbedOrderRequestsListSerializer(serializers.ModelSerializer):
             platforms_list.append({
                 'platform': platform,
                 'total_cost': total_cost,
-                'status': f'{missing_count} medicines are missing'
+                'status': f'{missing_count} products are missing'
             })
         return platforms_list
 
