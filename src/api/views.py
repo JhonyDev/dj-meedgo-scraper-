@@ -1,4 +1,4 @@
-from django.db.models import Sum, Q, F, OuterRef, Subquery, Case, When, Value, FloatField
+from django.db.models import Sum, Q, F, OuterRef, Subquery
 from django.shortcuts import redirect, render
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.filters import SearchFilter
@@ -155,12 +155,7 @@ class MedicineSearchView(generics.ListAPIView):
         if param and not queryset:
             from django.contrib.postgres.search import TrigramSimilarity
             queryset = orig_queryset.annotate(
-                similarity=Case(
-                    When(Q(name__icontains=param), then=Value(1.0)),
-                    When(Q(name__trigram_similar=param), then=TrigramSimilarity('name', param)),
-                    default=Value(0.0),
-                    output_field=FloatField()
-                )
+                similarity=TrigramSimilarity('name', param)
             ).order_by('-similarity')
             for query in queryset:
                 print(query.similarity)
