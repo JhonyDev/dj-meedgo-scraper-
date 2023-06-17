@@ -30,6 +30,10 @@ class Medicine(models.Model):
 
     class Meta:
         ordering = ['-last_updated']
+        indexes = [
+            models.Index(fields=['name', 'salt_name']),
+            models.Index(fields=['price', 'discounted_price']),
+        ]
 
 
 class MedicineCart(models.Model):

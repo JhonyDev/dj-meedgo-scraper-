@@ -136,14 +136,13 @@ class MedicineSearchView(generics.ListAPIView):
         orig_queryset = Medicine.objects.exclude(price=None, discounted_price=None)
         if param is None:
             return orig_queryset
+
         queryset = orig_queryset.filter(Q(name__search=param) | Q(salt_name__search=param)).order_by(
             'name', 'salt_name').distinct('name', 'salt_name')
-
         # scrape_flipkart.delay(param)
         # scrape_netmeds.delay(param)
         # scrape_pharmeasy.delay(param)
         # scrape_1mg.delay(param)
-
         # queryset = param_contains_name.union(param_contains_salt, all=True).union(queryset, all=True)
         # for med in queryset:
         #     if not med.salt_name and med.med_url:
