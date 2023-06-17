@@ -1,4 +1,4 @@
-from django.db.models import Sum, Q, F, OuterRef, Subquery
+from django.db.models import Sum, Q, F, OuterRef, Subquery, Case, When, Value, FloatField
 from django.shortcuts import redirect, render
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.filters import SearchFilter
@@ -8,7 +8,6 @@ from rest_framework.response import Response
 
 from core.consumers import send_message_to_group
 from core.settings import PHARM_EASY, NET_MEDS, ONE_MG, FIRST_MESSAGE_WHEN_ORDER_ACCEPTED
-from . import utils
 from .bll import add_medicine_to_card
 from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge, ConversationHistory, \
     Message, UserRating
@@ -18,7 +17,7 @@ from .serializers import MedicineSerializer, MedicineToCartSerializer, \
     MedicineOfferUpdateSerializer, LocalityOrderRequestListSerializer, \
     ConversationHistoryListSerializer, ConversationHistoryCreateSerializer, MessageCreateSerializer, \
     MessageListSerializer, UserRatingListSerializer, UserRatingCreateSerializer, OrderRequestCompleteSerializer
-from .tasks import scrape_pharmeasy, update_medicine_pharmeasy, update_medicine, \
+from .tasks import update_medicine_pharmeasy, update_medicine, \
     update_medicine_1mg
 from .utils import get_platform_dict, balance_medicines
 from ..accounts.authentication import JWTAuthentication
@@ -154,7 +153,17 @@ class MedicineSearchView(generics.ListAPIView):
         #         if med.platform == get_platform_dict()[ONE_MG]:
         #             update_medicine_1mg.delay(med.pk)
         if param and not queryset:
-            queryset = orig_queryset.filter(name__trigram_similar=param)
+            from django.contrib.postgres.search import TrigramSimilarity
+            queryset = orig_queryset.annotate(
+                similarity=Case(
+                    When(Q(name__icontains=param), then=Value(1.0)),
+                    When(Q(name__trigram_similar=param), then=TrigramSimilarity('name', search_term)),
+                    default=Value(0.0),
+                    output_field=FloatField()
+                )
+            ).order_by('-similarity')
+            for query in queryset:
+                print(query.similarity)
             # print(queryset)
             # if not queryset:
             #     med_list = scrape_pharmeasy(param)
