@@ -156,9 +156,9 @@ class MedicineSearchView(generics.ListAPIView):
         if param and not queryset:
             queryset = utils.get_similarity_queryset(orig_queryset, param)
             print(queryset)
-            if not queryset:
-                med_list = scrape_pharmeasy(param)
-                queryset = Medicine.objects.filter(pk__in=med_list)
+            # if not queryset:
+                # med_list = scrape_pharmeasy(param)
+                # queryset = Medicine.objects.filter(pk__in=med_list)
         return queryset
 
 
