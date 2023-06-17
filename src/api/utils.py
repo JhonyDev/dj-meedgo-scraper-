@@ -37,7 +37,7 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     # else:
     #     similar_words = queryset.values('pk', 'name', 'salt_name')
 
-    similar_words = queryset.values('pk', 'name', 'salt_name')
+    similar_words = queryset.values('pk', 'name', 'salt_name').distinct('values', 'salt_name')
     similar_words_ = []
     similarities = []
     similarities_map = {}
@@ -54,6 +54,8 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
             similar_words_.append(word['pk'])
             similarities.append(net_ratio)
             similarities_map[net_ratio] = word['pk']
+        if len(similarities) > 10:
+            break
     similarities.sort()
     similarities.reverse()
     queryset = queryset.filter(pk__in=similar_words_)
