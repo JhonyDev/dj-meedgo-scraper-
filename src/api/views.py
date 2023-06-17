@@ -137,12 +137,11 @@ class MedicineSearchView(generics.ListAPIView):
         if param is None:
             return orig_queryset
 
-        queryset = orig_queryset.filter(Q(name__search=param) | Q(salt_name__search=param)).order_by(
-            'name', 'salt_name').distinct('name', 'salt_name')
+        # queryset = orig_queryset.filter(Q(name__search=param) | Q(salt_name__search=param)).order_by(
+        #     'name', 'salt_name').distinct('name', 'salt_name')
 
-        if not queryset:
-            queryset = orig_queryset.filter(Q(name__trigram_similar=param) | Q(salt_name__trigram_similar=param)).order_by(
-                'name', 'salt_name').distinct('name', 'salt_name')
+        queryset = orig_queryset.filter(Q(name__trigram_similar=param) | Q(salt_name__trigram_similar=param)).order_by(
+            'name', 'salt_name').distinct('name', 'salt_name')
 
         # scrape_flipkart.delay(param)
         # scrape_netmeds.delay(param)
