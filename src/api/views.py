@@ -8,7 +8,6 @@ from rest_framework.response import Response
 
 from core.consumers import send_message_to_group
 from core.settings import PHARM_EASY, NET_MEDS, ONE_MG, FIRST_MESSAGE_WHEN_ORDER_ACCEPTED
-from . import utils
 from .bll import add_medicine_to_card
 from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge, ConversationHistory, \
     Message, UserRating
@@ -18,7 +17,7 @@ from .serializers import MedicineSerializer, MedicineToCartSerializer, \
     MedicineOfferUpdateSerializer, LocalityOrderRequestListSerializer, \
     ConversationHistoryListSerializer, ConversationHistoryCreateSerializer, MessageCreateSerializer, \
     MessageListSerializer, UserRatingListSerializer, UserRatingCreateSerializer, OrderRequestCompleteSerializer
-from .tasks import scrape_pharmeasy, update_medicine_pharmeasy, update_medicine, \
+from .tasks import update_medicine_pharmeasy, update_medicine, \
     update_medicine_1mg
 from .utils import get_platform_dict, balance_medicines
 from ..accounts.authentication import JWTAuthentication
@@ -140,7 +139,7 @@ class MedicineSearchView(generics.ListAPIView):
         # queryset = orig_queryset.filter(Q(name__search=param) | Q(salt_name__search=param)).order_by(
         #     'name', 'salt_name').distinct('name', 'salt_name')
 
-        queryset = orig_queryset.filter(Q(name__trigram_similar=param) | Q(salt_name__trigram_similar=param)).order_by(
+        queryset = orig_queryset.filter(name__trigram_similar=param).order_by(
             'name', 'salt_name').distinct('name', 'salt_name')
         print(queryset)
         # scrape_flipkart.delay(param)
