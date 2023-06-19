@@ -22,7 +22,7 @@ from src.accounts.authentication import JWTAuthentication
 from src.accounts.models import License, LicenseEntry, User, UserTime, AuthenticationToken
 from src.accounts.serializers import CustomRegisterAccountSerializer, CustomLoginSerializer, LicenseSerializer, \
     LicenseEntrySerializer, PhoneOTPLoginSerializer, OTPVerificationSerializer, UserTimeSerializer, \
-    ChangePasswordSerializer
+    ChangePasswordSerializer, EmailVerificationSerializer
 from src.api.serializers import UserSerializer, UserProfileSerializer
 
 
@@ -68,7 +68,7 @@ class CustomRegisterAccountView(CreateAPIView):
             email = EmailMultiAlternatives(mail_subject, message, to=[user.email])
             email.attach_alternative(message, 'text/html')
             email.send()
-            send_mail(mail_subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=True)
+            # send_mail(mail_subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=True)
             AuthenticationToken.objects.create(user=user, auth_token=unique_id)
         return user
 
@@ -216,3 +216,30 @@ class EmailVerificationView(View):
             auth_token.user.save()
             return render(request, 'accounts/ver_success.html')
         return render(request, 'accounts/ver_failed.html')
+
+
+class ResendVerificationView(APIView):
+    serializer_class = EmailVerificationSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        unique_id = str(uuid.uuid4())
+        mail_subject = 'Activate your account'
+        message = render_to_string('accounts/activation_email.html', {
+            'user': user,
+            'domain': settings.BASE_URL,
+            'unique_id': unique_id,
+        })
+        email = EmailMultiAlternatives(mail_subject, message, to=[user.email])
+        email.attach_alternative(message, 'text/html')
+        email.send()
+        # send_mail(mail_subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=True)
+        AuthenticationToken.objects.create(user=user, auth_token=unique_id)
+        response = Response(status=status.HTTP_200_OK)
+        response.data = {
+            'message': f'Verification email is sent to {user.email}.'
+        }
+        return response
