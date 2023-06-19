@@ -123,10 +123,17 @@ class MedicineCartBridgeSerializer(serializers.ModelSerializer):
 
 class OrderRequestListSerializer(serializers.ModelSerializer):
     medicine_cart = MedicineCartSerializer()
+    user = UserGeneralSerializer()
+    grabbed_by = serializers.SerializerMethodField('get_grabbed_by')
+
+    def get_grabbed_by(self, q):
+        user = GrabUserBridge.objects.filter(is_accepted=True, order_request=q).values_list('user__pk', flat=True)
+        user = User.objects.filter(pk__in=user)
+        return UserGeneralSerializer(user, many=True).data
 
     class Meta:
         model = OrderRequest
-        fields = ['pk', 'medicine_cart', 'order_status']
+        fields = ['pk', 'medicine_cart', 'order_status', 'user', 'grabbed_by']
 
 
 class OrderRequestCompleteSerializer(serializers.ModelSerializer):
