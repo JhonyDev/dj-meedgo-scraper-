@@ -1,0 +1,80 @@
+/* style.css */
+
+/* Reset some default browser styles */
+body, html {
+    margin: 0;
+    padding: 0;
+}
+
+/* Set some basic styles for the main content area */
+main {
+    margin: 20px;
+}
+
+/* Set styles for the password reset form */
+.password-reset-form {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.password-reset-form h2 {
+    margin-top: 0;
+}
+
+.password-reset-form .form-group {
+    margin-bottom: 20px;
+}
+
+.password-reset-form label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.password-reset-form input[type="email"],
+.password-reset-form input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.password-reset-form button[type="submit"] {
+    padding: 10px 20px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.password-reset-form button[type="submit"]:hover {
+    background-color: #555;
+}
+
+.password-reset-done { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); font-family: Arial, sans-serif; }
+
+.password-reset-done h2 {
+    color: #333333;
+    text-align: center;
+}
+
+.password-reset-done p {
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+.password-reset-done a {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #333333;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.password-reset-done a:hover {
+    background-color: #333333;
+}

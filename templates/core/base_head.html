@@ -1,28 +1,27 @@
 {% load static %}
-{#{% load notifications_tags %}#}
 
 {# MAIN HEADER ------------------------------------------------------------------------------------------------------ #}
-<header id="page-topbar">
-    <div class="navbar-header">
+<header id="page-topbar" style="background-color: orangered;">
+    <div class="navbar-header" style="background-color: orangered;">
 
         {# LEFT HEAD ------------------- #}
         <div class="d-flex">
             <div class="navbar-brand-box">
                 <a href="/" class="logo logo-dark">
                     <span class="logo-sm">
-                        <img src="{% static 'core/images/logo_100.png' %}" alt="" height="22">
+                        <img src="{% static 'images/cocognito_Logo_symbol.svg' %}" alt="" height="22">
                     </span>
                     <span class="logo-lg">
-                        <img src="{% static 'core/images/logo_100.png' %}" alt="" height="17">
+                        <img src="{% static 'images/cocognito_Logo_symbol.svg' %}" alt="" height="17">
                     </span>
                 </a>
 
                 <a href="/" class="logo logo-light">
                     <span class="logo-sm">
-                        <img src="{% static 'core/images/logo_100.png' %}" alt="" height="22">
+                        <img src="{% static 'images/new_1.png' %}" alt="" height="22">
                     </span>
                     <span class="logo-lg">
-                        <img src="{% static 'core/images/logo_100.png' %}" alt="" height="19">
+                        <img src="{% static 'images/new_1.png' %}" alt="" height="19">
                     </span>
                 </a>
             </div>
@@ -52,9 +51,7 @@
                         id="page-header-notifications-dropdown"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="bx bx-bell bx-tada"></i>
-                    <span class="badge badge-danger badge-pill">
-                        1
-{#                        % live_notify_badge %}#}
+                    <span class="badge badge-dark badge-pill">
                     </span>
                 </button>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right p-0"
@@ -69,12 +66,12 @@
                             </div>
                         </div>
                     </div>
-                    <div data-simplebar style="max-height: 230px;">
+                    <div data-simplebar style="max-height: 300px;">
                         <div id="notify_me_now">
 
                         </div>
                         <div class="p-2 border-top text-center">
-                            <button class="btn text-primary small">
+                            <button class="btn text-primary small" onclick="unread_all_notifications()">
                                 <i class="mdi mdi-arrow-right-circle mr-1"></i> Mark All as Read
                             </button>
                         </div>
@@ -90,9 +87,10 @@
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 
                     {% if request.user.profile_image %}
-                        <img class="rounded-circle header-profile-user" src="{% static 'images/user.png' %}" alt="Header Avatar">
+                        <img class="rounded-circle header-profile-user" src="{{ request.user.profile_image.url }}"
+                             alt="Header Avatar">
                     {% else %}
-                         <img class="rounded-circle header-profile-user" src="{% static 'images/user.png' %}">
+                        <img class="rounded-circle header-profile-user" src="{% static 'images/user.png' %}">
                     {% endif %}
 
 
@@ -100,19 +98,30 @@
                     <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-right">
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item d-block text-danger" href="#">
-                        {#                        <span class="badge badge-success float-right">11</span>#}
-                        <i class="bx bx-wrench font-size-16 align-middle mr-1"></i> Settings
+                    <a class="dropdown-item" href="">
+                        <i class="bx bx-user font-size-16 align-middle mr-1"></i> Profile
                     </a>
-                    <a class="dropdown-item" href="{% url 'account_email' %}">
+                    {% if request.user.is_student %}
+                        <a class="dropdown-item d-block" href="">
+                            <i class="bx bx-wrench font-size-16 align-middle mr-1"></i> Settings
+                        </a>
+                    {% endif %}
+                    <div class="dropdown-divider"></div>
+
+                    <a class="dropdown-item" href="">
                         <i class="bx bxl-telegram font-size-16 align-middle mr-1"></i> Email accounts
                     </a>
-                    <a class="dropdown-item" href="{% url 'account_change_password' %}">
+                    <a class="dropdown-item" href="">
                         <i class="bx bx-lock-open font-size-16 align-middle mr-1"></i>Password Change
                     </a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item text-primary" href="{% url 'account_logout' %}">
+                    <a class="dropdown-item text-primary" href="
+
+
+
+
+
+">
                         <i class="bx bx-power-off font-size-16 align-middle mr-1"></i> Logout
                     </a>
                 </div>
@@ -134,10 +143,14 @@
                 <ul class="navbar-nav">
 
                     {% if request.user.is_authenticated %}
-                        {% if request.user.is_company %}
+                        {% if request.user.is_superuser %}
                             {% include 'core/include/admin_header.html' %}
+                        {% elif request.user.is_student %}
+                            {% include 'core/include/student_header.html' %}
+                        {% elif request.user.is_parent %}
+                            {% include 'core/include/parent_header.html' %}
                         {% else %}
-                            {% include 'core/include/customer_header.html' %}
+                            {% include 'core/include/moderator_header.html' %}
                         {% endif %}
                     {% endif %}
 

@@ -1,21 +1,52 @@
 {% load static %}
 
 
+{#DASHBOARD#}
 <li class="nav-item">
-    <a class="nav-link" href="{% url 'company:dashboard' %}">
-        <i class="bx bx-sitemap mr-2"></i>Dashboard
+    <a class="nav-link dropdown-toggle arrow-none" href="">
+        <i class="bx bx-home-circle mr-2"></i>Admin Dashboard
     </a>
 </li>
 
-<li class="nav-item">
-    <a class="nav-link" href="{% url 'company:company-update' %}">
-        <i class="bx bx-globe mr-2"></i>Company
+
+{# Apps #}
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button"
+       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="bx bx-customize mr-2"></i>Apps
+        <div class="arrow-down"></div>
     </a>
+    <div class="dropdown-menu" aria-labelledby="topnav-pages">
+
+        <a href="" class="dropdown-item">Quiz Builder</a>
+        <a href="" class="dropdown-item">Question
+            Builder</a>
+    </div>
 </li>
 
+
+{# FEATURES #}
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-components" role="button"
+       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="bx bx-collection mr-2"></i>Features
+        <div class="arrow-down"></div>
+    </a>
+    <div class="dropdown-menu" aria-labelledby="topnav-components">
+        <a href="" class="dropdown-item">Users</a>
+        <a href="" class="dropdown-item">Quizzes</a>
+        <a href="" class="dropdown-item">Questions</a>
+        <a href="" class="dropdown-item">Subjects</a>
+        <a href="" class="dropdown-item">Topics</a>
+        <a href="" class="dropdown-item">Grades</a>
+        <a href="" class="dropdown-item">Relation Types</a>
+    </div>
+</li>
+
+{#DASHBOARD#}
 <li class="nav-item">
-    <a class="nav-link" href="{% url 'company:job-list' %}">
-        <i class="bx bx-briefcase mr-2"></i>Job
+    <a class="nav-link dropdown-toggle arrow-none" href="">
+        <i class="fa fa-child mr-2"></i>Parental Control
     </a>
 </li>
 
