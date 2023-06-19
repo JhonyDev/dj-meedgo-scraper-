@@ -11,12 +11,16 @@
 
 </head>
 <body>
+{% for message in messages %}
+    <div class="alert alert-{{ message.tags }} mx-5 mt-3">
+        {{ message }}
+    </div>
+{% endfor %}
 <main>
     {% block content %}
     {% endblock %}
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
 <script src="{% static 'core/js/bootstrap.bundle.min.js' %}"></script>
-
 </body>
 </html>
