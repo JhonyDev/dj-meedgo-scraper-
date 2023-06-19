@@ -207,6 +207,18 @@ class OrderRequestsView(generics.ListCreateAPIView):
         return super().get_serializer_class()
 
     def get_queryset(self):
+        user = self.request.GET.get('user')
+        if user:
+            return OrderRequest.objects.filter(user__pk=user).order_by('-pk')
+        status_param = self.request.GET.get('status')
+        if status_param:
+            status_list = status_param.split('+')
+            queryset = OrderRequest.objects.filter(order_status__in=status_list)
+            return queryset
+        date_param = self.request.GET.get('date')
+        if date_param:
+            return OrderRequest.objects.filter(date=date_param)
+
         return OrderRequest.objects.filter(user=self.request.user).order_by('-pk')
 
     def perform_create(self, serializer):
