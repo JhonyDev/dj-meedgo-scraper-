@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from .views import CustomLoginView, CustomRegisterAccountView, UserUpdateView, LicensesListView, \
     LicenseEntryListCreateView, LicenseEntryRUDView, PhoneOTPLoginView, OTPVerificationView, UserTimeViewSet, \
-    ChangePasswordView, EmailVerificationView, ResendVerificationView, VerificationStatusView
+    ChangePasswordView, EmailVerificationView, ResendVerificationView, VerificationStatusView, GoogleCallbackView
 
 app_name = 'accounts'
 router = DefaultRouter()
@@ -17,7 +17,7 @@ urlpatterns = [
     path('re-send/verification/', ResendVerificationView.as_view(), name='re-send-verification'),
     path('verification-status/', VerificationStatusView.as_view(), name='verification-status'),
 
-    path('google-callback/', VerificationStatusView.as_view(), name='google-callback'),
+    path('google-callback/', GoogleCallbackView.as_view(), name='google-callback'),
 
     path('licenses/', LicensesListView.as_view(), name='licenses'),
     path('verify-email/<str:auth_token>/', EmailVerificationView.as_view(), name='verification'),
