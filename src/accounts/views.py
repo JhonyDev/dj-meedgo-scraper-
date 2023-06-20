@@ -265,9 +265,6 @@ class GoogleCallbackView(APIView):
 
     def get(self, request):
         print(request.GET)
-        print(request.POST)
-        print(request.kwargs)
-        print(request.args)
         response = Response(status=status.HTTP_200_OK)
         response.data = {
             'message': 'verified'
