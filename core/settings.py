@@ -54,13 +54,8 @@ PLATFORMS = (
     ('3', PHARM_EASY),
     ('4', FLIPCART),
 )
-
-if SERVER:
-    SITE_ID = 4
-    GOOGLE_CALLBACK_ADDRESS = ""
-else:
-    SITE_ID = 1
-    GOOGLE_CALLBACK_ADDRESS = "http://127.0.0.1:8000/accounts/google/login/callback/"
+GOOGLE_CALLBACK_ADDRESS = "https://meedgo.jhonydev.com/accounts/google/login/callback/"
+SITE_ID = 1
 
 ALLOWED_HOSTS = ['*']
 CORS_ALLOWED_ORIGINS = [
