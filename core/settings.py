@@ -47,6 +47,7 @@ FLIPCART = 'Flipkart Health'
 FIRST_MESSAGE_WHEN_ORDER_ACCEPTED = 'Hi, I have accepted your offer.'
 
 LIST_PLATFORMS = [NET_MEDS, ONE_MG, PHARM_EASY, FLIPCART]
+LOGIN_REDIRECT_URL = '/auth/google-callback/'
 
 PLATFORMS = (
     ('1', NET_MEDS),
@@ -54,8 +55,13 @@ PLATFORMS = (
     ('3', PHARM_EASY),
     ('4', FLIPCART),
 )
-GOOGLE_CALLBACK_ADDRESS = "https://meedgo.jhonydev.com/accounts/google/login/callback/"
-SITE_ID = 4
+if SERVER:
+    SITE_ID = 4
+    GOOGLE_CALLBACK_ADDRESS = "https://meedgo.jhonydev.com/auth/google-callback/"
+else:
+    SITE_ID = 1
+    # GOOGLE_CALLBACK_ADDRESS = "http://127.0.0.1:8000/auth/google-callback/"
+    GOOGLE_CALLBACK_ADDRESS = "http://127.0.0.1:8000/accounts/google/login/callback/"
 
 ALLOWED_HOSTS = ['*']
 CORS_ALLOWED_ORIGINS = [
@@ -100,7 +106,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
 
-    'src.accounts',
+    # 'src.accounts',
+    'src.accounts.apps.AccountsAppConfig',
     'src.api',
     'drf_yasg',
     'corsheaders',
@@ -235,7 +242,6 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 """ LOGIN SYSTEM ---------------------------------------------------------------------------------"""
 
-LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/admin/'
 
 """ EMAIL SYSTEM ---------------------------------------------------------------------------------"""
@@ -271,7 +277,7 @@ SOCIALACCOUNT_PROVIDERS = {
         ],
         'AUTH_PARAMS': {
             'access_type': 'online',
-            'redirect_uri': 'https://meedgo.jhonydev.com/auth/google-callback/'
+            'redirect_uri': GOOGLE_CALLBACK_ADDRESS
         }
     }
 }

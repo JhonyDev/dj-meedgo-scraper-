@@ -3,12 +3,14 @@ import uuid
 from datetime import datetime
 
 from allauth.account.models import EmailAddress
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from django.contrib.auth.hashers import check_password
 from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.views import View
 from django_otp import devices_for_user
+from rest_auth.registration.views import SocialLoginView
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.generics import CreateAPIView
 from rest_framework.generics import GenericAPIView, UpdateAPIView
@@ -264,9 +266,13 @@ class GoogleCallbackView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
-        print(request.GET)
+        print(request.user)
         response = Response(status=status.HTTP_200_OK)
         response.data = {
             'message': 'verified'
         }
         return response
+
+
+class GoogleLogin(SocialLoginView):
+    adapter_class = GoogleOAuth2Adapter

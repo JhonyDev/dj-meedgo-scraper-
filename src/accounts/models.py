@@ -1,7 +1,12 @@
+from allauth.socialaccount.models import SocialAccount
+from allauth.socialaccount.models import SocialAccount
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django_resized import ResizedImageField
 
 from core.settings import SOLE_PROPRIETORSHIP, PARTNERSHIP, LIMITED_LIABILITY_PARTNERSHIP, ONE_PERSON_COMPANY, \
@@ -82,6 +87,11 @@ class User(AbstractUser):
     gst_number = models.PositiveIntegerField(null=True, blank=True, default=None)
     is_active = models.BooleanField(default=False)
 
+    def save(self, *args, **kwargs):
+        if SocialAccount.objects.filter(user=self).exists():
+            self.is_active = True
+        super().save(*args, **kwargs)
+
     def clean(self):
         if self.username is None and self.email is None and self.phone_number:
             raise ValidationError("Either username or email must be provided.")
@@ -155,3 +165,12 @@ class AuthenticationToken(models.Model):
 
     class Meta:
         ordering = ['-pk']
+
+
+@receiver(post_save, sender=SocialAccount)
+def update_user_active_status(sender, instance, created, **kwargs):
+    print("Instance Signal received")
+    if created:
+        print("Changing user state")
+        instance.user.is_active = True
+        instance.user.save()
