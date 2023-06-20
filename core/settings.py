@@ -55,7 +55,7 @@ PLATFORMS = (
     ('4', FLIPCART),
 )
 GOOGLE_CALLBACK_ADDRESS = "https://meedgo.jhonydev.com/accounts/google/login/callback/"
-SITE_ID = 1
+SITE_ID = 4
 
 ALLOWED_HOSTS = ['*']
 CORS_ALLOWED_ORIGINS = [
