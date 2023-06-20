@@ -4,7 +4,7 @@ from datetime import datetime
 
 from allauth.account.models import EmailAddress
 from django.contrib.auth.hashers import check_password
-from django.core.mail import send_mail, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.views import View
@@ -22,7 +22,7 @@ from src.accounts.authentication import JWTAuthentication
 from src.accounts.models import License, LicenseEntry, User, UserTime, AuthenticationToken
 from src.accounts.serializers import CustomRegisterAccountSerializer, CustomLoginSerializer, LicenseSerializer, \
     LicenseEntrySerializer, PhoneOTPLoginSerializer, OTPVerificationSerializer, UserTimeSerializer, \
-    ChangePasswordSerializer, EmailVerificationSerializer
+    ChangePasswordSerializer, EmailVerificationSerializer, EmailVerificationStatusSerializer
 from src.api.serializers import UserSerializer, UserProfileSerializer
 
 
@@ -241,5 +241,20 @@ class ResendVerificationView(APIView):
         response = Response(status=status.HTTP_200_OK)
         response.data = {
             'message': f'Verification email is sent to {user.email}.'
+        }
+        return response
+
+
+class VerificationStatusView(APIView):
+    serializer_class = EmailVerificationStatusSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        response = Response(status=status.HTTP_200_OK)
+        response.data = {
+            'is_verified': user.is_active
         }
         return response

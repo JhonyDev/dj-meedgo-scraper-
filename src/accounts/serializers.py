@@ -190,3 +190,16 @@ class EmailVerificationSerializer(serializers.Serializer):
             raise serializers.ValidationError('No account associated with this email.')
         attrs['user'] = User.objects.filter(email=email).first()
         return attrs
+
+
+class EmailVerificationStatusSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=False)
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        if not email:
+            raise serializers.ValidationError('Email must be provided.')
+        if not User.objects.filter(email=email).exists():
+            raise serializers.ValidationError('No account associated with this email.')
+        attrs['user'] = User.objects.filter(email=email).first()
+        return attrs
