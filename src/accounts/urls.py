@@ -17,6 +17,8 @@ urlpatterns = [
     path('re-send/verification/', ResendVerificationView.as_view(), name='re-send-verification'),
     path('verification-status/', VerificationStatusView.as_view(), name='verification-status'),
 
+    path('google-callback/', VerificationStatusView.as_view(), name='google-callback'),
+
     path('licenses/', LicensesListView.as_view(), name='licenses'),
     path('verify-email/<str:auth_token>/', EmailVerificationView.as_view(), name='verification'),
 

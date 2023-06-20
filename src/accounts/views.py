@@ -258,3 +258,18 @@ class VerificationStatusView(APIView):
             'is_verified': user.is_active
         }
         return response
+
+
+class GoogleCallbackView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        print(request.GET)
+        print(request.POST)
+        print(request.kwargs)
+        print(request.args)
+        response = Response(status=status.HTTP_200_OK)
+        response.data = {
+            'message': 'verified'
+        }
+        return response
