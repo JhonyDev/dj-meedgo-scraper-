@@ -271,7 +271,7 @@ SOCIALACCOUNT_PROVIDERS = {
         ],
         'AUTH_PARAMS': {
             'access_type': 'online',
-            'redirect_uri': 'https://meedgo.jhonydev.com/accounts/google/login/callback/'
+            'redirect_uri': 'https://meedgo.jhonydev.com/auth/google-callback/'
         }
     }
 }
