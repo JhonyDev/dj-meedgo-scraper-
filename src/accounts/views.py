@@ -3,6 +3,7 @@ import uuid
 from datetime import datetime
 
 from allauth.account.models import EmailAddress
+from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from django.contrib.auth.hashers import check_password
 from django.core.mail import EmailMultiAlternatives
@@ -276,3 +277,7 @@ class GoogleCallbackView(APIView):
 
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
+
+
+class FacebookLogin(SocialLoginView):
+    adapter_class = FacebookOAuth2Adapter

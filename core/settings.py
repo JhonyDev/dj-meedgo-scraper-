@@ -279,6 +279,30 @@ SOCIALACCOUNT_PROVIDERS = {
             'access_type': 'online',
             'redirect_uri': GOOGLE_CALLBACK_ADDRESS
         }
+    },
+    'apple': {
+        'APP': {
+            'client_id': 'YOUR_APPLE_CLIENT_ID',
+            'team_id': 'YOUR_APPLE_TEAM_ID',
+            'key_id': 'YOUR_APPLE_KEY_ID',
+            'private_key_path': 'path/to/your/private_key.p8',
+            'algorithm': 'ES256',
+        }
+    },
+    'facebook': {
+        'METHOD': 'oauth2',
+        'SCOPE': ['email'],
+        'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+        'FIELDS': [
+            'id',
+            'email',
+            'name',
+            'first_name',
+            'last_name',
+        ],
+        'EXCHANGE_TOKEN': True,
+        'VERIFIED_EMAIL': False,
+        'VERSION': 'v11.0',
     }
 }
 
