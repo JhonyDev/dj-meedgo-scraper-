@@ -15,6 +15,7 @@ from rest_framework.response import Response
 
 from core.consumers import send_message_to_group
 from core.settings import PHARM_EASY, NET_MEDS, ONE_MG, FIRST_MESSAGE_WHEN_ORDER_ACCEPTED
+from . import Checksum
 from .bll import add_medicine_to_card
 from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge, ConversationHistory, \
     Message, UserRating
@@ -468,11 +469,13 @@ class InitiatePaymentView(CreateAPIView):
             "MID": settings.PAYTM_MERCHANT_ID,
             "WEBSITE": settings.PAYTM_WEBSITE,
             "ORDER_ID": order_id,
+            'INDUSTRY_TYPE_ID': 'Retail',
             "CUST_ID": 'cust-' + str(request.user.id),
+            'CHANNEL_ID': 'WEB',
             "TXN_AMOUNT": str(amount),
             "CALLBACK_URL": settings.PAYTM_CALLBACK_URL,
         }
-        checksum = PaytmChecksum.generateSignature(paytmParams, MERCHANT_KEY)
+        checksum = Checksum.generate_checksum(paytmParams, MERCHANT_KEY)
         paytmParams['CHECKSUMHASH'] = checksum
         print(checksum)
         return Response(paytmParams, status=status.HTTP_201_CREATED)
@@ -495,8 +498,8 @@ class CallbackView(CreateAPIView):
                 paytmChecksum = value[0]
             else:
                 paytmParams[key] = str(value[0])
-        print(paytmParams)
-        print(paytmChecksum)
+        # print(paytmParams)
+        # print(paytmChecksum)
         try:
             isValidChecksum = PaytmChecksum.verifySignature(paytmParams, MERCHANT_KEY, paytmChecksum)
         except Exception as e:

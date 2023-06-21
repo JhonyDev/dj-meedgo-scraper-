@@ -26,8 +26,8 @@
         const amount = paymentForm.amount.value;
 
         // Send a POST request to the initiate-payment endpoint with the payment amount
-        // const response = await fetch('http://127.0.0.1:8000/api/initiate-payment/', {
-        const response = await fetch('https://meedgo.jhonydev.com/api/initiate-payment/', {
+         const response = await fetch('http://127.0.0.1:8000/api/initiate-payment/', {
+        //const response = await fetch('https://meedgo.jhonydev.com/api/initiate-payment/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -41,6 +41,7 @@
 
         // Create a form and submit it to Paytm to initiate the payment
         const form = document.createElement('form');
+        form.setAttribute('name', 'paytm');
         form.setAttribute('method', 'post');
         form.setAttribute('action', 'https://securegw-stage.paytm.in/theia/processTransaction');
 
