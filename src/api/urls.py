@@ -9,7 +9,6 @@ router = DefaultRouter()
 router.register(r'rating', UserRatingViewSet)
 
 urlpatterns = [
-    path('', views.lobby),
 
     path('', include(router.urls)),
     path('my/ratings/', views.UserRatingListView.as_view()),
@@ -28,7 +27,15 @@ urlpatterns = [
     path('my/conversations/', views.ConversationHistoryListView.as_view()),
     path('my/conversations/<int:pk>/', views.MessageListView.as_view()),
 
+    path('initiate-payment/', views.InitiatePaymentView.as_view(), name='initiate-payment'),
+    path('callback/', views.CallbackView.as_view(), name='callback'),
+
     # ADMIN PANEL SCRAPE TASK
     path('run-task/<int:object_id>/', views.custom_method_view, name='object-celery'),
     path('run-task/<int:object_id>/all/', views.custom_method_all_view, name='object-celery-all'),
+
+    # Test API VIEW
+    path('', views.lobby),
+    path('payment-test/', views.test),
+
 ]

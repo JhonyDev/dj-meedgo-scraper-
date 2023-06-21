@@ -3,43 +3,58 @@ import json
 
 # import checksum generation utility
 # You can get this utility from https://developer.paytm.com/docs/checksum/
-import PaytmChecksum
-import requests
+# from paytmchecksum import PaytmChecksum
+# import requests
+# # pycryptodome
+# paytmParams = dict()
+#
+# paytmParams["body"] = {
+#     "requestType": "Payment",
+#     "mid": "KdrBel67166523599721",
+#     "websiteName": "meedgo.com",
+#     "orderId": "ORDERID_98765",
+#     "callbackUrl": "http://127.0.0.1:8000/auth/google-callback/",
+#     "txnAmount": {
+#         "value": "1.00",
+#         "currency": "INR",
+#     },
+#     "userInfo": {
+#         "custId": "CUST_001",
+#     },
+# }
+#
+# # Generate checksum by parameters we have in body
+# # Find your Merchant Key in your Paytm Dashboard at https://dashboard.paytm.com/next/apikeys 
+# checksum = PaytmChecksum.generateSignature(json.dumps(paytmParams["body"]), "QdE9x0og5gT@IEwj")
+#
+# paytmParams["head"] = {
+#     "signature": checksum
+# }
+#
+# post_data = json.dumps(paytmParams)
+#
+# # for Staging
+# url = "https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid=KdrBel67166523599721&orderId=ORDERID_98765"
+#
+# # for Production
+# # url = "https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid=YOUR_MID_HERE&orderId=ORDERID_98765"
+# response = requests.post(url, data=post_data, headers={"Content-type": "application/json"}).json()
+# print(response)
 
-paytmParams = dict()
+order_id = "<generate_unique_order_id_here>"
 
-paytmParams["body"] = {
-    "requestType": "Payment",
-    "mid": "KdrBel67166523599721",
-    "websiteName": "meedgo.com",
-    "orderId": "ORDERID_98765",
-    "callbackUrl": "https://<callback URL to be used by merchant>",
-    "txnAmount": {
-        "value": "1.00",
-        "currency": "INR",
-    },
-    "userInfo": {
-        "custId": "CUST_001",
-    },
+# Create a Paytm transaction request
+paytm_params = {
+    'MID': 'your_merchant_id',
+    'WEBSITE': 'WEBSTAGING',
+    'INDUSTRY_TYPE_ID': 'Retail',
+    'CHANNEL_ID': 'WEB',
+    'ORDER_ID': order_id,
+    'CUST_ID': 'customer_id',
+    'TXN_AMOUNT': '10',
+    'CALLBACK_URL': 'http://yourdomain.com/paytm/callback',
 }
-
-# Generate checksum by parameters we have in body
-# Find your Merchant Key in your Paytm Dashboard at https://dashboard.paytm.com/next/apikeys 
-checksum = PaytmChecksum.generateSignature(json.dumps(paytmParams["body"]), "QdE9x0og5gT@IEwj")
-
-paytmParams["head"] = {
-    "signature": checksum
-}
-
-post_data = json.dumps(paytmParams)
-
-# for Staging
-url = "https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid=YOUR_MID_HERE&orderId=ORDERID_98765"
-
-# for Production
-# url = "https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid=YOUR_MID_HERE&orderId=ORDERID_98765"
-response = requests.post(url, data=post_data, headers={"Content-type": "application/json"}).json()
-print(response)
+paytm_params['CHECKSUMHASH'] = Checksum.generate_checksum(paytm_params, 'your_merchant_key')
 
 """INVOKE PAYMENT FROM FRONTENT"""
 """

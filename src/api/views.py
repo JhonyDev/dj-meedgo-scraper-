@@ -1,8 +1,15 @@
+import time
+
+from django.conf import settings
 from django.db.models import Sum, Q, F, OuterRef, Subquery
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from paytmchecksum import PaytmChecksum
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.filters import SearchFilter
-from rest_framework.generics import get_object_or_404, ListAPIView
+from rest_framework.generics import get_object_or_404, ListAPIView, CreateAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
@@ -16,7 +23,8 @@ from .serializers import MedicineSerializer, MedicineToCartSerializer, \
     GrabbedOrderRequestsCreateSerializer, GrabbedOrderRequestsUpdateSerializer, MedicineOfferSerializer, \
     MedicineOfferUpdateSerializer, LocalityOrderRequestListSerializer, \
     ConversationHistoryListSerializer, ConversationHistoryCreateSerializer, MessageCreateSerializer, \
-    MessageListSerializer, UserRatingListSerializer, UserRatingCreateSerializer, OrderRequestCompleteSerializer
+    MessageListSerializer, UserRatingListSerializer, UserRatingCreateSerializer, OrderRequestCompleteSerializer, \
+    PaymentSerializer, PaymentResponseSerializer
 from .tasks import update_medicine_pharmeasy, update_medicine, \
     update_medicine_1mg, scrape_pharmeasy
 from .utils import get_platform_dict, balance_medicines, get_similarity_queryset
@@ -80,6 +88,10 @@ def custom_method_all_view(request, object_id):
 def lobby(request):
     Medicine.objects.filter(salt_name=None, price=None, discounted_price=None, name='').delete()
     return render(request, 'api/lobby.html')
+
+
+def test(request):
+    return render(request, 'api/test.html')
 
 
 """
@@ -433,3 +445,66 @@ class UserRatingListView(ListAPIView):
 
     def get_queryset(self):
         return UserRating.objects.filter(pharmacist=self.request.user).order_by('-pk')
+
+
+MERCHANT_KEY = settings.PAYTM_SECRET_KEY
+
+
+class InitiatePaymentView(CreateAPIView):
+    serializer_class = PaymentSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        serializer = PaymentSerializer(data=request.data)
+        if not serializer.is_valid():
+            return JsonResponse({'error': 'Amount is not valid'})
+
+        amount = serializer.validated_data['amount']
+
+        order_id = 'order-' + str(request.user.id) + '-' + str(int(time.time()))
+
+        paytmParams = {
+            "MID": settings.PAYTM_MERCHANT_ID,
+            "WEBSITE": settings.PAYTM_WEBSITE,
+            "ORDER_ID": order_id,
+            "CUST_ID": 'cust-' + str(request.user.id),
+            "TXN_AMOUNT": str(amount),
+            "CALLBACK_URL": settings.PAYTM_CALLBACK_URL,
+        }
+        checksum = PaytmChecksum.generateSignature(paytmParams, MERCHANT_KEY)
+        paytmParams['CHECKSUMHASH'] = checksum
+        print(checksum)
+        return Response(paytmParams, status=status.HTTP_201_CREATED)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CallbackView(CreateAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.AllowAny]
+    serializer_class = PaymentResponseSerializer
+
+    def create(self, request, *args, **kwargs):
+        received_data = dict(request.POST)
+        print(received_data)
+        paytmParams = {}
+        paytmChecksum = ""
+
+        for key, value in received_data.items():
+            if key == 'CHECKSUMHASH':
+                paytmChecksum = value[0]
+            else:
+                paytmParams[key] = str(value[0])
+        print(paytmParams)
+        print(paytmChecksum)
+        try:
+            isValidChecksum = PaytmChecksum.verifySignature(paytmParams, MERCHANT_KEY, paytmChecksum)
+        except:
+            isValidChecksum = False
+
+        if isValidChecksum:
+            received_data['message'] = "Checksum Matched"
+        else:
+            received_data['message'] = "Checksum Mismatched"
+
+        return Response(received_data, status=status.HTTP_201_CREATED)

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Paytm Demo</title>
+</head>
+<body>
+<h1>Paytm Demo</h1>
+
+<form id="payment-form">
+    <label for="amount">Amount:</label>
+    <input type="number" id="amount" name="amount" required>
+    <button type="submit">Pay Now</button>
+</form>
+
+<div id="message"></div>
+
+<!-- Add your JavaScript code here -->
+<script>
+    const paymentForm = document.getElementById('payment-form');
+    const messageDiv = document.getElementById('message');
+
+    paymentForm.addEventListener('submit', async event => {
+        event.preventDefault();
+
+        // Get the payment amount from the form
+        const amount = paymentForm.amount.value;
+
+        // Send a POST request to the initiate-payment endpoint with the payment amount
+        const response = await fetch('http://127.0.0.1:8000/api/initiate-payment/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({amount})
+        });
+
+        // Parse the response as JSON
+        const data = await response.json();
+
+        // Create a form and submit it to Paytm to initiate the payment
+        const form = document.createElement('form');
+        form.setAttribute('method', 'post');
+        form.setAttribute('action', 'https://securegw.paytm.in/order/process');
+
+        for (const key in data) {
+            if (data.hasOwnProperty(key)) {
+                const input = document.createElement('input');
+                input.setAttribute('type', 'hidden');
+                input.setAttribute('name', key);
+                input.setAttribute('value', data[key]);
+                form.appendChild(input);
+                console.log(key);
+                console.log(data[key]);
+            }
+        }
+
+        document.body.appendChild(form);
+        setTimeout(function () {
+            form.submit();
+        }, 5000);
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Handle the response from Paytm
+    window.addEventListener('message', event => {
+        if (event.origin === window.location.origin && event.data && event.data.response) {
+            const data = event.data.response;
+            if (data.STATUS === 'TXN_SUCCESS') {
+                // Payment was successful
+                messageDiv.textContent = 'Payment was successful!';
+            } else {
+                // Payment failed
+                messageDiv.textContent = 'Payment failed. Please try again.';
+            }
+        }
+    });
+</script>
+</body>
+</html>

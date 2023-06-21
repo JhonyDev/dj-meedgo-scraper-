@@ -298,3 +298,18 @@ class UserRatingCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRating
         exclude = ('given_by',)
+
+
+class PaymentSerializer(serializers.Serializer):
+    amount = serializers.IntegerField()
+
+
+class PaymentResponseSerializer(serializers.Serializer):
+    ORDERID = serializers.CharField()
+    MID = serializers.CharField()
+    TXNAMOUNT = serializers.DecimalField(max_digits=10, decimal_places=2)
+    CURRENCY = serializers.CharField()
+    STATUS = serializers.CharField()
+    RESPCODE = serializers.CharField()
+    RESPMSG = serializers.CharField()
+    BANKTXNID = serializers.CharField(allow_blank=True)

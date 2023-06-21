@@ -55,13 +55,19 @@ PLATFORMS = (
     ('3', PHARM_EASY),
     ('4', FLIPCART),
 )
+PAYTM_MERCHANT_ID = 'QlrInG17260337389232'
+PAYTM_SECRET_KEY = 'QdE9x0og5gT@IEwj'
+PAYTM_WEBSITE = 'WEBSTAGING'  # Replace with 'DEFAULT' for production
+
 if SERVER:
     SITE_ID = 4
     GOOGLE_CALLBACK_ADDRESS = "https://meedgo.jhonydev.com/auth/google-callback/"
+    PAYTM_CALLBACK_URL = 'https://meedgo.jhonydev.com/api/callback/'
 else:
     SITE_ID = 1
     # GOOGLE_CALLBACK_ADDRESS = "http://127.0.0.1:8000/auth/google-callback/"
     GOOGLE_CALLBACK_ADDRESS = "http://127.0.0.1:8000/accounts/google/login/callback/"
+    PAYTM_CALLBACK_URL = 'http://127.0.0.1:8000/api/callback/'
 
 ALLOWED_HOSTS = ['*']
 CORS_ALLOWED_ORIGINS = [
