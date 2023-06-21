@@ -42,7 +42,7 @@
         // Create a form and submit it to Paytm to initiate the payment
         const form = document.createElement('form');
         form.setAttribute('method', 'post');
-        form.setAttribute('action', 'https://securegw.paytm.in/theia/processTransaction');
+        form.setAttribute('action', 'https://securegw-stage.paytm.in/theia/processTransaction');
 
         for (const key in data) {
             if (data.hasOwnProperty(key)) {
