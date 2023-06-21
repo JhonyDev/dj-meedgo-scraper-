@@ -499,7 +499,8 @@ class CallbackView(CreateAPIView):
         print(paytmChecksum)
         try:
             isValidChecksum = PaytmChecksum.verifySignature(paytmParams, MERCHANT_KEY, paytmChecksum)
-        except:
+        except Exception as e:
+            print(f"Exception handled - {str(e)}")
             isValidChecksum = False
 
         if isValidChecksum:
