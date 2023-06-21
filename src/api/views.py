@@ -210,14 +210,14 @@ class OrderRequestsView(generics.ListCreateAPIView):
         user = self.request.GET.get('user')
         order_requests = OrderRequest.objects.filter(user=self.request.user)
         if user:
-            return order_requests.filter(user__pk=user).order_by('-pk')
+            order_requests = order_requests.filter(user__pk=user)
         status_param = self.request.GET.get('status')
         if status_param:
-            status_list = status_param.split('+')
-            return order_requests.filter(order_status__in=status_list).order_by('-pk')
+            status_list = status_param.split(' ')
+            order_requests = order_requests.filter(order_status__in=status_list)
         date_param = self.request.GET.get('date')
         if date_param:
-            return order_requests.filter(date=date_param).order_by('-pk')
+            order_requests = order_requests.filter(date=date_param)
         return order_requests.order_by('-pk')
 
     def perform_create(self, serializer):
