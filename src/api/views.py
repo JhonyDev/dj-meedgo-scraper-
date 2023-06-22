@@ -92,7 +92,7 @@ def lobby(request):
 
 
 def test(request):
-    return render(request, 'api/test.html')
+    return render(request, 'api/test2.html')
 
 
 """
