@@ -23,6 +23,7 @@ urlpatterns = [
     path('facebook/login/', FacebookLogin.as_view(), name='fb_login'),
 
     path('custom/google/login/', CustomGoogleSignInView.as_view(), name='custom_google_login'),
+    path('custom/facebook/login/', CustomGoogleSignInView.as_view(), name='custom_google_login'),
 
     path('licenses/', LicensesListView.as_view(), name='licenses'),
     path('verify-email/<str:auth_token>/', EmailVerificationView.as_view(), name='verification'),

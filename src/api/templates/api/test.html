@@ -1,23 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Redirect Button</title>
-  <script>
-    function redirectToURL() {
-      window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount'
-        + '?redirect_uri=' + encodeURIComponent('https://meedgo.jhonydev.com/auth/custom/google/login/')
-        + '&prompt=consent'
-        + '&response_type=code'
-        + '&client_id=' + encodeURIComponent('267690366244-ql55e38j75vj1mlkqctja4oh8l4jek27.apps.googleusercontent.com')
-        + '&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile email'
-        + '&access_type=offline'
-        + '&service=lso'
-        + '&o2v=2'
-        + '&flowName=GeneralOAuthFlow';
-    }
-  </script>
+    <title>Redirect Button</title>
+    <script>
+        function redirectToURL() {
+            window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount'
+                + '?prompt=consent'
+                + '&response_type=code'
+                + '&client_id=' + encodeURIComponent('267690366244-ql55e38j75vj1mlkqctja4oh8l4jek27.apps.googleusercontent.com')
+                + '&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile email'
+                + '&access_type=offline'
+                + '&service=lso'
+                + '&o2v=2'
+                + '&redirect_uri=' + encodeURIComponent('https://meedgo.jhonydev.com/auth/custom/google/login/')
+            ;
+        }
+
+        function redirectToFacebookURL() {
+            window.location.href = 'https://www.facebook.com/v17.0/dialog/oauth'
+                + '?redirect_uri={"' + encodeURIComponent('https://meedgo.jhonydev.com/auth/custom/facebook/login/') + '"}'
+                + '&client_id={"' + encodeURIComponent('293664706340117') + '"}'
+                + '&state={"{st=state123abc,ds=123456789}"}';
+        }
+
+    </script>
 </head>
 <body>
-  <button onclick="redirectToURL()">Redirect</button>
+<button onclick="redirectToURL()">Google Sign in</button>
+<button onclick="redirectToFacebookURL()">Facebook Sign in</button>
 </body>
 </html>
