@@ -203,3 +203,7 @@ class EmailVerificationStatusSerializer(serializers.Serializer):
             raise serializers.ValidationError('No account associated with this email.')
         attrs['user'] = User.objects.filter(email=email).first()
         return attrs
+
+
+class CustomGoogleLoginSerializerSerializer(serializers.Serializer):
+    code = serializers.CharField()

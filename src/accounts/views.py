@@ -25,7 +25,8 @@ from src.accounts.authentication import JWTAuthentication
 from src.accounts.models import License, LicenseEntry, User, UserTime, AuthenticationToken
 from src.accounts.serializers import CustomRegisterAccountSerializer, CustomLoginSerializer, LicenseSerializer, \
     LicenseEntrySerializer, PhoneOTPLoginSerializer, OTPVerificationSerializer, UserTimeSerializer, \
-    ChangePasswordSerializer, EmailVerificationSerializer, EmailVerificationStatusSerializer
+    ChangePasswordSerializer, EmailVerificationSerializer, EmailVerificationStatusSerializer, \
+    CustomGoogleLoginSerializerSerializer
 from src.api.serializers import UserSerializer, UserProfileSerializer
 
 
@@ -281,3 +282,61 @@ class GoogleLogin(SocialLoginView):
 
 class FacebookLogin(SocialLoginView):
     adapter_class = FacebookOAuth2Adapter
+
+
+class CustomGoogleSignInView(generics.ListCreateAPIView):
+    serializer_class = CustomGoogleLoginSerializerSerializer
+    permission_classes = [permissions.AllowAny]
+    queryset = LicenseEntry.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        data = {
+            'message': request.GET,
+        }
+        return Response(data=data, status=status.HTTP_201_CREATED)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        code = serializer.validated_data['code']
+        # TODO: Communicated code for access token
+        import requests
+        from core import settings
+        url = 'https://oauth2.googleapis.com/token'
+        payload = {
+            'code': code,
+            'redirect_uri': f'{settings.BASE_URL}auth/custom/google/login/',
+            'client_id': f'{settings.GOOGLE_CLIENT_ID}',
+            'client_secret': f'{settings.GOOGLE_CLIENT_SECRET}',
+            'scope': '',
+            'grant_type': 'authorization_code'
+        }
+        response = requests.post(url, data=payload)
+        tokens = response.json()
+        access_token = response.json().get('access_token')
+        url = 'https://www.googleapis.com/oauth2/v3/userinfo'
+        headers = {'Authorization': f'Bearer {access_token}'}
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            user_info = response.json()
+            profile_image = user_info.get('picture')
+            full_name = user_info.get('name')
+            email = user_info.get('email')
+        else:
+            data = {
+                'details': tokens,
+            }
+            return Response(data=data, status=status.HTTP_201_CREATED)
+
+        if User.objects.filter(email=email).exists():
+            user = User.objects.filter(email=email).first()
+        else:
+            user = User.objects.create(email=email, profile_image=profile_image, full_name=full_name)
+        user_serializer = UserSerializer(user)
+        access_token = authentication.create_access_token(user_serializer.data)
+        refresh_token = authentication.create_refresh_token(user.pk)
+        data = {
+            'access_token': access_token,
+            'refresh_token': refresh_token
+        }
+        return Response(data=data, status=status.HTTP_201_CREATED)

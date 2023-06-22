@@ -31,8 +31,6 @@ SECRET_KEY = env('SERVER_KEY')
 SERVER = env('SERVER') == 'True'
 DEBUG = env('DEBUG') == 'True'
 
-BASE_URL = "https://meedgo.jhonydev.com/"
-
 SOLE_PROPRIETORSHIP = 'SP'
 PARTNERSHIP = 'P'
 LIMITED_LIABILITY_PARTNERSHIP = 'LLP'
@@ -56,6 +54,9 @@ PLATFORMS = (
     ('4', FLIPCART),
 )
 
+GOOGLE_CLIENT_ID = "267690366244-ql55e38j75vj1mlkqctja4oh8l4jek27.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET = "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"
+
 # PAYTM_MERCHANT_ID = 'QlrInG17260337389232'
 # PAYTM_SECRET_KEY = 'kbzk1DSbJiV_03p5'
 # PAYTM_WEBSITE = 'WEBSTAGING'  # Replace with 'DEFAULT' for production
@@ -63,16 +64,17 @@ PLATFORMS = (
 PAYTM_MERCHANT_ID = 'KdrBel67166523599721'
 PAYTM_SECRET_KEY = 'QdE9x0og5gT@IEwj'
 PAYTM_WEBSITE = 'WEBSTAGING'  # Replace with 'DEFAULT' for production
-
 if SERVER:
     SITE_ID = 4
     GOOGLE_CALLBACK_ADDRESS = "https://meedgo.jhonydev.com/auth/google-callback/"
     PAYTM_CALLBACK_URL = 'https://meedgo.jhonydev.com/api/callback/'
+    BASE_URL = "https://meedgo.jhonydev.com/"
 else:
     SITE_ID = 1
     # GOOGLE_CALLBACK_ADDRESS = "http://127.0.0.1:8000/auth/google-callback/"
     GOOGLE_CALLBACK_ADDRESS = "http://127.0.0.1:8000/accounts/google/login/callback/"
     PAYTM_CALLBACK_URL = 'http://127.0.0.1:8000/api/callback/'
+    BASE_URL = "http://127.0.0.1:8000/"
 
 ALLOWED_HOSTS = ['*']
 CORS_ALLOWED_ORIGINS = [
