@@ -223,7 +223,7 @@ class OrderRequestsView(generics.ListCreateAPIView):
         user = self.request.GET.get('user')
         order_requests = OrderRequest.objects.filter(user=self.request.user)
         if user:
-            order_requests = order_requests.filter(user__pk=user)
+            order_requests = OrderRequest.objects.filter(user__pk=user)
         status_param = self.request.GET.get('status')
         if status_param:
             status_list = status_param.split(' ')
@@ -267,7 +267,7 @@ class OrderRequestsLocalityView(generics.ListAPIView):
                 pk__in=grabs)
         user = self.request.GET.get('user')
         if user:
-            order_requests = order_requests.filter(user__pk=user)
+            order_requests = OrderRequest.objects.filter(user__pk=user)
         status_param = self.request.GET.get('status')
         if status_param:
             status_list = status_param.split(' ')
