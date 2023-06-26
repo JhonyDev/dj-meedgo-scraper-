@@ -1,0 +1,328 @@
+
+.bg-soft-primary {
+    background-color: rgba(87, 102, 218, .15) !important;
+    color: #5766da !important
+}
+
+.bg-soft-secondary {
+    background-color: rgba(226, 226, 241, .15) !important;
+    color: #e2e2f1 !important
+}
+
+.bg-soft-success {
+    background-color: rgba(30, 202, 184, .15) !important;
+    color: #1ecab8 !important
+}
+
+.bg-soft-warning {
+    background-color: rgba(251, 182, 36, .15) !important;
+    color: #fbb624 !important
+}
+
+.bg-soft-info {
+    background-color: rgba(0, 188, 212, .15) !important;
+    color: #00bcd4 !important
+}
+
+.bg-soft-danger {
+    background-color: rgba(249, 59, 122, .15) !important;
+    color: #f93b7a !important
+}
+
+.bg-soft-pink {
+    background-color: rgba(236, 64, 143, .15) !important;
+    color: #ec408f !important
+}
+
+.bg-soft-purple {
+    background-color: rgba(112, 67, 193, .15) !important;
+    color: #7043c1 !important
+}
+
+.bg-soft-dark {
+    background-color: rgba(47, 57, 78, .15) !important;
+    color: #2f394e !important
+}
+
+.badge {
+    -webkit-box-shadow: none;
+    box-shadow: none
+}
+
+.badge.badge-soft-primary {
+    background-color: rgba(87, 102, 218, .15) !important;
+    color: #5766da !important;
+    -webkit-box-shadow: 0 0 13px 0 rgba(87, 102, 218, .05);
+    box-shadow: 0 0 13px 0 rgba(87, 102, 218, .05)
+}
+
+.badge.badge-soft-secondary {
+    background-color: rgba(226, 226, 241, .15) !important;
+    color: #e2e2f1 !important;
+    -webkit-box-shadow: 0 0 13px 0 rgba(226, 226, 241, .05);
+    box-shadow: 0 0 13px 0 rgba(226, 226, 241, .05)
+}
+
+.badge.badge-soft-success {
+    background-color: rgba(30, 202, 184, .15) !important;
+    color: #1ecab8 !important;
+    -webkit-box-shadow: 0 0 13px 0 rgba(30, 202, 184, .05);
+    box-shadow: 0 0 13px 0 rgba(30, 202, 184, .05)
+}
+
+.badge.badge-soft-warning {
+    background-color: rgba(251, 182, 36, .15) !important;
+    color: #fbb624 !important;
+    -webkit-box-shadow: 0 0 13px 0 rgba(251, 182, 36, .05);
+    box-shadow: 0 0 13px 0 rgba(251, 182, 36, .05)
+}
+
+.badge.badge-soft-info {
+    background-color: rgba(0, 188, 212, .15) !important;
+    color: #00bcd4 !important;
+    -webkit-box-shadow: 0 0 13px 0 rgba(0, 188, 212, .05);
+    box-shadow: 0 0 13px 0 rgba(0, 188, 212, .05)
+}
+
+.badge.badge-soft-danger {
+    background-color: rgba(249, 59, 122, .15) !important;
+    color: #f93b7a !important;
+    -webkit-box-shadow: 0 0 13px 0 rgba(249, 59, 122, .05);
+    box-shadow: 0 0 13px 0 rgba(249, 59, 122, .05)
+}
+
+.badge.badge-soft-pink {
+    background-color: rgba(236, 64, 143, .15) !important;
+    color: #ec408f !important;
+    -webkit-box-shadow: 0 0 13px 0 rgba(236, 64, 143, .05);
+    box-shadow: 0 0 13px 0 rgba(236, 64, 143, .05)
+}
+
+.badge.badge-soft-purple {
+    background-color: rgba(112, 67, 193, .15) !important;
+    color: #7043c1 !important;
+    -webkit-box-shadow: 0 0 13px 0 rgba(112, 67, 193, .05);
+    box-shadow: 0 0 13px 0 rgba(112, 67, 193, .05)
+}
+
+.badge.badge-soft-dark {
+    background-color: rgba(47, 57, 78, .15) !important;
+    color: #2f394e !important;
+    -webkit-box-shadow: 0 0 13px 0 rgba(47, 57, 78, .05);
+    box-shadow: 0 0 13px 0 rgba(47, 57, 78, .05)
+}
+
+.btn-soft-primary {
+    background-color: rgba(87, 102, 218, .1);
+    color: #5766da
+}
+
+.btn-soft-primary:hover {
+    background-color: #5766da;
+    color: #fff
+}
+
+.btn-soft-primary:focus {
+    -webkit-box-shadow: 0 0 0 .1rem rgba(87, 102, 218, .2);
+    box-shadow: 0 0 0 .1rem rgba(87, 102, 218, .2);
+    background-color: rgba(87, 102, 218, .8);
+    color: #fff
+}
+
+.btn-soft-secondary {
+    background-color: rgba(226, 226, 241, .1);
+    color: #e2e2f1
+}
+
+.btn-soft-secondary:hover {
+    background-color: #e2e2f1;
+    color: #fff
+}
+
+.btn-soft-secondary:focus {
+    -webkit-box-shadow: 0 0 0 .1rem rgba(226, 226, 241, .2);
+    box-shadow: 0 0 0 .1rem rgba(226, 226, 241, .2);
+    background-color: rgba(226, 226, 241, .8);
+    color: #fff
+}
+
+.btn-soft-success {
+    background-color: rgba(30, 202, 184, .1);
+    color: #1ecab8
+}
+
+.btn-soft-success:hover {
+    background-color: #1ecab8;
+    color: #fff
+}
+
+.btn-soft-success:focus {
+    -webkit-box-shadow: 0 0 0 .1rem rgba(30, 202, 184, .2);
+    box-shadow: 0 0 0 .1rem rgba(30, 202, 184, .2);
+    background-color: rgba(30, 202, 184, .8);
+    color: #fff
+}
+
+.btn-soft-warning {
+    background-color: rgba(251, 182, 36, .1);
+    color: #fbb624
+}
+
+.btn-soft-warning:hover {
+    background-color: #fbb624;
+    color: #fff
+}
+
+.btn-soft-warning:focus {
+    -webkit-box-shadow: 0 0 0 .1rem rgba(251, 182, 36, .2);
+    box-shadow: 0 0 0 .1rem rgba(251, 182, 36, .2);
+    background-color: rgba(251, 182, 36, .8);
+    color: #fff
+}
+
+.btn-soft-danger {
+    background-color: rgba(249, 59, 122, .1);
+    color: #f93b7a
+}
+
+.btn-soft-danger:hover {
+    background-color: #f93b7a;
+    color: #fff
+}
+
+.btn-soft-danger:focus {
+    -webkit-box-shadow: 0 0 0 .1rem rgba(249, 59, 122, .2);
+    box-shadow: 0 0 0 .1rem rgba(249, 59, 122, .2);
+    background-color: rgba(249, 59, 122, .8);
+    color: #fff
+}
+
+.btn-soft-info {
+    background-color: rgba(0, 188, 212, .1);
+    color: #00bcd4
+}
+
+.btn-soft-info:hover {
+    background-color: #00bcd4;
+    color: #fff
+}
+
+.btn-soft-info:focus {
+    -webkit-box-shadow: 0 0 0 .1rem rgba(0, 188, 212, .2);
+    box-shadow: 0 0 0 .1rem rgba(0, 188, 212, .2);
+    background-color: rgba(0, 188, 212, .8);
+    color: #fff
+}
+
+.btn-soft-dark {
+    background-color: rgba(47, 57, 78, .1);
+    color: #2f394e
+}
+
+.btn-soft-dark:hover {
+    background-color: #2f394e;
+    color: #fff
+}
+
+.btn-soft-dark:focus {
+    -webkit-box-shadow: 0 0 0 .1rem rgba(47, 57, 78, .2);
+    box-shadow: 0 0 0 .1rem rgba(47, 57, 78, .2);
+    background-color: rgba(47, 57, 78, .8);
+    color: #fff
+}
+
+.btn-soft-pink {
+    background-color: rgba(236, 64, 143, .1);
+    color: #ec408f
+}
+
+.btn-soft-pink:hover {
+    background-color: #ec408f;
+    color: #fff
+}
+
+.btn-soft-pink:focus {
+    -webkit-box-shadow: 0 0 0 .1rem rgba(236, 64, 143, .2);
+    box-shadow: 0 0 0 .1rem rgba(236, 64, 143, .2);
+    background-color: rgba(236, 64, 143, .8);
+    color: #fff
+}
+
+.btn-soft-purple {
+    background-color: rgba(112, 67, 193, .1);
+    color: #7043c1
+}
+
+.btn-soft-purple:hover {
+    background-color: #7043c1;
+    color: #fff
+}
+
+.btn-soft-purple:focus {
+    -webkit-box-shadow: 0 0 0 .1rem rgba(112, 67, 193, .2);
+    box-shadow: 0 0 0 .1rem rgba(112, 67, 193, .2);
+    background-color: rgba(112, 67, 193, .8);
+    color: #fff
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+#mc_embed_signup form {
+    display: flex;
+    margin: 0px;
+}
+
+#mc_embed_signup input:not(.subscribe-submit) {
+    /* border:unset; */
+    border-radius: 0;
+    border-style: none none solid;
+    border-width: 1px 1px 2px;
+    border-color: #000;
+}
+
+#mc_embed_signup input.subscribe-submit {
+    border: unset;
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    z-index: 99;
+    display: block;
+    width: 113px;
+    height: 58px;
+    background-color: transparent;
+    -webkit-transition: all 200ms ease;
+    transition: all 200ms ease;
+}
+
+#mc_embed_signup #mc-embedded-subscribe-form input.mce_inline_error {
+    border-style: none none solid;
+    border-width: 1px 1px 2px;
+    border-color: #e85c41;
+    background-color: transparent;
+}
+
+/* Add your own Mailchimp form style overrides in your site stylesheet or in this style block.
+        We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
+@keyframes fadein {
+    from {
+        bottom: 0;
+        opacity: 0;
+    }
+    to {
+        bottom: 30px;
+        opacity: 1;
+    }
+}
+
+@keyframes fadeout {
+    from {
+        bottom: 30px;
+        opacity: 1;
+    }
+    to {
+        bottom: 0;
+        opacity: 0;
+    }
+}

@@ -122,6 +122,7 @@ INSTALLED_APPS = [
     # 'src.accounts',
     'src.accounts.apps.AccountsAppConfig',
     'src.api',
+    'src.website',
     'drf_yasg',
     'corsheaders',
 ]

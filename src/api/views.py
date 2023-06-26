@@ -274,7 +274,7 @@ class OrderRequestsLocalityView(generics.ListAPIView):
             order_requests = order_requests.filter(order_status__in=status_list)
         date_param = self.request.GET.get('date')
         if date_param:
-            order_requests = order_requests.filter(date=date_param)
+            order_requests = order_requests.filter(created_on=date_param)
         return order_requests.order_by('-pk')
 
         # return OrderRequest.objects.filter(user__postal_code=self.request.user.postal_code)
@@ -292,6 +292,8 @@ class GrabOrdersView(generics.ListCreateAPIView):
         return super().get_serializer_class()
 
     def get_queryset(self):
+        # TODO:
+
         return GrabUserBridge.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):

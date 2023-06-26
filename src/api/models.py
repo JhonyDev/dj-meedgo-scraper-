@@ -58,6 +58,7 @@ class OrderRequest(models.Model):
     medicine_cart = models.ForeignKey(MedicineCart, on_delete=models.CASCADE)
     grabbed_by = models.ManyToManyField(User, through='GrabUserBridge', blank=True, null=True, related_name="+")
     order_status = models.CharField(max_length=25, null=True, blank=True, default='Pending', choices=STATUS)
+    created_on = models.DateField(auto_now_add=True, null=True, blank=True)
 
     def __str__(self):
         return str(self.pk)

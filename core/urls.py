@@ -48,6 +48,7 @@ def redirect_to_external_domain(request):
 
 urlpatterns = [
                   # ADMIN/ROOT APPLICATION
+                  path('', include('src.website.urls', namespace='website')),
                   path('admin/', admin.site.urls),
                   path('auth/', include('src.accounts.urls', namespace='api')),
                   path('accounts/inactive/', redirect_to_external_domain),

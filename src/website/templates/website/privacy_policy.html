@@ -1,0 +1,256 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block content %}
+    <style>
+        .parallax {
+            min-height: 100vh; /* Adjust the height based on your content */
+            background-image: url('{% static "dropppin/images/images-Group-36690.png" %}');
+            overflow: hidden;
+            position: relative;
+        }
+
+        .parallax:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            overflow: hidden;
+            padding-bottom: 40px;
+            z-index: -1;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .section-heading {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 30px;
+        }
+
+        .section-subheading {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .footer {
+            font-size: 14px;
+            color: #888;
+            margin-top: 50px;
+        }
+
+        @media (max-width: 990px) {
+            .sm-not {
+                display: none;
+            }
+        }
+    </style>
+
+    <div class="w-100 h-100 " style="position:fixed; top: 0; left: 0">
+        <img src="{% static 'dropppin/images/back_top.svg' %}" style="position:absolute; right: 0; top: 0"
+             loading="lazy"
+             alt="">
+        <img src="{% static 'dropppin/images/back_right_mid.svg' %}" loading="lazy" alt=""
+             style="position:absolute; right: 0; bottom: 70px">
+    </div>
+
+    <div id="top" class="parallax wf-section" style="background-attachment: fixed;min-height: 100vh">
+        <img src="{% static 'dropppin/images/back_bottom.svg' %}" loading="lazy" alt=""
+             style="position:absolute; left: 30px; bottom: 0px">
+
+        <div class="container w-container ">
+            <div class="header-row ">
+                <div class="header-content-col pb-5 mb-5">
+                    <h1 class="header-content-title" style="">Privacy <span class="text-white"
+                                                                            style="background: black;">Policy&nbsp</span>
+                    </h1>
+                    <b>Last Updated: May 22, 2023</b>
+                    <p class="mt-2">This Privacy Policy explains how Dropppin collects, uses, shares, and
+                        protects the personal information of users when you use our web platform
+                        ("Dropppin") to generate content at scale using the User Generated Content method. This Privacy
+                        Policy applies to all users of Dropppin.</p>
+
+                    <div class="section-heading" id="section1">1. Information We Collect</div>
+
+                    <p class="section-subheading ml-5">1.1. Personal Information:</p>
+                    <p class="ml-5">When you use Dropppin, we may collect personal information that you voluntarily
+                        provide, such as
+                        your name, email address, and any other information you submit while using the platform.</p>
+
+                    <p class="section-subheading ml-5">1.2. Campaign Information:</p>
+                    <p class="ml-5">As a campaign owner, we collect information related to the campaigns you create,
+                        including the
+                        type of content you desire, campaign settings, and any rewards or incentives you offer to users
+                        for their submitted content.</p>
+
+                    <p class="section-subheading ml-5">1.3. User Generated Content:</p>
+                    <p class="ml-5">Dropppin collects and stores the content that users submit as part of the campaigns.
+                        This may
+                        include text, images, videos, or any other media files uploaded by users.</p>
+
+                    <p class="section-subheading ml-5">1.4. Usage Data:</p>
+                    <p class="ml-5">We automatically collect certain information about your usage of Dropppin, such as
+                        your IP
+                        address, device information, browser type, and operating system. This information is collected
+                        through cookies and similar technologies.</p>
+
+                    <div class="section-heading" id="section2">2. Use of Information</div>
+
+                    <p class="section-subheading ml-5">2.1. Providing and Improving Dropppin:</p>
+                    <p class="ml-5">We use the collected information to operate, maintain, and improve Dropppin,
+                        including enhancing
+                        its features and functionality, analyzing user trends, and troubleshooting technical issues.</p>
+
+                    <!-- Continue with the remaining sections -->
+                    <p class="section-subheading ml-5">2.2. Campaign Management:</p>
+                    <p class="ml-5">We use the information you provide as a campaign owner to manage and administer the
+                        campaigns you
+                        create, including verifying submissions, determining rewards, and communicating with users.</p>
+                    <p class="section-subheading ml-5">2.3. User Communication:</p>
+                    <p class="ml-5">We may use your email address or other provided contact information to communicate
+                        with you
+                        regarding Dropppin updates, notifications, and support.</p>
+                    <p class="section-subheading ml-5">2.4. Aggregated Data:</p>
+                    <p class="ml-5">We may aggregate and anonymize the collected information to generate statistical or
+                        analytical
+                        insights for research or marketing purposes. This aggregated data does not identify individual
+                        users.</p>
+                    <div class="section-heading" id="section3">3. Sharing of Information</div>
+                    <p class="section-subheading ml-5">3.1. Campaign Submission:</p>
+                    <p class="ml-5">As a user, when you submit content to a campaign, your submitted content may be
+                        shared with the
+                        campaign owner and their authorized personnel for the purpose of evaluating, selecting, and
+                        rewarding your contribution.</p>
+                    <p class="section-subheading ml-5">3.2. Service Providers:</p>
+                    <p class="ml-5">We may engage trusted third-party service providers to assist us in operating and
+                        maintaining
+                        Dropppin. These service providers may have access to your personal information but are obligated
+                        to protect it and use it solely for the purpose of providing the requested services.</p>
+                    <p class="section-subheading ml-5">3.3. Legal Requirements:</p>
+                    <p class="ml-5">We may disclose your personal information if required by law, regulation, or legal
+                        process, or if
+                        we believe such disclosure is necessary to protect our rights, property, or the safety of
+                        others.</p>
+                    <p class="section-subheading ml-5">3.4. Business Transfers:</p>
+                    <p class="ml-5">In the event of a merger, acquisition, or any other transfer of ownership of
+                        Dropppin, your
+                        personal information may be transferred to the acquiring entity as part of the transaction. We
+                        will notify you via email or prominent notice on Dropppin of any such change in ownership or
+                        control.</p>
+                    <div class="section-heading" id="section4">4. Data Security</div>
+                    <p>We implement reasonable security measures to protect your personal information from unauthorized
+                        access, alteration, disclosure, or destruction. However, no method of transmission over the
+                        Internet or electronic storage is entirely secure, and we cannot guarantee absolute
+                        security.</p>
+                    <div class="section-heading" id="section5">5. Data Retention</div>
+                    <p>We retain your personal information for as long as necessary to fulfill the purposes outlined in
+                        this Privacy Policy, unless a longer retention period is required or permitted by law.</p>
+                    <div class="section-heading" id="section6">6. Your Choices</div>
+                    <p class="section-subheading ml-5">6.1. Account Information:</p>
+                    <p class="ml-5">You can review and update your personal information by accessing your account
+                        settings on
+                        Dropppin.</p>
+                    <p class="section-subheading ml-5">6.2. Communications:</p>
+                    <p class="ml-5">You can unsubscribe from marketing communications by following the instructions
+                        provided in the
+                        email or contacting us directly.</p>
+                    <div class="section-heading" id="section7">7. Children's Privacy</div>
+                    <p>Dropppin is not intended for use by individuals under the age of 18. We do not knowingly collect
+                        personal information from individuals in this age group. If you believe we have inadvertently
+                        collected personal information from a minor, please contact us, and we will promptly delete the
+                        information.</p>
+                    <div class="section-heading" id="section8">8. Changes to this Privacy Policy</div>
+                    <p>We may update this Privacy Policy from time to time. We will notify you of any material changes
+                        by posting the updated Privacy Policy on Dropppin or by sending you a notification. Your
+                        continued use of Dropppin after the effective date of the revised Privacy Policy constitutes
+                        your acceptance of the changes.</p>
+                    <div class="section-heading" id="section9">9. Contact Us</div>
+                    <p>If you have any questions or concerns about this Privacy Policy or our privacy practices, please
+                        contact us at support@dropppin.com</p>
+                    <div class="footer">
+                        <p>Contact us at support@dropppin.com if you have any questions or concerns regarding this
+                            Privacy
+                            Policy.</p>
+                    </div>
+
+                </div>
+                <div class="sm-not header-content-col p-3 ml-5 "
+                     style="border-left: 1px solid rebeccapurple; max-width: 40%; position: fixed;right:5%;top: 100px;">
+                    <h1 style="font-size: 45px"><span
+                            class="header-content-title-span-f">Table of&nbsp</span>Content</h1>
+                    <table class="table table-borderless">
+                        <tbody>
+                        <tr>
+                            <th scope="row"><a href="#section1" class="text-dark">1. Information We Collect</a></th>
+                        </tr>
+                        <tr>
+                            <th scope="row"><a href="#section2" class="text-dark">2. Use of Information</a></th>
+                        </tr>
+                        <tr>
+                            <th scope="row"><a href="#section3" class="text-dark">3. Sharing of Information</a></th>
+                        </tr>
+                        <tr>
+                            <th scope="row"><a href="#section4" class="text-dark">4. Data Security</a></th>
+                        </tr>
+                        <tr>
+                            <th scope="row"><a href="#section5" class="text-dark">5. Data Retention</a></th>
+                        </tr>
+                        <tr>
+                            <th scope="row"><a href="#section6" class="text-dark">6. Your Choices</a></th>
+                        </tr>
+                        <tr>
+                            <th scope="row"><a href="#section7" class="text-dark">7. Children's Privacy</a></th>
+                        </tr>
+                        <tr>
+                            <th scope="row"><a href="#section8" class="text-dark">8. Changes to this Privacy Policy</a>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope="row"><a href="#section9" class="text-dark">9. Contact Us</a></th>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <ul>
+
+
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("scroll", function () {
+            var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            var parallaxElement = document.querySelector(".parallax");
+            parallaxElement.style.backgroundPositionY = -scrollTop * 0.1 + "px";
+        });
+    </script>
+
+{% endblock %}
