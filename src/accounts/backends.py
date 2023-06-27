@@ -21,8 +21,6 @@ class CustomAuthBackend(BaseBackend):
             user = User.objects.filter(
                 Q(phone_number=phone_number)
             ).first()
-        else:
-            return None
 
         if not user:
             return None
