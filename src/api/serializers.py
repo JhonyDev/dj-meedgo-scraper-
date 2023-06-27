@@ -168,7 +168,7 @@ class GrabbedOrderRequestsCreateSerializer(serializers.ModelSerializer):
 class GrabbedOrderRequestsUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = GrabUserBridge
-        fields = ['is_active', 'is_accepted']
+        exclude = ('user', 'order_request')
 
 
 class MedicineOfferSerializer(serializers.ModelSerializer):

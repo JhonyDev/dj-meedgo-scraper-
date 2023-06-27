@@ -97,6 +97,9 @@ class GrabUserBridge(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, default=None)
     order_request = models.ForeignKey('OrderRequest', on_delete=models.CASCADE, null=True, blank=True, default=None)
     is_active = models.BooleanField(default=True)
+    is_picked = models.BooleanField(default=False)
+    adhar_required = models.BooleanField(default=False)
+    prescription_required = models.BooleanField(default=False)
     is_accepted = models.BooleanField(default=False)
 
     def __str__(self):
