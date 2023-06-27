@@ -108,6 +108,9 @@ class User(AbstractUser):
         verbose_name_plural = 'Users Accounts'
 
     def __str__(self):
+        if self.username is None:
+            self.username = self.email
+            self.save()
         return self.username
 
     def __init__(self, *args, **kwargs):
