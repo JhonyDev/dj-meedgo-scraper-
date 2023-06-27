@@ -1,0 +1,180 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+    <style>
+        .parallax {
+            min-height: 100vh; /* Adjust the height based on your content */
+            overflow: hidden;
+            position: relative;
+        }
+
+        .parallax:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            overflow: hidden;
+            padding-bottom: 40px;
+            z-index: -1;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .section-heading {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 30px;
+        }
+
+        .section-subheading {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .footer {
+            font-size: 14px;
+            color: #888;
+            margin-top: 50px;
+        }
+
+        @media (max-width: 990px) {
+            .sm-not {
+                display: none;
+            }
+        }
+    </style>
+
+    <div class="w-100 h-100 " style="position:fixed; top: 0; left: 0">
+
+    </div>
+
+    <div id="top" class="parallax wf-section" style="background-attachment: fixed;min-height: 100vh">
+
+        <div class="container w-container ">
+            <div class="header-row ">
+                <div class="header-content-col pb-5 mb-5">
+                    <h1 class="header-content-title" style="">About <span class="text-white bg-primary"
+                                                                          style=";">Us&nbsp</span>
+                    </h1>
+                    <b>Last Updated: June 27, 2023</b>
+
+                    <h2 id="section1">Our Mission</h2>
+                    <p>At Meedgo, we are driven by a clear mission - to revolutionize the way people access healthcare
+                        products and services while empowering local pharmacies and connecting communities. Our
+                        innovative SAAS (Software-as-a-Service) platform combines the best of online and offline retail,
+                        creating a seamless and transparent experience for users.</p>
+                    <h2 id="section2">Our Platform</h2>
+                    <p>We understand that healthcare is a fundamental need, and finding the right products at affordable
+                        prices can be a challenge. That's why we developed Meedgo, a platform that offers live price
+                        discovery, allowing users to compare and access the best deals on healthcare articles from a
+                        wide range of pharmacies, both online and offline.</p>
+                    <h2 id="section3">Empowering Local Pharmacies</h2>
+                    <p>Our vision is to level the playing field for local pharmacies, enabling them to compete
+                        effectively with larger e-commerce players. We believe in supporting small businesses and
+                        fostering healthy competition, as it leads to innovation and better services for customers.
+                        Through Meedgo, we provide pharmacies with software solutions that streamline their operations,
+                        enhance efficiency, and expand their reach to a wider customer base.</p>
+                    <h2 id="section4">Transparency and Trust</h2>
+                    <p>At Meedgo, we value transparency, trust, and reliability. We believe that customers should have
+                        access to accurate and real-time information when making healthcare decisions. Our platform not
+                        only showcases product prices but also provides detailed descriptions, customer reviews, and
+                        ratings, empowering users to make informed choices.</p>
+                    <h2 id="section5">Humanizing Our Brand</h2>
+                    <p>We take pride in the personal touch we bring to the Meedgo brand. Our founders have a deep
+                        passion for creating positive change in the healthcare industry, and their experiences have
+                        shaped our company's values and commitment to excellence. By humanising our brand and sharing
+                        our story, we build trust and connection with our customers, ensuring they feel confident in
+                        choosing Meedgo as their go-to healthcare platform.</p>
+                    <h2 id="section6">Our Values</h2>
+                    <p>Our corporate values are at the core of everything we do. We believe in integrity,
+                        accountability, and customer-centricity. We are dedicated to providing exceptional service,
+                        prioritizing user satisfaction, and continuously improving our platform to meet the evolving
+                        needs of our customers and partner pharmacies.</p>
+                    <h2 id="section7">Join Us on the Journey</h2>
+                    <p>Join us on this exciting journey as we revolutionize the way people access healthcare products
+                        and services. Together, we can create a more transparent, accessible, and inclusive healthcare
+                        ecosystem that benefits everyone.</p>
+                    <h2 id="section8">Experience Meedgo</h2>
+                    <p>Experience Meedgo today and discover a new way to access healthcare with convenience,
+                        transparency, and affordability.</p>
+                </div>
+                <div class=" sm-not header-content-col p-3 ml-5 "
+                     style="border-left: 1px solid rebeccapurple; max-width: 40%; position: fixed;right:5%;top: 18%;">
+                    <h1 style="font-size: 45px"><span
+                            class="bg-primary text-white">Table of&nbsp</span>Content</h1>
+                    <table class="table table-borderless">
+                        <tbody>
+                        <tr>
+                            <th scope="row"><a href="#section1" class="text-dark">1. Our Mission</a></th>
+                        </tr>
+
+                        <tr>
+                            <th scope="row"><a href="#section2" class="text-dark">2. Our Platform</a></th>
+                        </tr>
+
+                        <tr>
+                            <th scope="row"><a href="#section3" class="text-dark">3. Empowering Local Pharmacies</a></th>
+                        </tr>
+                        <tr>
+                            <th scope="row"><a href="#section4" class="text-dark">4. Transparency and Trust</a></th>
+                        </tr>
+                        <tr>
+                            <th scope="row"><a href="#section5" class="text-dark">5. Humanizing Our Brand</a></th>
+                        </tr>
+                        <tr>
+                            <th scope="row"><a href="#section6" class="text-dark">6. Our Values</a></th>
+                        </tr>
+                        <tr>
+                            <th scope="row"><a href="#section7" class="text-dark">7. Join Us on the Journey</a></th>
+                        </tr>
+                        <tr>
+                            <th scope="row"><a href="#section8" class="text-dark">8. Experience Meedgo</a>
+                            </th>
+                        </tr>
+
+                        </tbody>
+                    </table>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("scroll", function () {
+            var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            var parallaxElement = document.querySelector(".parallax");
+            parallaxElement.style.backgroundPositionY = -scrollTop * 0.1 + "px";
+        });
+    </script>
+
+{% endblock %}
