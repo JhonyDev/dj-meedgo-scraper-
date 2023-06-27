@@ -14,6 +14,7 @@ class UserGeneralSerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     is_documentation_complete = serializers.SerializerMethodField('get_documentation')
+    is_profile = serializers.SerializerMethodField('get_profile')
 
     def get_documentation(self, obj):
         return LicenseEntry.objects.filter(user=obj).exists() \
@@ -24,6 +25,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
                and obj.pan_number is not None \
                and obj.business_name is not None \
                and obj.aadhar_card is not None
+
+    def get_profile(self, obj):
+        return obj.postal_code is not None \
+               and obj.phone_number is not None \
+               and (obj.address_line_1 is not None or obj.address_line_2 is not None)
 
     class Meta:
         model = User

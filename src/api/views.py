@@ -167,7 +167,7 @@ class MedicineSearchView(generics.ListAPIView):
             if not queryset:
                 med_list = scrape_pharmeasy(param)
                 queryset = Medicine.objects.filter(pk__in=med_list)
-        return queryset
+        return queryset.order_by('price')
 
 
 class MedicineToCartView(generics.GenericAPIView):
