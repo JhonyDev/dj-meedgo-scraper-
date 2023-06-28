@@ -243,7 +243,11 @@ class OrderRequestsView(generics.ListCreateAPIView):
             'order_id': instance.id,
             'chemist_id': instance.user.pk
         }
-        send_message_to_group(f'{self.request.user.postal_code}', order_request)
+        try:
+            send_message_to_group(f'{self.request.user.postal_code}', order_request)
+        except Exception as e:
+            print(f"Exception when sending message against order-request - {instance}")
+            print(str(e))
         return instance
 
     def create(self, request, *args, **kwargs):
