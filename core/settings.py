@@ -66,8 +66,8 @@ PAYTM_SECRET_KEY = 'QdE9x0og5gT@IEwj'
 PAYTM_WEBSITE = 'WEBSTAGING'  # Replace with 'DEFAULT' for production
 if SERVER:
     SITE_ID = 4
-    GOOGLE_CALLBACK_ADDRESS = "https://meedgo.jhonydev.com/auth/google-callback/"
-    PAYTM_CALLBACK_URL = 'https://meedgo.jhonydev.com/api/callback/'
+    GOOGLE_CALLBACK_ADDRESS = "https://app.meedgo.com/auth/google-callback/"
+    PAYTM_CALLBACK_URL = 'https://app.meedgo.com/api/callback/'
     BASE_URL = "https://app.meedgo.com/"
 else:
     SITE_ID = 1
