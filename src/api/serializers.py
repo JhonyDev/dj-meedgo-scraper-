@@ -9,7 +9,7 @@ from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, Medici
 class UserGeneralSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('pk', 'username', 'full_name','business_name', 'email', 'postal_code', 'profile_image')
+        fields = ('pk', 'username', 'full_name', 'business_name', 'email', 'postal_code', 'profile_image')
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -191,6 +191,10 @@ class GrabbedOrderRequestsListSerializer(serializers.ModelSerializer):
     offered_total_price = serializers.SerializerMethodField('get_offered_total')
     cost_comparisons = serializers.SerializerMethodField('get_cost_comparisons')
     customer = serializers.SerializerMethodField('get_customer')
+    pharmacist = serializers.SerializerMethodField('get_pharmacist')
+
+    def get_pharmacist(self, q):
+        return UserGeneralSerializer(q.user, many=False).data
 
     def get_customer(self, q):
         return UserGeneralSerializer(q.order_request.user, many=False).data
