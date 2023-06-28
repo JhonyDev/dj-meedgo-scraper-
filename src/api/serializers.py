@@ -9,7 +9,7 @@ from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, Medici
 class UserGeneralSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('pk', 'username', 'full_name', 'email', 'postal_code', 'profile_image')
+        fields = ('pk', 'username', 'full_name','business_name', 'email', 'postal_code', 'profile_image')
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
