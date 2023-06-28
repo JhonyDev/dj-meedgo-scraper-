@@ -68,7 +68,7 @@ if SERVER:
     SITE_ID = 4
     GOOGLE_CALLBACK_ADDRESS = "https://meedgo.jhonydev.com/auth/google-callback/"
     PAYTM_CALLBACK_URL = 'https://meedgo.jhonydev.com/api/callback/'
-    BASE_URL = "https://meedgo.jhonydev.com/"
+    BASE_URL = "https://app.meedgo.com/"
 else:
     SITE_ID = 1
     # GOOGLE_CALLBACK_ADDRESS = "http://127.0.0.1:8000/auth/google-callback/"
