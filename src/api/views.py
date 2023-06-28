@@ -246,7 +246,8 @@ class OrderRequestsView(generics.ListCreateAPIView):
         try:
             send_message_to_group(f'{self.request.user.postal_code}', order_request)
         except Exception as e:
-            print(f"Exception when sending message against order-request - {instance}")
+            print(
+                f"Exception when sending message against order-request - {instance} - {self.request.user.postal_code}")
             print(str(e))
         return instance
 
