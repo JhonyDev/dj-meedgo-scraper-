@@ -68,7 +68,6 @@ class CustomRegisterAccountView(CreateAPIView):
                 EmailAddress.objects.create(user=user, email=user.email, primary=True, verified=False)
             except:
                 raise ValidationError({'email': 'Email already associated with another account.'})
-
             mail_subject = 'Activate your account'
             message = render_to_string('accounts/activation_email.html', {
                 'user': user,
@@ -78,7 +77,6 @@ class CustomRegisterAccountView(CreateAPIView):
             email = EmailMultiAlternatives(mail_subject, message, to=[user.email])
             email.attach_alternative(message, 'text/html')
             email.send()
-            # send_mail(mail_subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=True)
             AuthenticationToken.objects.create(user=user, auth_token=unique_id)
         return user
 
