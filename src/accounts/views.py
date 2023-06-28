@@ -14,6 +14,7 @@ from django.views import View
 from django_otp import devices_for_user
 from rest_auth.registration.views import SocialLoginView
 from rest_framework import generics, permissions, status, viewsets
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import CreateAPIView
 from rest_framework.generics import GenericAPIView, UpdateAPIView
 from rest_framework.response import Response
@@ -63,7 +64,11 @@ class CustomRegisterAccountView(CreateAPIView):
         user = serializer.save()
         if user.email:
             unique_id = str(uuid.uuid4())
-            EmailAddress.objects.create(user=user, email=user.email, primary=True, verified=False)
+            try:
+                EmailAddress.objects.create(user=user, email=user.email, primary=True, verified=False)
+            except:
+                raise ValidationError({'email': 'Email already associated with another account.'})
+
             mail_subject = 'Activate your account'
             message = render_to_string('accounts/activation_email.html', {
                 'user': user,
