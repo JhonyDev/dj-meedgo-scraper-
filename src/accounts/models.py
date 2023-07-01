@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
+from django.db.models import Avg
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django_resized import ResizedImageField
@@ -42,6 +43,9 @@ class User(AbstractUser):
         upload_to='accounts/images/pan_cards/', null=True, blank=True, quality=60, force_format='PNG',
         help_text='Format must be png image file', crop=['middle', 'center']
     )
+
+    latitude = models.FloatField(default=None, null=True, blank=True)
+    longitude = models.FloatField(default=None, null=True, blank=True)
 
     date_of_birth = models.DateField(default=None, null=True, blank=True)
 

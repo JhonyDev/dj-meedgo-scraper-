@@ -2,6 +2,7 @@ from django.db.models import Sum
 from rest_framework import serializers
 
 from src.accounts.models import User, LicenseEntry
+from src.api.utils import get_average_rating
 from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge, MedicineCartBridge, \
     ConversationHistory, Message, UserRating
 
@@ -194,7 +195,13 @@ class GrabbedOrderRequestsListSerializer(serializers.ModelSerializer):
     pharmacist = serializers.SerializerMethodField('get_pharmacist')
 
     def get_pharmacist(self, q):
-        return UserGeneralSerializer(q.user, many=False).data
+        pharmacist = UserGeneralSerializer(q.user, many=False).data
+        pharmacist['rating'] = get_average_rating(q.user)
+        pharmacist['completed_orders'] = \
+            GrabUserBridge.objects.filter(order_request__order_status="Completed", user=q.user).count()
+        pharmacist['latitude'] = q.user.latitude
+        pharmacist['longitude'] = q.user.longitude
+        return pharmacist
 
     def get_customer(self, q):
         return UserGeneralSerializer(q.order_request.user, many=False).data
@@ -231,7 +238,8 @@ class GrabbedOrderRequestsListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GrabUserBridge
-        fields = ['pk', 'customer', 'order_request', 'cost_comparisons', 'medicine_offers', 'offered_total_price',
+        fields = ['pk', 'customer', 'pharmacist', 'order_request', 'cost_comparisons', 'medicine_offers',
+                  'offered_total_price',
                   'is_with_delivery', 'prescription_required', 'adhar_required',
                   'is_active']
 

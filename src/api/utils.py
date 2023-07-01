@@ -1,6 +1,6 @@
 from django.db import models
 
-from src.api.models import MedicineCartBridge
+from src.api.models import MedicineCartBridge, UserRating
 
 
 def get_api_exception(detail, code):
@@ -65,3 +65,10 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     ))
 
     return queryset.order_by('custom_order')
+
+
+def get_average_rating(user):
+    from django.db.models import Avg
+    average_rating = UserRating.objects.filter(given_to=user).aggregate(avg_rating=Avg('rating'))
+    avg_rating_value = average_rating['avg_rating']
+    return avg_rating_value
