@@ -24,7 +24,7 @@ from .serializers import MedicineSerializer, MedicineToCartSerializer, \
     GrabbedOrderRequestsCreateSerializer, GrabbedOrderRequestsUpdateSerializer, MedicineOfferSerializer, \
     MedicineOfferUpdateSerializer, LocalityOrderRequestListSerializer, \
     ConversationHistoryListSerializer, ConversationHistoryCreateSerializer, MessageCreateSerializer, \
-    MessageListSerializer, UserRatingListSerializer, UserRatingCreateSerializer, OrderRequestCompleteSerializer, \
+    MessageListSerializer, UserRatingListSerializer, UserRatingCreateSerializer, OrderRequestUpdateSerializer, \
     PaymentSerializer, PaymentResponseSerializer
 from .tasks import update_medicine_pharmeasy, update_medicine, \
     update_medicine_1mg, scrape_pharmeasy
@@ -204,7 +204,7 @@ class AlternateMedicineView(generics.ListAPIView):
 class OrderRequestUpdateView(generics.RetrieveUpdateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = OrderRequestCompleteSerializer
+    serializer_class = OrderRequestUpdateSerializer
     queryset = OrderRequest.objects.all()
 
 
@@ -297,8 +297,6 @@ class GrabOrdersView(generics.ListCreateAPIView):
         return super().get_serializer_class()
 
     def get_queryset(self):
-        # TODO:
-
         return GrabUserBridge.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):

@@ -142,10 +142,10 @@ class OrderRequestListSerializer(serializers.ModelSerializer):
         fields = ['pk', 'medicine_cart', 'order_status', 'user', 'grabbed_by']
 
 
-class OrderRequestCompleteSerializer(serializers.ModelSerializer):
+class OrderRequestUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderRequest
-        fields = ['pk', 'order_status']
+        fields = ['pk', 'order_status', 'adhar', 'prescription']
 
 
 class LocalityOrderRequestListSerializer(serializers.ModelSerializer):
@@ -232,6 +232,7 @@ class GrabbedOrderRequestsListSerializer(serializers.ModelSerializer):
     class Meta:
         model = GrabUserBridge
         fields = ['pk', 'customer', 'order_request', 'cost_comparisons', 'medicine_offers', 'offered_total_price',
+                  'is_with_delivery', 'prescription_required', 'adhar_required',
                   'is_active']
 
     def get_fields(self):

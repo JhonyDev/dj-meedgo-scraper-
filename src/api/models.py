@@ -60,6 +60,9 @@ class OrderRequest(models.Model):
     order_status = models.CharField(max_length=25, null=True, blank=True, default='Pending', choices=STATUS)
     created_on = models.DateField(auto_now_add=True, null=True, blank=True)
 
+    adhar = models.FileField(upload_to='adhar/', default=None, null=True)
+    prescription = models.FileField(upload_to='prescription/', default=None, null=True)
+
     def __str__(self):
         return str(self.pk)
 
@@ -100,6 +103,7 @@ class GrabUserBridge(models.Model):
     is_picked = models.BooleanField(default=False)
     adhar_required = models.BooleanField(default=False)
     prescription_required = models.BooleanField(default=False)
+    is_with_delivery = models.BooleanField(default=False)
     is_accepted = models.BooleanField(default=False)
 
     def __str__(self):
