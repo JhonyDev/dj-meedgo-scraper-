@@ -10,7 +10,7 @@ class CustomAuthBackend(BaseBackend):
             user = User.objects.filter(
                 username=username
             ).first()
-            if user.check_password(password):
+            if user and user.check_password(password):
                 return user
 
         if email:
@@ -18,14 +18,14 @@ class CustomAuthBackend(BaseBackend):
                 email=email
             ).first()
 
-            if user.check_password(password):
+            if user and user.check_password(password):
                 return user
 
         if phone_number:
             user = User.objects.filter(
                 phone_number=phone_number
             ).first()
-            if user.check_password(password):
+            if user and user.check_password(password):
                 return user
 
         return None

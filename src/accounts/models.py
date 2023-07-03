@@ -86,6 +86,7 @@ class User(AbstractUser):
     city_town_name = models.CharField(max_length=150, null=True, blank=True, default=None)
     state_name = models.CharField(max_length=150, null=True, blank=True, default=None)
     country = models.CharField(max_length=150, null=True, blank=True, default=None)
+
     pin_code = models.PositiveIntegerField(null=True, blank=True, default=None)
     shop_name = models.CharField(max_length=150, null=True, blank=True, default=None)
     gst_number = models.PositiveIntegerField(null=True, blank=True, default=None)

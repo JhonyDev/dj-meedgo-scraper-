@@ -15,7 +15,7 @@ class UserGeneralSerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     is_documentation_complete = serializers.SerializerMethodField('get_documentation')
-    is_profile = serializers.SerializerMethodField('get_profile')
+    is_profile_complete = serializers.SerializerMethodField('get_profile')
 
     def get_documentation(self, obj):
         return LicenseEntry.objects.filter(user=obj).exists() \
