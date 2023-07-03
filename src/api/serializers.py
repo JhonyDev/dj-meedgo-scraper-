@@ -1,4 +1,4 @@
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from rest_framework import serializers
 
 from src.accounts.models import User, LicenseEntry
@@ -271,6 +271,13 @@ class AlternateMedicineSerializer(serializers.Serializer):
 class ConversationHistoryListSerializer(serializers.ModelSerializer):
     target_user = UserGeneralSerializer()
     last_message = serializers.SerializerMethodField('get_last_message')
+    is_completed = serializers.SerializerMethodField('get_is_completed')
+
+    def get_is_completed(self, q):
+        order_request = GrabUserBridge.objects.filter(
+            Q(order_request__user=q.sending_user) | Q(order_request__user=q.receiving_user)).filter(
+            Q(user=q.sending_user) | Q(user=q.receiving_user)).exclude(order_request__order_status='Completed')
+        return order_request.exists()
 
     def get_last_message(self, q):
         last_message = Message.objects.filter(conversation_history=q).order_by('-pk').first()
