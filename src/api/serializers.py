@@ -285,7 +285,7 @@ class ConversationHistoryListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ConversationHistory
-        fields = ['pk', 'target_user', 'last_message']
+        fields = ['pk', 'target_user', 'last_message', 'is_completed']
 
 
 class ConversationHistoryCreateSerializer(serializers.ModelSerializer):
