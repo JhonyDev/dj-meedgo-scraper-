@@ -457,8 +457,8 @@ class InitiatePaymentView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, *args, **kwargs):
-        order_id = 'ORDERID_' + str(int(time.time()))[5]
-        cust_id = 'CUST_' + str(int(time.time()))[3]
+        order_id = 'ORDERID_' + str(int(time.time()))
+        cust_id = 'CUST_' + str(int(time.time()))
         txn_amount = '1.00'
         import requests
         import json
