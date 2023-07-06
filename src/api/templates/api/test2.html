@@ -3,64 +3,90 @@
 <head>
     <title>Facebook Login JavaScript Example</title>
     <meta charset="UTF-8">
+    <script type="application/javascript"
+            src="https://securegw.paytm.in/merchantpgpui/checkoutjs/merchants/QlrInG17260337389232.js"></script>
+
 </head>
 <body>
 <script>
+    // Create an XMLHttpRequest object
+    const xhr = new XMLHttpRequest();
 
-    function statusChangeCallback(response) {  // Called with the results from FB.getLoginStatus().
-        console.log('statusChangeCallback');
-        console.log(response);                   // The current login status of the person.
-        if (response.status === 'connected') {   // Logged into your webpage and Facebook.
-            testAPI();
-        } else {                                 // Not logged into your webpage or we are unable to tell.
-            document.getElementById('status').innerHTML = 'Please log ' +
-                'into this webpage.';
+    // Define the API endpoint URL
+    const url = '/api/initiate-payment/';
+
+    // Set the HTTP method and URL
+    xhr.open('GET', url, true);
+
+    // Set the response type to JSON
+    xhr.responseType = 'json';
+
+    // Handle the response
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            const response = xhr.response;
+
+            // Extract the txnToken, order_id, and amount from the response
+            const txnToken = response.body.txnToken;
+            const order_id = response.order_id;
+            const amount = response.amount;
+            console.log('txnToken:', txnToken);
+            console.log('order_id:', order_id);
+            console.log('amount:', amount);
+            onScriptLoad(txnToken, order_id, amount)
+        } else {
+            console.error('Request failed. Status:', xhr.status);
         }
-    }
-
-
-    function checkLoginState() {               // Called when a person is finished with the Login Button.
-        FB.getLoginStatus(function (response) {   // See the onlogin handler
-            statusChangeCallback(response);
-        });
-    }
-
-
-    window.fbAsyncInit = function () {
-        FB.init({
-            appId: '293664706340117',
-            cookie: true,                     // Enable cookies to allow the server to access the session.
-            xfbml: true,                     // Parse social plugins on this webpage.
-            version: 'v17.0'           // Use this Graph API version for this call.
-        });
-
-
-        FB.getLoginStatus(function (response) {   // Called after the JS SDK has been initialized.
-            statusChangeCallback(response);        // Returns the login status.
-        });
     };
 
-    function testAPI() {                      // Testing Graph API after login.  See statusChangeCallback() for when this call is made.
-        console.log('Welcome!  Fetching your information.... ');
-        FB.api('/me', function (response) {
-            console.log('Successful login for: ' + response.name);
-            document.getElementById('status').innerHTML =
-                'Thanks for logging in, ' + response.name + '!';
-        });
-    }
+    // Handle network errors
+    xhr.onerror = function () {
+        console.error('Network error occurred');
+    };
 
+    // Send the request
+    xhr.send();
+
+    function onScriptLoad(txnToken, orderId, amount) {
+        var config = {
+            "root": "",
+            "flow": "DEFAULT",
+            "merchant": {
+                "name": "MEEDGO",
+                "logo": "https://business.paytm.com/demo//static/images/merchant-logo.png?v=1.4"
+            },
+            "style": {
+                "headerBackgroundColor": "#8dd8ff",
+                "headerColor": "#3f3f40"
+            },
+            "data": {
+                "orderId": orderId,
+                "token": txnToken,
+                "tokenType": "TXN_TOKEN",
+                "amount": amount
+            },
+            "handler": {
+                "notifyMerchant": function (eventName, data) {
+                    if (eventName == 'SESSION_EXPIRED') {
+                        alert("Your session has expired!!");
+                        location.reload();
+                    }
+                }
+            }
+        };
+
+        if (window.Paytm && window.Paytm.CheckoutJS) {
+            // initialze configuration using init method
+            window.Paytm.CheckoutJS.init(config).then(function onSuccess() {
+                console.log('Before JS Checkout invoke');
+                // after successfully update configuration invoke checkoutjs
+                window.Paytm.CheckoutJS.invoke();
+            }).catch(function onError(error) {
+                console.log("Error => ", error);
+            });
+        }
+    }
 </script>
 
-
-<!-- The JS SDK Login Button -->
-
-<fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-</fb:login-button>
-
-<div id="status">
-</div>
-
-<!-- Load the JS SDK asynchronously -->
-<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
 </body>
 </html>

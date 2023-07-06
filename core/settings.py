@@ -61,9 +61,9 @@ GOOGLE_CLIENT_SECRET = "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"
 # PAYTM_SECRET_KEY = 'kbzk1DSbJiV_03p5'
 # PAYTM_WEBSITE = 'WEBSTAGING'  # Replace with 'DEFAULT' for production
 
-PAYTM_MERCHANT_ID = 'KdrBel67166523599721'
-PAYTM_SECRET_KEY = 'QdE9x0og5gT@IEwj'
-PAYTM_WEBSITE = 'WEBSTAGING'  # Replace with 'DEFAULT' for production
+PAYTM_MERCHANT_ID = 'QlrInG17260337389232'
+PAYTM_MERCHANT_KEY = 'jnJg0c7Rbvv13w@t'
+PAYTM_WEBSITE = 'WEB'  # Replace with 'DEFAULT' for production
 if SERVER:
     SITE_ID = 4
     GOOGLE_CALLBACK_ADDRESS = "https://app.meedgo.com/auth/google-callback/"

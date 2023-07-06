@@ -2,7 +2,6 @@ import time
 
 from django.conf import settings
 from django.db.models import Sum, Q, F, OuterRef, Subquery
-from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -12,10 +11,10 @@ from rest_framework.filters import SearchFilter
 from rest_framework.generics import get_object_or_404, ListAPIView, CreateAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from core.consumers import send_message_to_group
 from core.settings import PHARM_EASY, NET_MEDS, ONE_MG, FIRST_MESSAGE_WHEN_ORDER_ACCEPTED
-from . import Checksum
 from .bll import add_medicine_to_card
 from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge, ConversationHistory, \
     Message, UserRating
@@ -25,7 +24,7 @@ from .serializers import MedicineSerializer, MedicineToCartSerializer, \
     MedicineOfferUpdateSerializer, LocalityOrderRequestListSerializer, \
     ConversationHistoryListSerializer, ConversationHistoryCreateSerializer, MessageCreateSerializer, \
     MessageListSerializer, UserRatingListSerializer, UserRatingCreateSerializer, OrderRequestUpdateSerializer, \
-    PaymentSerializer, PaymentResponseSerializer
+    PaymentResponseSerializer
 from .tasks import update_medicine_pharmeasy, update_medicine, \
     update_medicine_1mg, scrape_pharmeasy
 from .utils import get_platform_dict, balance_medicines, get_similarity_queryset
@@ -453,37 +452,97 @@ class UserRatingListView(ListAPIView):
         return UserRating.objects.filter(pharmacist=self.request.user).order_by('-pk')
 
 
-MERCHANT_KEY = settings.PAYTM_SECRET_KEY
-
-
-class InitiatePaymentView(CreateAPIView):
-    serializer_class = PaymentSerializer
+class InitiatePaymentView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.AllowAny]
 
-    def create(self, request, *args, **kwargs):
-        serializer = PaymentSerializer(data=request.data)
-        if not serializer.is_valid():
-            return JsonResponse({'error': 'Amount is not valid'})
-
-        amount = serializer.validated_data['amount']
-
-        order_id = 'order-' + str(request.user.id) + '-' + str(int(time.time()))
-
-        paytmParams = {
-            "MID": settings.PAYTM_MERCHANT_ID,
-            "WEBSITE": settings.PAYTM_WEBSITE,
-            "ORDER_ID": order_id,
-            'INDUSTRY_TYPE_ID': 'Retail',
-            "CUST_ID": 'cust-' + str(request.user.id),
-            'CHANNEL_ID': 'WEB',
-            "TXN_AMOUNT": str(amount),
-            "CALLBACK_URL": settings.PAYTM_CALLBACK_URL,
+    def get(self, request, *args, **kwargs):
+        order_id = 'ORDERID_' + str(int(time.time()))[5]
+        cust_id = 'CUST_' + str(int(time.time()))[3]
+        txn_amount = '1.00'
+        import requests
+        import json
+        import paytmchecksum.PaytmChecksum as PaytmChecksum
+        paytm_params = dict()
+        paytm_params["body"] = {
+            "requestType": "Payment",
+            "mid": settings.PAYTM_MERCHANT_ID,
+            "websiteName": "MEEDGO",
+            "orderId": order_id,
+            "callbackUrl": settings.PAYTM_CALLBACK_URL,
+            "txnAmount": {
+                "value": txn_amount,
+                "currency": "INR",
+            },
+            "userInfo": {
+                "custId": cust_id,
+            },
         }
-        checksum = Checksum.generate_checksum(paytmParams, MERCHANT_KEY)
-        paytmParams['CHECKSUMHASH'] = checksum
-        print(checksum)
-        return Response(paytmParams, status=status.HTTP_201_CREATED)
+        checksum = PaytmChecksum.generateSignature(json.dumps(paytm_params["body"]), settings.PAYTM_MERCHANT_KEY)
+        paytm_params["head"] = {
+            "signature": checksum
+        }
+        post_data = json.dumps(paytm_params)
+        url = f"https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid={settings.PAYTM_MERCHANT_ID}&orderId={order_id}"
+        response = requests.post(url, data=post_data, headers={"Content-type": "application/json"}).json()
+        response['order_id'] = order_id
+        response['amount'] = txn_amount
+        return Response(response, status=status.HTTP_200_OK)
+
+    # def create(self, request, *args, **kwargs):
+    #     serializer = PaymentSerializer(data=request.data)
+    #     if not serializer.is_valid():
+    #         return JsonResponse({'error': 'Amount is not valid'})
+    #
+    #     amount = serializer.validated_data['amount']
+    #
+    #     order_id = 'ORDERID_'+ str(int(time.time()))[5]
+    #     cust_id = 'CUST_' + str(int(time.time()))[3]
+    #     import requests
+    #     import json
+    #
+    #     # import checksum generation utility
+    #     # You can get this utility from https://developer.paytm.com/docs/checksum/
+    #     import paytmchecksum.PaytmChecksum as PaytmChecksum
+    #
+    #     paytmParams = dict()
+    #
+    #     paytmParams["body"] = {
+    #         "requestType": "Payment",
+    #         "mid": settings.PAYTM_MERCHANT_ID,
+    #         "websiteName": "MEEDGO",
+    #         "orderId": order_id,
+    #         "callbackUrl": settings.PAYTM_CALLBACK_URL,
+    #         "txnAmount": {
+    #             "value": "1.00",
+    #             "currency": "INR",
+    #         },
+    #         "userInfo": {
+    #             "custId": cust_id,
+    #         },
+    #     }
+    #
+    #     # Generate checksum by parameters we have in body
+    #     # Find your Merchant Key in your Paytm Dashboard at https://dashboard.paytm.com/next/apikeys
+    #     checksum = PaytmChecksum.generateSignature(json.dumps(paytmParams["body"]), settings.PAYTM_MERCHANT_KEY)
+    #
+    #     paytmParams["head"] = {
+    #         "signature": checksum
+    #     }
+    #
+    #     post_data = json.dumps(paytmParams)
+    #
+    #     # for Staging
+    #     # url = "https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid=YOUR_MID_HERE&orderId=ORDERID_98765"
+    #
+    #     # for Production
+    #     url = f"https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid={settings.PAYTM_MERCHANT_ID}&orderId={order_id}"
+    #     response = requests.post(url, data=post_data, headers={"Content-type": "application/json"}).json()
+    #     print(response)
+    #     response['order_id'] = order_id
+    #     response['amount'] = order_id
+    #     return Response(response, status=status.HTTP_201_CREATED)
+    #
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -506,7 +565,7 @@ class CallbackView(CreateAPIView):
         # print(paytmParams)
         # print(paytmChecksum)
         try:
-            isValidChecksum = PaytmChecksum.verifySignature(paytmParams, MERCHANT_KEY, paytmChecksum)
+            isValidChecksum = PaytmChecksum.verifySignature(paytmParams, settings.PAYTM_MERCHANT_KEY, paytmChecksum)
         except Exception as e:
             print(f"Exception handled - {str(e)}")
             isValidChecksum = False
