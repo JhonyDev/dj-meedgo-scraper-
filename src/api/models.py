@@ -49,6 +49,7 @@ class MedicineCart(models.Model):
 
 class OrderRequest(models.Model):
     STATUS = (
+        ('Cancelled', 'Cancelled'),
         ('Pending', 'Pending'),
         ('Picked', 'Picked'),
         ('Dispatched', 'Dispatched'),
