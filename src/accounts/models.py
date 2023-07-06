@@ -83,6 +83,7 @@ class User(AbstractUser):
     """BUSINESS ADDRESS DETAILS"""
     address_line_1 = models.CharField(max_length=150, null=True, blank=True, default=None)
     address_line_2 = models.CharField(max_length=150, null=True, blank=True, default=None)
+    geo_address = models.CharField(max_length=150, null=True, blank=True, default=None)
     city_town_name = models.CharField(max_length=150, null=True, blank=True, default=None)
     state_name = models.CharField(max_length=150, null=True, blank=True, default=None)
     country = models.CharField(max_length=150, null=True, blank=True, default=None)

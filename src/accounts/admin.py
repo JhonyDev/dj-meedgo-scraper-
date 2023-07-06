@@ -32,12 +32,13 @@ class CustomerUserAdmin(admin.ModelAdmin):
         (None, {'fields': ('username', 'password')}),
         (_('Personal info'),
          {'fields': (
-             'full_name', 'email', 'phone_number', 'postal_code', 'profile_image', 'pan_card_image', 'latitude',
-             'longitude',
+             'full_name', 'email', 'phone_number', 'postal_code', 'profile_image', 'pan_card_image',
              'store_photo')}),
         (_('Bio'), {
             'fields': (
-
+                'latitude',
+                'longitude',
+                'geo_address',
             )
         }),
         (_('Important dates'), {'fields': ('last_login', 'date_joined',)}),
