@@ -175,6 +175,8 @@ class AutoCompleteView(generics.ListAPIView):
         ).annotate(
             platform_count=Count('platform')
         )
+        for med in medicines:
+            print(med.platform_count)
         return medicines.order_by('platform_count')
 
 
