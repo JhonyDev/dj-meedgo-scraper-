@@ -174,10 +174,7 @@ class AutoCompleteView(generics.ListAPIView):
             platform__in=LIST_PLATFORMS
         ).annotate(
             platform_count=Count('platform')
-        ).filter(platform_count=4).values_list('pk', flat=True)
-        medicines = Medicine.objects.filter(pk__in=medicines).order_by('name', 'salt_name').distinct(
-            'name', 'salt_name')
-
+        ).filter(platform_count=4)
         return medicines.order_by('price')
 
 
