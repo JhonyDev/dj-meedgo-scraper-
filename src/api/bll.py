@@ -65,7 +65,7 @@ def add_medicine_to_card(self, request):
             print(f'{"-" * 15} Medicines - {platform_medicines}')
             query_set = get_similarity_queryset(
                 platform_medicines, medicine.name, medicine.salt_name, True)
-
+            print(f'{"-" * 15} Similar Found - {query_set}')
             if not query_set.exists():
                 missing_count += 1
             else:
