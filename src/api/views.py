@@ -15,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.consumers import send_message_to_group
-from core.settings import PHARM_EASY, NET_MEDS, ONE_MG, FIRST_MESSAGE_WHEN_ORDER_ACCEPTED, LIST_PLATFORMS
+from core.settings import PHARM_EASY, NET_MEDS, ONE_MG, FIRST_MESSAGE_WHEN_ORDER_ACCEPTED
 from .bll import add_medicine_to_card
 from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge, ConversationHistory, \
     Message, UserRating
@@ -168,10 +168,10 @@ class AutoCompleteView(generics.ListAPIView):
             price=None, discounted_price=None)
         if param is None:
             return orig_queryset.order_by('name', 'salt_name').distinct(
-            'name', 'salt_name')
+                'name', 'salt_name')
 
         medicines = orig_queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param)).filter(
-            platform__in=LIST_PLATFORMS
+            platform__in=['1', '2', '3', '4']
         ).annotate(
             platform_count=Count('platform')
         ).filter(platform_count=4)
