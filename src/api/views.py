@@ -189,7 +189,7 @@ class MedicineSearchView(generics.ListAPIView):
                 continue
             new_list.append(x.id)
             added_medicines.append(f'{x.name}-{x.salt_name}')
-            if len(new_list) >= 20:
+            if len(new_list) >= 10:
                 break
         queryset = Medicine.objects.filter(pk__in=new_list)
         if param and not queryset:
