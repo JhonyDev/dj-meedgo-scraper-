@@ -180,6 +180,7 @@ class MedicineSearchView(generics.ListAPIView):
                 tie_breaker=0.5
             )
         )
+        search = search.filter('terms', id=list(orig_queryset.values_list('id', flat=True)))
         results = search.execute()
         results = [x.id for x in results.hits]
         queryset = Medicine.objects.filter(pk__in=results)
