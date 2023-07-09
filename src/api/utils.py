@@ -64,21 +64,22 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
 
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import MultiMatch
+    print(salt_name)
     search = Search(index='medicine')
     search = search.query(
         MultiMatch(
             query=salt_name,
-            fields=['salt_name'],
+            fields=['name', 'salt_name'],
             fuzziness='AUTO',
             prefix_length=2,
             max_expansions=100,
-            tie_breaker=1.0
+            tie_breaker=0.0
         )
     )
     results = search.execute()
-    results = [x.id for x in results.hits[:1]]
+    results = [x.id for x in results.hits[:5]]
     queryset = queryset.filter(pk__in=results)
-
+    print(queryset)
     return queryset
 
 
