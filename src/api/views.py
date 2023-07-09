@@ -164,7 +164,9 @@ class MedicineSearchView(generics.ListAPIView):
 
     def get_queryset(self):
         param = self.request.query_params.get('search')
-        orig_queryset = Medicine.objects.exclude(price=None, discounted_price=None)
+        orig_queryset = Medicine.objects.exclude(
+            price=None, discounted_price=None).order_by('name', 'salt_name').distinct(
+            'name', 'salt_name')
         if param is None:
             return orig_queryset
         search = Search(index='medicine')
@@ -175,11 +177,11 @@ class MedicineSearchView(generics.ListAPIView):
                 fuzziness='AUTO',
                 prefix_length=2,
                 max_expansions=100,
-                tie_breaker=1.0
+                tie_breaker=0.5
             )
         )
         results = search.execute()
-        results = [x.id for x in results.hits[:20]]
+        results = [x.id for x in results.hits]
         queryset = Medicine.objects.filter(pk__in=results)
         if param and not queryset:
             med_list = scrape_pharmeasy(param)
