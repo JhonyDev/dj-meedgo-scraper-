@@ -76,6 +76,7 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
             tie_breaker=0.5
         )
     )
+    search = search[:500]
     results = search.execute()
     print(results.hits)
     new_list = []
