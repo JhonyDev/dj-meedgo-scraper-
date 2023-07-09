@@ -165,8 +165,7 @@ class AutoCompleteView(generics.ListAPIView):
     def get_queryset(self):
         param = self.request.query_params.get('search')
         orig_queryset = Medicine.objects.exclude(
-            price=None, discounted_price=None).order_by('name', 'salt_name').distinct(
-            'name', 'salt_name')
+            price=None, discounted_price=None)
         if param is None:
             return orig_queryset
 
@@ -174,7 +173,8 @@ class AutoCompleteView(generics.ListAPIView):
             platform__in=LIST_PLATFORMS
         ).annotate(
             platform_count=Count('platform')
-        ).filter(platform_count=4)
+        ).filter(platform_count=4).order_by('name', 'salt_name').distinct(
+            'name', 'salt_name')
 
         return medicines.order_by('price')
 
