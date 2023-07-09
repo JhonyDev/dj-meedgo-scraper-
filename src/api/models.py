@@ -26,7 +26,7 @@ class Medicine(models.Model):
         return dict(PLATFORMS).get(self.platform)
 
     def __str__(self):
-        return str(self.name)
+        return f'{self.name} - {self.salt_name}'
 
     class Meta:
         ordering = ['-last_updated']
