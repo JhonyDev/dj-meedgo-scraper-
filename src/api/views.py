@@ -172,7 +172,7 @@ class AutoCompleteView(generics.ListAPIView):
 
         orig_queryset = orig_queryset.filter(
             Q(name__icontains=param) | Q(salt_name__icontains=param)).order_by('name', 'salt_name').distinct(
-                'name', 'salt_name')
+            'name', 'salt_name')
         return orig_queryset.order_by('price')
 
 
@@ -295,6 +295,7 @@ class OrderRequestsView(generics.ListCreateAPIView):
             'chemist_id': instance.user.pk
         }
         try:
+            print("Sending message")
             send_message_to_group(f'{self.request.user.postal_code}', order_request)
         except Exception as e:
             print(

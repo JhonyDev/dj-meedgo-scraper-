@@ -86,7 +86,6 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     for x in results.hits:
         new_list.append(x.id)
     queryset = queryset.filter(pk__in=new_list)
-
     return queryset
 
 
