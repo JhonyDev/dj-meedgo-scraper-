@@ -67,8 +67,8 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     search = Search(index='medicine')
     search = search.query(
         MultiMatch(
-            query=param1 + ' ' + salt_name,
-            fields=['name', 'salt_name'],
+            query=salt_name,
+            fields=['salt_name'],
             fuzziness='AUTO',
             prefix_length=2,
             max_expansions=100,
