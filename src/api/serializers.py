@@ -2,7 +2,7 @@ from django.db.models import Sum, Q
 from rest_framework import serializers
 
 from src.accounts.models import User, LicenseEntry
-from src.api.utils import get_average_rating
+from src.api.utils import get_average_rating, get_similarity_queryset
 from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge, MedicineCartBridge, \
     ConversationHistory, Message, UserRating
 
@@ -211,20 +211,28 @@ class GrabbedOrderRequestsListSerializer(serializers.ModelSerializer):
         from src.api.utils import get_platform_dict
         platforms_list = []
         for platform in LIST_PLATFORMS:
-            platform_medicines = Medicine.objects.filter(platform=get_platform_dict()[platform])
             missing_count = 0
             total_cost = 0
             for medicine in q.order_request.medicine_cart.medicines.all():
-                query_set = platform_medicines.filter(
-                    name=medicine.name, salt_name=medicine.salt_name, dosage=medicine.dosage)
+                print(f'{"=" * 15} CHECKING FOR {medicine.name} - {medicine.salt_name} {"=" * 15}')
+                print(f'{"-" * 15} PLATFORM - {platform}')
+                platform_medicines = Medicine.objects.filter(
+                    platform=get_platform_dict()[platform], price=medicine.price)
+                print(f'{"-" * 15} Platform - {get_platform_dict()[platform]}')
+                print(f'{"-" * 15} Medicine Price - {medicine.price}')
+                print(f'{"-" * 15} Medicines - {platform_medicines}')
+                query_set = get_similarity_queryset(
+                    platform_medicines, medicine.name, medicine.salt_name, True)
+                print(f'{"-" * 15} Similar Found - {query_set}')
                 if not query_set.exists():
                     missing_count += 1
                 else:
-                    total_cost += query_set.first().price or 0
+                    total_cost += query_set.first().discounted_price or query_set.first().price or 0
+
             platforms_list.append({
                 'platform': platform,
-                'total_cost': total_cost,
-                'status': f'{missing_count} products are missing'
+                'total_cost': round(total_cost, 2),
+                'status': f'{missing_count} medicines are missing'
             })
         return platforms_list
 

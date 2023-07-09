@@ -58,7 +58,6 @@ def add_medicine_to_card(self, request):
         for medicine in cart.medicines.all():
             print(f'{"=" * 15} CHECKING FOR {medicine.name} - {medicine.salt_name} {"=" * 15}')
             print(f'{"-" * 15} PLATFORM - {platform}')
-            # query_set = platform_medicines.filter(salt_name__icontains=medicine.salt_name)
             platform_medicines = Medicine.objects.filter(platform=get_platform_dict()[platform], price=medicine.price)
             print(f'{"-" * 15} Platform - {get_platform_dict()[platform]}')
             print(f'{"-" * 15} Medicine Price - {medicine.price}')

@@ -27,7 +27,6 @@ def balance_medicines(instance):
 
 
 def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
-    print("/" * 100)
     # from fuzzywuzzy import fuzz
     #
     # similar_words = queryset.order_by(
@@ -87,6 +86,8 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     print(new_list)
     queryset = queryset.filter(pk__in=new_list)
     print(queryset)
+    print("/" * 100)
+
     return queryset
 
 
