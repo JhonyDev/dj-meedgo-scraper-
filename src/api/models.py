@@ -16,11 +16,13 @@ class Medicine(models.Model):
     med_url = models.URLField(null=True, blank=True, default=None, unique=True)
     is_available = models.BooleanField(default=True)
     last_updated = models.DateTimeField(default=None, null=True, blank=True)
+    med_count = models.PositiveIntegerField(default=None, null=True, blank=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if not self.price:
             self.price = self.discounted_price
+        self.med_count = 0
 
     def get_platform(self):
         return dict(PLATFORMS).get(self.platform)

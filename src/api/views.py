@@ -1,7 +1,7 @@
 import time
 
 from django.conf import settings
-from django.db.models import Sum, Q, F, OuterRef, Subquery, Count
+from django.db.models import Sum, Q, F, OuterRef, Subquery
 from django.shortcuts import redirect, render
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -170,14 +170,10 @@ class AutoCompleteView(generics.ListAPIView):
             return orig_queryset.order_by('name', 'salt_name').distinct(
                 'name', 'salt_name')
 
-        medicines = orig_queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param)).filter(
-            platform__in=['1', '2', '3', '4']
-        ).annotate(
-            platform_count=Count('platform')
-        )
-        for med in medicines:
-            print(med.platform_count)
-        return medicines.order_by('platform_count')
+        orig_queryset = orig_queryset.filter(
+            Q(name__icontains=param) | Q(salt_name__icontains=param)).order_by('name', 'salt_name').distinct(
+                'name', 'salt_name')
+        return orig_queryset.order_by('price')
 
 
 class MedicineSearchView(generics.ListAPIView):

@@ -63,7 +63,6 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
 
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import MultiMatch
-    print(salt_name)
     search = Search(index='medicine')
     search = search.query(
         MultiMatch(
@@ -77,16 +76,10 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
     )
     search = search.filter('terms', id=list(queryset.values_list('id', flat=True)))
     results = search.execute()
-    print(results.hits)
     new_list = []
     for x in results.hits:
-        print(x)
-        print(x.id)
         new_list.append(x.id)
-    print(new_list)
     queryset = queryset.filter(pk__in=new_list)
-    print(queryset)
-    print("/" * 100)
 
     return queryset
 
