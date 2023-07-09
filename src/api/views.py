@@ -391,8 +391,10 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = serializer.save()
         if instance.is_active:
             data = GrabbedOrderRequestsListSerializer(instance).data
+            print("*" * 100)
+            print(data)
+            print("*" * 100)
             send_message_to_group(f'order-request-{instance.order_request.pk}', data)
-
         if instance.is_accepted:
             chemist = instance.user
             instance.order_request.status = 'Picked'
