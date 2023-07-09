@@ -180,10 +180,18 @@ class MedicineSearchView(generics.ListAPIView):
                 tie_breaker=0.5
             )
         )
-        search = search.filter('terms', id=list(orig_queryset.values_list('id', flat=True)))
+        search = search[:50]
         results = search.execute()
-        results = [x.id for x in results.hits]
-        queryset = Medicine.objects.filter(pk__in=results)
+        new_list = []
+        added_medicines = []
+        for x in results.hits:
+            if f'{x.name}-{x.salt_name}' in added_medicines:
+                continue
+            new_list.append(x.id)
+            added_medicines.append(f'{x.name}-{x.salt_name}')
+            if len(new_list) >= 20:
+                break
+        queryset = Medicine.objects.filter(pk__in=new_list)
         if param and not queryset:
             med_list = scrape_pharmeasy(param)
             queryset = Medicine.objects.filter(pk__in=med_list)
