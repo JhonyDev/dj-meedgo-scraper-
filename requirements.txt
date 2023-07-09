@@ -46,3 +46,5 @@ ipython-genutils==0.1.0
 pexpect==4.2.1
 backports.shutil-get-terminal-size==1.0.0
 enum34==1.1.6
+django_elasticsearch_dsl
+django_elasticsearch_dsl_drf
