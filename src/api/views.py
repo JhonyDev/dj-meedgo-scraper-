@@ -1,7 +1,7 @@
 import time
 
 from django.conf import settings
-from django.db.models import Sum, Q, F, OuterRef, Subquery
+from django.db.models import Sum, Q, F, OuterRef, Subquery, Count
 from django.shortcuts import redirect, render
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -15,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.consumers import send_message_to_group
-from core.settings import PHARM_EASY, NET_MEDS, ONE_MG, FIRST_MESSAGE_WHEN_ORDER_ACCEPTED
+from core.settings import PHARM_EASY, NET_MEDS, ONE_MG, FIRST_MESSAGE_WHEN_ORDER_ACCEPTED, LIST_PLATFORMS
 from .bll import add_medicine_to_card
 from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge, ConversationHistory, \
     Message, UserRating
@@ -151,6 +151,32 @@ class UserRatingViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return UserRating.objects.filter(given_by=self.request.user)
+
+
+class AutoCompleteView(generics.ListAPIView):
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = [JWTAuthentication]
+    queryset = Medicine.objects.all()
+    pagination_class = PageNumberPagination
+    pagination_class.page_size = 10
+    filter_backends = [SearchFilter]
+    serializer_class = MedicineSerializer
+
+    def get_queryset(self):
+        param = self.request.query_params.get('search')
+        orig_queryset = Medicine.objects.exclude(
+            price=None, discounted_price=None).order_by('name', 'salt_name').distinct(
+            'name', 'salt_name')
+        if param is None:
+            return orig_queryset
+
+        medicines = orig_queryset.filter(Q(name__icontains=param) | Q(salt_name__icontains=param)).filter(
+            platform__in=LIST_PLATFORMS
+        ).annotate(
+            platform_count=Count('platform')
+        ).filter(platform_count=4)
+
+        return medicines.order_by('price')
 
 
 class MedicineSearchView(generics.ListAPIView):

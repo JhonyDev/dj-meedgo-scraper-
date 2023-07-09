@@ -18,6 +18,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('my/ratings/', views.UserRatingListView.as_view()),
 
+    path('auto-complete/', views.AutoCompleteView.as_view()),
     path('search-medicine/', views.MedicineSearchView.as_view()),
     path('cart/', views.MedicineToCartView.as_view()),
     path('alternate-medicine/<int:medicine_pk>/', views.AlternateMedicineView.as_view()),
