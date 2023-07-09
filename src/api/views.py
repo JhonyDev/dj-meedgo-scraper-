@@ -174,8 +174,8 @@ class AutoCompleteView(generics.ListAPIView):
             platform__in=['1', '2', '3', '4']
         ).annotate(
             platform_count=Count('platform')
-        ).filter(platform_count=4)
-        return medicines.order_by('price')
+        )
+        return medicines.order_by('platform_count')
 
 
 class MedicineSearchView(generics.ListAPIView):
