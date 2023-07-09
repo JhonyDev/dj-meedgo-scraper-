@@ -75,7 +75,10 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
         )
     )
     search = search.filter('terms', id=list(queryset.values_list('id', flat=True)))
-    results = search.execute()
+    try:
+        results = search.execute()
+    except:
+        return Medicine.objects.none()
     new_list = []
     for x in results.hits:
         new_list.append(x.id)
