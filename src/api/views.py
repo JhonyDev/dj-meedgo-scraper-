@@ -28,7 +28,7 @@ from .serializers import MedicineSerializer, MedicineToCartSerializer, \
     PaymentResponseSerializer
 from .tasks import update_medicine_pharmeasy, update_medicine, \
     update_medicine_1mg, scrape_pharmeasy
-from .utils import get_platform_dict, balance_medicines, get_similarity_queryset
+from .utils import get_platform_dict, balance_medicines
 from ..accounts.authentication import JWTAuthentication
 
 """ADMIN-TASKS"""
@@ -99,15 +99,13 @@ def lobby(request):
             fuzziness='AUTO',
             prefix_length=2,
             max_expansions=100,
-            tie_breaker=0.3
+            tie_breaker=1.0
         )
     )
     results = search.execute()
-    for hit in results.hits:
-        print(hit.id)
-        print(hit.name)
-        print(hit.salt_name)
-        print('==' * 100)
+    results = [x.id for x in results.hits[:15]]
+    medicines = Medicine.objects.filter(pk__in=results)
+    print(medicines)
 
     return render(request, 'api/lobby.html')
 
@@ -169,25 +167,23 @@ class MedicineSearchView(generics.ListAPIView):
         orig_queryset = Medicine.objects.exclude(price=None, discounted_price=None)
         if param is None:
             return orig_queryset
-        queryset = orig_queryset.filter(Q(name__search=param) | Q(salt_name__search=param))
-        # scrape_flipkart.delay(param)
-        # scrape_netmeds.delay(param)
-        # scrape_pharmeasy.delay(param)
-        # scrape_1mg.delay(param)
-        # queryset = param_contains_name.union(param_contains_salt, all=True).union(queryset, all=True)
-        # for med in queryset:
-        #     if not med.salt_name and med.med_url:
-        #         if med.platform == get_platform_dict()[PHARM_EASY]:
-        #             update_medicine_pharmeasy.delay(med.pk)
-        #         if med.platform == get_platform_dict()[NET_MEDS]:
-        #             update_medicine.delay(med.pk)
-        #         if med.platform == get_platform_dict()[ONE_MG]:
-        #             update_medicine_1mg.delay(med.pk)
+        search = Search(index='medicine')
+        search = search.query(
+            MultiMatch(
+                query=param,
+                fields=['salt_name', 'name'],
+                fuzziness='AUTO',
+                prefix_length=2,
+                max_expansions=100,
+                tie_breaker=1.0
+            )
+        )
+        results = search.execute()
+        results = [x.id for x in results.hits[:20]]
+        queryset = Medicine.objects.filter(pk__in=results)
         if param and not queryset:
-            queryset = get_similarity_queryset(orig_queryset, param)
-            if not queryset:
-                med_list = scrape_pharmeasy(param)
-                queryset = Medicine.objects.filter(pk__in=med_list)
+            med_list = scrape_pharmeasy(param)
+            queryset = Medicine.objects.filter(pk__in=med_list)
         return queryset.order_by('price')
 
 
