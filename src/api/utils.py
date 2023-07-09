@@ -85,7 +85,7 @@ def get_similarity_queryset(queryset, param1, salt_name=None, is_salt=False):
         print(x.id)
         new_list.append(x.id)
     print(new_list)
-    queryset = Medicine.objects.filter(pk__in=new_list)
+    queryset = queryset.filter(pk__in=new_list)
     print(queryset)
     return queryset
 
