@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
+import logging
 
 import environ
 
@@ -107,6 +108,9 @@ INSTALLED_APPS = [
     'django_celery_results',
     'celery_progress',
 
+    'django_elasticsearch_dsl',
+    'django_elasticsearch_dsl_drf',
+
     'rest_framework',
     'rest_framework.authtoken',
 
@@ -128,6 +132,11 @@ INSTALLED_APPS = [
 ]
 SWAGGER_SETTINGS = {
     'DEFAULT_INFO': 'core.urls.swagger_info',
+}
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'localhost:9200',  # Replace with your Elasticsearch server details
+    },
 }
 
 """ MIDDLE WARES ----------------------------------------------------------------------------"""
@@ -342,3 +351,8 @@ accept_content = ['application/json']
 task_serializer = 'json'
 result_serializer = 'json'
 timezone = 'Asia/Karachi'
+
+
+logger = logging.getLogger('elasticsearch')
+logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.DEBUG)

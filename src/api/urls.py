@@ -10,6 +10,11 @@ router.register(r'rating', UserRatingViewSet)
 
 urlpatterns = [
 
+    # Test API VIEW
+    path('', views.lobby),
+    path('payment-test/', views.test),
+
+    # API VIEW
     path('', include(router.urls)),
     path('my/ratings/', views.UserRatingListView.as_view()),
 
@@ -33,9 +38,5 @@ urlpatterns = [
     # ADMIN PANEL SCRAPE TASK
     path('run-task/<int:object_id>/', views.custom_method_view, name='object-celery'),
     path('run-task/<int:object_id>/all/', views.custom_method_all_view, name='object-celery-all'),
-
-    # Test API VIEW
-    path('', views.lobby),
-    path('payment-test/', views.test),
 
 ]

@@ -5,6 +5,7 @@ from django.db.models import Sum, Q, F, OuterRef, Subquery
 from django.shortcuts import redirect, render
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from elasticsearch_dsl.query import MultiMatch
 from paytmchecksum import PaytmChecksum
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.filters import SearchFilter
@@ -85,8 +86,29 @@ def custom_method_all_view(request, object_id):
     return redirect('admin:api_medicine_change', object_id)
 
 
+from django_elasticsearch_dsl.search import Search
+
+
 def lobby(request):
     Medicine.objects.filter(salt_name=None, price=None, discounted_price=None, name='').delete()
+    search = Search(index='medicine')
+    search = search.query(
+        MultiMatch(
+            query='Panpotrazole (40mg)',
+            fields=['salt_name', 'name'],
+            fuzziness='AUTO',
+            prefix_length=2,
+            max_expansions=100,
+            tie_breaker=0.3
+        )
+    )
+    results = search.execute()
+    for hit in results.hits:
+        print(hit.id)
+        print(hit.name)
+        print(hit.salt_name)
+        print('==' * 100)
+
     return render(request, 'api/lobby.html')
 
 
@@ -488,61 +510,6 @@ class InitiatePaymentView(APIView):
         response['order_id'] = order_id
         response['amount'] = txn_amount
         return Response(response, status=status.HTTP_200_OK)
-
-    # def create(self, request, *args, **kwargs):
-    #     serializer = PaymentSerializer(data=request.data)
-    #     if not serializer.is_valid():
-    #         return JsonResponse({'error': 'Amount is not valid'})
-    #
-    #     amount = serializer.validated_data['amount']
-    #
-    #     order_id = 'ORDERID_'+ str(int(time.time()))[5]
-    #     cust_id = 'CUST_' + str(int(time.time()))[3]
-    #     import requests
-    #     import json
-    #
-    #     # import checksum generation utility
-    #     # You can get this utility from https://developer.paytm.com/docs/checksum/
-    #     import paytmchecksum.PaytmChecksum as PaytmChecksum
-    #
-    #     paytmParams = dict()
-    #
-    #     paytmParams["body"] = {
-    #         "requestType": "Payment",
-    #         "mid": settings.PAYTM_MERCHANT_ID,
-    #         "websiteName": "MEEDGO",
-    #         "orderId": order_id,
-    #         "callbackUrl": settings.PAYTM_CALLBACK_URL,
-    #         "txnAmount": {
-    #             "value": "1.00",
-    #             "currency": "INR",
-    #         },
-    #         "userInfo": {
-    #             "custId": cust_id,
-    #         },
-    #     }
-    #
-    #     # Generate checksum by parameters we have in body
-    #     # Find your Merchant Key in your Paytm Dashboard at https://dashboard.paytm.com/next/apikeys
-    #     checksum = PaytmChecksum.generateSignature(json.dumps(paytmParams["body"]), settings.PAYTM_MERCHANT_KEY)
-    #
-    #     paytmParams["head"] = {
-    #         "signature": checksum
-    #     }
-    #
-    #     post_data = json.dumps(paytmParams)
-    #
-    #     # for Staging
-    #     # url = "https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid=YOUR_MID_HERE&orderId=ORDERID_98765"
-    #
-    #     # for Production
-    #     url = f"https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid={settings.PAYTM_MERCHANT_ID}&orderId={order_id}"
-    #     response = requests.post(url, data=post_data, headers={"Content-type": "application/json"}).json()
-    #     print(response)
-    #     response['order_id'] = order_id
-    #     response['amount'] = order_id
-    #     return Response(response, status=status.HTTP_201_CREATED)
-    #
 
 
 @method_decorator(csrf_exempt, name='dispatch')
