@@ -391,6 +391,9 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = serializer.save()
         if instance.is_active:
             data = GrabbedOrderRequestsListSerializer(instance).data
+
+
+
             print("*" * 100)
             print(data)
             print("*" * 100)
