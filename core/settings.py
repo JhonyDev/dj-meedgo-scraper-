@@ -9,10 +9,10 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
+import logging
 import os
 from datetime import timedelta
 from pathlib import Path
-import logging
 
 import environ
 
@@ -214,10 +214,20 @@ CHANNEL_LAYERS = {
 }
 
 if not SERVER:
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.sqlite3',
+    #         'NAME': BASE_DIR / 'db.sqlite3',
+    #     }
+    # }
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'Standard_B1ms',
+            'USER': 'admin22',
+            'PASSWORD': 'Twitter*222023',
+            'HOST': 'meedgodb.postgres.database.azure.com',
+            'PORT': '',
         }
     }
 
@@ -351,7 +361,6 @@ accept_content = ['application/json']
 task_serializer = 'json'
 result_serializer = 'json'
 timezone = 'Asia/Karachi'
-
 
 logger = logging.getLogger('elasticsearch')
 logger.addHandler(logging.StreamHandler())
