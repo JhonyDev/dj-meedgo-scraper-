@@ -354,7 +354,8 @@ class ActiveGrabOrdersView(generics.RetrieveAPIView):
     serializer_class = GrabbedOrderRequestsListSerializer
 
     def get_object(self):
-        return GrabUserBridge.objects.filter(order_request__user=self.request.user, is_accepted=True).first()
+        return GrabUserBridge.objects.filter(order_request__user=self.request.user, is_accepted=True).exclude(
+            order_request__order_status='Completed').first()
 
 
 class GrabOrdersView(generics.ListCreateAPIView):
@@ -381,6 +382,8 @@ class GrabOrdersView(generics.ListCreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         instance = self.perform_create(serializer)
+        instance.order_request.order_status = 'Picked'
+        instance.order_request.save()
         return Response(GrabbedOrderRequestsListSerializer(instance, many=False).data,
                         status=status.HTTP_201_CREATED)
 
@@ -417,7 +420,7 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
             send_message_to_group(f'order-request-{instance.order_request.pk}', data)
         if instance.is_accepted:
             chemist = instance.user
-            instance.order_request.status = 'Picked'
+            instance.order_request.order_status = 'Dispatched'
             instance.order_request.save()
             customer = self.request.user
             conversation_history = ConversationHistory.objects.filter(
@@ -524,7 +527,7 @@ class UserRatingListView(ListAPIView):
     serializer_class = UserRatingListSerializer
 
     def get_queryset(self):
-        return UserRating.objects.filter(pharmacist=self.request.user).order_by('-pk')
+        return UserRating.objects.filter(given_to=self.request.user).order_by('-pk')
 
 
 class InitiatePaymentView(APIView):
