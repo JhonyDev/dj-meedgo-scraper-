@@ -288,6 +288,9 @@ class OrderRequestsView(generics.ListCreateAPIView):
         instance = serializer.save()
         instance.user = self.request.user
         instance.save()
+        print(instance.pk)
+        print(instance.medicine_cart.pk)
+        print(instance.medicine_cart.medicines.all())
         order_request = {
             'total_medicines': instance.medicine_cart.medicines.all().count(),
             'total_price': instance.medicine_cart.medicines.aggregate(total=Sum('price'))['total'],
