@@ -337,8 +337,8 @@ class OrderRequestsLocalityView(generics.ListAPIView):
         # return OrderRequest.objects.filter(user__postal_code=self.request.user.postal_code)
 
 
-class OrderGrabOrdersViewSet(CreateModelMixin, ListModelMixin, RetrieveModelMixin,
-                             viewsets.GenericViewSet):
+class OrderGrabOrdersViewSet(
+    CreateModelMixin, ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     queryset = GrabUserBridge.objects.all()
@@ -346,6 +346,15 @@ class OrderGrabOrdersViewSet(CreateModelMixin, ListModelMixin, RetrieveModelMixi
 
     def get_queryset(self):
         return GrabUserBridge.objects.filter(order_request__user=self.request.user)
+
+
+class ActiveGrabOrdersView(generics.RetrieveAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = GrabbedOrderRequestsListSerializer
+
+    def get_object(self):
+        return GrabUserBridge.objects.filter(order_request__user=self.request.user, is_accepted=True).first()
 
 
 class GrabOrdersView(generics.ListCreateAPIView):
