@@ -214,22 +214,22 @@ CHANNEL_LAYERS = {
 }
 
 if not SERVER:
-    # DATABASES = {
-    #     'default': {
-    #         'ENGINE': 'django.db.backends.sqlite3',
-    #         'NAME': BASE_DIR / 'db.sqlite3',
-    #     }
-    # }
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'Standard_B1ms',
-            'USER': 'admin22',
-            'PASSWORD': 'Twitter*222023',
-            'HOST': 'meedgodb.postgres.database.azure.com',
-            'PORT': '',
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #         'NAME': 'Standard_B1ms',
+    #         'USER': 'admin22',
+    #         'PASSWORD': 'Twitter*222023',
+    #         'HOST': 'meedgodb.postgres.database.azure.com',
+    #         'PORT': '',
+    #     }
+    # }
 
 else:
     DATABASES = {

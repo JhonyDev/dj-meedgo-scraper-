@@ -10,6 +10,7 @@ from paytmchecksum import PaytmChecksum
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import get_object_or_404, ListAPIView, CreateAPIView
+from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -336,9 +337,11 @@ class OrderRequestsLocalityView(generics.ListAPIView):
         # return OrderRequest.objects.filter(user__postal_code=self.request.user.postal_code)
 
 
-class OrderGrabOrdersView(generics.ListCreateAPIView):
+class OrderGrabOrdersViewSet(CreateModelMixin, ListModelMixin, RetrieveModelMixin,
+                             viewsets.GenericViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
+    queryset = GrabUserBridge.objects.all()
     serializer_class = GrabbedOrderRequestsListSerializer
 
     def get_queryset(self):

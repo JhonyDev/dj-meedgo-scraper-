@@ -188,7 +188,7 @@ class MedicineOfferUpdateSerializer(serializers.ModelSerializer):
 
 
 class GrabbedOrderRequestsListSerializer(serializers.ModelSerializer):
-    # order_request = OrderRequestListSerializer()
+    order_request = OrderRequestListSerializer()
     medicine_offers = serializers.SerializerMethodField('get_medicine_offers')
     offered_total_price = serializers.SerializerMethodField('get_offered_total')
     cost_comparisons = serializers.SerializerMethodField('get_cost_comparisons')
@@ -200,8 +200,11 @@ class GrabbedOrderRequestsListSerializer(serializers.ModelSerializer):
         pharmacist['rating'] = get_average_rating(q.user)
         pharmacist['completed_orders'] = \
             GrabUserBridge.objects.filter(order_request__order_status="Completed", user=q.user).count()
-        pharmacist['latitude'] = q.user.latitude
-        pharmacist['longitude'] = q.user.longitude
+        try:
+            pharmacist['latitude'] = q.user.latitude
+            pharmacist['longitude'] = q.user.longitude
+        except:
+            pass
         return pharmacist
 
     def get_customer(self, q):
