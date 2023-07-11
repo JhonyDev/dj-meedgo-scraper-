@@ -288,9 +288,6 @@ class OrderRequestsView(generics.ListCreateAPIView):
         instance = serializer.save()
         instance.user = self.request.user
         instance.save()
-        print(instance.pk)
-        print(instance.medicine_cart.pk)
-        print(instance.medicine_cart.medicines.all())
         order_request = {
             'total_medicines': instance.medicine_cart.medicines.all().count(),
             'total_price': instance.medicine_cart.medicines.aggregate(total=Sum('price'))['total'],
@@ -298,7 +295,6 @@ class OrderRequestsView(generics.ListCreateAPIView):
             'chemist_id': instance.user.pk
         }
         try:
-            print("Sending message")
             send_message_to_group(f'{self.request.user.postal_code}', order_request)
         except Exception as e:
             print(
@@ -338,6 +334,15 @@ class OrderRequestsLocalityView(generics.ListAPIView):
         return order_requests.order_by('-pk')
 
         # return OrderRequest.objects.filter(user__postal_code=self.request.user.postal_code)
+
+
+class OrderGrabOrdersView(generics.ListCreateAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = GrabbedOrderRequestsListSerializer
+
+    def get_queryset(self):
+        return GrabUserBridge.objects.filter(order_request__user=self.request.user)
 
 
 class GrabOrdersView(generics.ListCreateAPIView):
@@ -394,9 +399,6 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = serializer.save()
         if instance.is_active:
             data = GrabbedOrderRequestsListSerializer(instance).data
-
-
-
             print("*" * 100)
             print(data)
             print("*" * 100)

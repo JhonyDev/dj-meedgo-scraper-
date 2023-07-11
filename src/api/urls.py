@@ -27,6 +27,7 @@ urlpatterns = [
     path('order-requests/<int:pk>/update/', views.OrderRequestUpdateView.as_view()),
 
     path('locality/order-requests/', views.OrderRequestsLocalityView.as_view()),
+    path('order-request/grab-orders/', views.OrderGrabOrdersView.as_view()),
     path('grab-orders/', views.GrabOrdersView.as_view()),
     path('grab-orders/<int:pk>/', views.GrabOrderDetailView.as_view()),
     path('medicine-offer/<int:pk>/', views.MedicineOfferUpdateView.as_view()),
