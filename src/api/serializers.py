@@ -265,7 +265,7 @@ class MedicineToCartSerializer(serializers.Serializer):
         ('REMOVE', 'REMOVE'),
     ]
     medicine_id = serializers.IntegerField(required=False)
-    quantity = serializers.IntegerField(required=True)
+    quantity = serializers.IntegerField(required=False)
     cart_id = serializers.IntegerField(required=False)
     action = serializers.ChoiceField(choices=CHOICES)
 

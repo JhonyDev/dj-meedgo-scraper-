@@ -228,7 +228,6 @@ class MedicineToCartView(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
-        # send_message_to_group('15100', "CHECKING MESSAGE")
         return Response({'message': 'Please use POST Method. Provide "cart_id" to get Cart Data '
                                     'or Provide "medicine_id" to create new cart and add medicine'},
                         status=status.HTTP_405_METHOD_NOT_ALLOWED)
