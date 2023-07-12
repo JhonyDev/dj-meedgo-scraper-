@@ -141,7 +141,7 @@ class OrderRequestListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderRequest
-        fields = ['pk', 'medicine_cart', 'order_status', 'user', 'grabbed_by']
+        fields = ['pk', 'medicine_cart', 'order_status', 'user', 'created_on', 'grabbed_by']
 
 
 class OrderRequestUpdateSerializer(serializers.ModelSerializer):
