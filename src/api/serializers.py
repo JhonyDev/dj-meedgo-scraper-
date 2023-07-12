@@ -251,7 +251,7 @@ class GrabbedOrderRequestsListSerializer(serializers.ModelSerializer):
     class Meta:
         model = GrabUserBridge
         fields = ['pk', 'customer', 'pharmacist', 'order_request', 'cost_comparisons', 'medicine_offers',
-                  'offered_total_price',
+                  'offered_total_price', 'created_on',
                   'is_with_delivery', 'prescription_required', 'adhar_required',
                   'is_active']
 
