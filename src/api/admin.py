@@ -41,8 +41,12 @@ class OrderRequestView(admin.ModelAdmin):
     list_display = ['pk', 'created_on']
 
 
+class GrabView(admin.ModelAdmin):
+    list_display = ['pk', 'user', 'order_request', 'created_on']
+
+
 admin.site.register(models.Medicine, MedicineView)
 admin.site.register(models.MedicineCart, MedicineCartView)
 admin.site.register(models.OrderRequest, OrderRequestView)
-admin.site.register(models.GrabUserBridge)
+admin.site.register(models.GrabUserBridge, GrabView)
 admin.site.register(models.MedicineCartBridge)
