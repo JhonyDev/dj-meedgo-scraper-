@@ -106,7 +106,6 @@ def lobby(request):
     results = search.execute()
     results = [x.id for x in results.hits[:15]]
     medicines = Medicine.objects.filter(pk__in=results)
-    print(medicines)
 
     return render(request, 'api/lobby.html')
 
@@ -414,9 +413,6 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = serializer.save()
         if instance.is_active:
             data = GrabbedOrderRequestsListSerializer(instance).data
-            print("*" * 100)
-            print(data)
-            print("*" * 100)
             send_message_to_group(f'order-request-{instance.order_request.pk}', data)
         if instance.is_accepted:
             chemist = instance.user
@@ -576,7 +572,6 @@ class CallbackView(CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         received_data = dict(request.POST)
-        print(received_data)
         paytmParams = {}
         paytmChecksum = ""
 
@@ -585,8 +580,6 @@ class CallbackView(CreateAPIView):
                 paytmChecksum = value[0]
             else:
                 paytmParams[key] = str(value[0])
-        # print(paytmParams)
-        # print(paytmChecksum)
         try:
             isValidChecksum = PaytmChecksum.verifySignature(paytmParams, settings.PAYTM_MERCHANT_KEY, paytmChecksum)
         except Exception as e:

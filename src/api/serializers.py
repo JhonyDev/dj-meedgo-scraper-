@@ -218,16 +218,10 @@ class GrabbedOrderRequestsListSerializer(serializers.ModelSerializer):
             missing_count = 0
             total_cost = 0
             for medicine in q.order_request.medicine_cart.medicines.all():
-                print(f'{"=" * 15} CHECKING FOR {medicine.name} - {medicine.salt_name} {"=" * 15}')
-                print(f'{"-" * 15} PLATFORM - {platform}')
                 platform_medicines = Medicine.objects.filter(
                     platform=get_platform_dict()[platform], price=medicine.price)
-                print(f'{"-" * 15} Platform - {get_platform_dict()[platform]}')
-                print(f'{"-" * 15} Medicine Price - {medicine.price}')
-                print(f'{"-" * 15} Medicines - {platform_medicines}')
                 query_set = get_similarity_queryset(
                     platform_medicines, medicine.name, medicine.salt_name, True)
-                print(f'{"-" * 15} Similar Found - {query_set}')
                 if not query_set.exists():
                     missing_count += 1
                 else:
