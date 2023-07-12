@@ -108,7 +108,7 @@ class GrabUserBridge(models.Model):
     prescription_required = models.BooleanField(default=False)
     is_with_delivery = models.BooleanField(default=False)
     is_accepted = models.BooleanField(default=False)
-    created_on = models.DateTimeField(default=None, null=True, blank=True)
+    created_on = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
         return str(self.pk)
