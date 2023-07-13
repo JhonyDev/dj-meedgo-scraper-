@@ -54,6 +54,7 @@ class OrderRequest(models.Model):
         ('Cancelled', 'Cancelled'),
         ('Pending', 'Pending'),
         ('Picked', 'Picked'),
+        ('Packed', 'Packed'),
         ('Dispatched', 'Dispatched'),
         ('Completed', 'Completed'),
     )
@@ -62,7 +63,7 @@ class OrderRequest(models.Model):
     grabbed_by = models.ManyToManyField(User, through='GrabUserBridge', blank=True, null=True, related_name="+")
     order_status = models.CharField(max_length=25, null=True, blank=True, default='Pending', choices=STATUS)
     created_on = models.DateField(auto_now_add=True, null=True, blank=True)
-
+    is_cash_on_delivery = models.BooleanField(default=True)
     adhar = models.FileField(upload_to='adhar/', default=None, null=True)
     prescription = models.FileField(upload_to='prescription/', default=None, null=True)
 

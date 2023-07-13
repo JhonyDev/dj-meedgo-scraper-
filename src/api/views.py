@@ -380,7 +380,6 @@ class GrabOrdersView(generics.ListCreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         instance = self.perform_create(serializer)
-        instance.order_request.order_status = 'Picked'
         instance.order_request.save()
         return Response(GrabbedOrderRequestsListSerializer(instance, many=False).data,
                         status=status.HTTP_201_CREATED)
@@ -415,7 +414,7 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
             send_message_to_group(f'order-request-{instance.order_request.pk}', data)
         if instance.is_accepted:
             chemist = instance.user
-            instance.order_request.order_status = 'Dispatched'
+            instance.order_request.order_status = 'Packed'
             instance.order_request.save()
             customer = self.request.user
             conversation_history = ConversationHistory.objects.filter(

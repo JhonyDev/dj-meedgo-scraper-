@@ -10,7 +10,9 @@ from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, Medici
 class UserGeneralSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('pk', 'username', 'full_name', 'business_name', 'email', 'postal_code', 'profile_image')
+        fields = (
+        'pk', 'username', 'full_name', 'business_name', 'email', 'postal_code', 'profile_image', 'address_line_1',
+        'address_line_2', 'state_name', 'country')
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -147,7 +149,7 @@ class OrderRequestListSerializer(serializers.ModelSerializer):
 class OrderRequestUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderRequest
-        fields = ['pk', 'order_status', 'adhar', 'prescription']
+        fields = ['pk', 'order_status', 'adhar', 'prescription', 'is_cash_on_delivery']
 
 
 class LocalityOrderRequestListSerializer(serializers.ModelSerializer):
