@@ -11,8 +11,8 @@ class UserGeneralSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-        'pk', 'username', 'full_name', 'business_name', 'email', 'postal_code', 'profile_image', 'address_line_1',
-        'address_line_2', 'state_name', 'country')
+            'pk', 'username', 'full_name', 'business_name', 'email', 'postal_code', 'profile_image', 'address_line_1',
+            'address_line_2', 'state_name', 'country')
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -100,6 +100,12 @@ class MedicineSerializer(serializers.ModelSerializer):
 
     def get_platform(self, obj):
         return obj.get_platform()
+
+
+class MedicineSearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Medicine
+        fields = ['name']
 
 
 class MedicineCartSerializer(serializers.ModelSerializer):

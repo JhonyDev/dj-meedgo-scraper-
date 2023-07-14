@@ -26,7 +26,7 @@ from .serializers import MedicineSerializer, MedicineToCartSerializer, \
     MedicineOfferUpdateSerializer, LocalityOrderRequestListSerializer, \
     ConversationHistoryListSerializer, ConversationHistoryCreateSerializer, MessageCreateSerializer, \
     MessageListSerializer, UserRatingListSerializer, UserRatingCreateSerializer, OrderRequestUpdateSerializer, \
-    PaymentResponseSerializer
+    PaymentResponseSerializer, MedicineSearchSerializer
 from .tasks import update_medicine_pharmeasy, update_medicine, \
     update_medicine_1mg, scrape_pharmeasy
 from .utils import get_platform_dict, balance_medicines
@@ -160,7 +160,7 @@ class AutoCompleteView(generics.ListAPIView):
     pagination_class = PageNumberPagination
     pagination_class.page_size = 10
     filter_backends = [SearchFilter]
-    serializer_class = MedicineSerializer
+    serializer_class = MedicineSearchSerializer
 
     def get_queryset(self):
         param = self.request.query_params.get('search')
