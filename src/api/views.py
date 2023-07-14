@@ -170,10 +170,9 @@ class AutoCompleteView(generics.ListAPIView):
             return orig_queryset.order_by('name', 'salt_name').distinct(
                 'name', 'salt_name')
 
-        orig_queryset = orig_queryset.filter(
+        return orig_queryset.filter(
             Q(name__icontains=param) | Q(salt_name__icontains=param)).order_by('name', 'salt_name').distinct(
             'name', 'salt_name')
-        return orig_queryset.order_by('price')
 
 
 class MedicineSearchView(generics.ListAPIView):
