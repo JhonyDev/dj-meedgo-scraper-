@@ -157,8 +157,6 @@ class AutoCompleteView(generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
     authentication_classes = [JWTAuthentication]
     queryset = Medicine.objects.all()
-    pagination_class = PageNumberPagination
-    pagination_class.page_size = 10
     filter_backends = [SearchFilter]
     serializer_class = MedicineSearchSerializer
 
@@ -172,7 +170,7 @@ class AutoCompleteView(generics.ListAPIView):
 
         return orig_queryset.filter(
             Q(name__icontains=param) | Q(salt_name__icontains=param)).order_by('name', 'salt_name').distinct(
-            'name', 'salt_name')
+            'name', 'salt_name')[:5]
 
 
 class MedicineSearchView(generics.ListAPIView):
