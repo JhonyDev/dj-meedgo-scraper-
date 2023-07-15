@@ -25,6 +25,8 @@ urlpatterns = [
     path('cart/', views.MedicineToCartView.as_view()),
     path('alternate-medicine/<int:medicine_pk>/', views.AlternateMedicineView.as_view()),
 
+    path('order-requests/target-user/<int:pk>/', views.TargetOrderRequestsView.as_view()),
+
     path('order-requests/', views.OrderRequestsView.as_view()),
     path('order-requests/<int:pk>/update/', views.OrderRequestUpdateView.as_view()),
 

@@ -32,6 +32,7 @@ from .tasks import update_medicine_pharmeasy, update_medicine, \
     update_medicine_1mg, scrape_pharmeasy
 from .utils import get_platform_dict, balance_medicines
 from ..accounts.authentication import JWTAuthentication
+from ..accounts.models import User
 
 """ADMIN-TASKS"""
 
@@ -351,6 +352,21 @@ class OrderRequestsView(generics.ListCreateAPIView):
         instance = self.perform_create(serializer)
         return Response(OrderRequestListSerializer(instance, many=False).data,
                         status=status.HTTP_201_CREATED)
+
+
+class TargetOrderRequestsView(generics.ListAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = OrderRequestListSerializer
+
+    def get_queryset(self):
+        user = self.kwargs.get('pk')
+        user = get_object_or_404(User, pk=user)
+        order_requests = GrabUserBridge.objects.filter(
+            Q(user=self.request.user, order_request__user=user) | Q(user=user,
+                                                                    order_request__user=self.request.user)).values(
+            'order_request')
+        return order_requests.order_by('-pk')
 
 
 class OrderRequestsLocalityView(generics.ListAPIView):
