@@ -128,6 +128,7 @@ INSTALLED_APPS = [
     'src.accounts.apps.AccountsAppConfig',
     'src.api',
     'src.website',
+    'src.notification',
     'drf_yasg',
     'corsheaders',
 ]

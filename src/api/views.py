@@ -18,6 +18,7 @@ from rest_framework.views import APIView
 
 from core.consumers import send_message_to_group
 from core.settings import PHARM_EASY, NET_MEDS, ONE_MG, FIRST_MESSAGE_WHEN_ORDER_ACCEPTED
+from src.notification.models import Notification
 from .bll import add_medicine_to_card
 from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge, ConversationHistory, \
     Message, UserRating
@@ -335,11 +336,17 @@ class OrderRequestsView(generics.ListCreateAPIView):
         order_request = {
             'prescription_request': instance.prescription_request,
             'total_medicines': instance.medicine_cart.medicines.all().count() if instance.medicine_cart is not None else None,
-            'total_price': instance.medicine_cart.medicines.aggregate(total=Sum('price'))['total'] if instance.medicine_cart is not None else None,
+            'total_price': instance.medicine_cart.medicines.aggregate(total=Sum('price'))[
+                'total'] if instance.medicine_cart is not None else None,
             'order_id': instance.id,
             'chemist_id': instance.user.pk
         }
         try:
+            users = User.objects.filter(postal_code=self.request.user.postal_code)
+            for user in users:
+                Notification.objects.create(user=user, title=f'New Order Request',
+                                            description=f'You have a new order request',
+                                            context=f'order-request-{instance.pk}')
             send_message_to_group(f'{self.request.user.postal_code}', order_request)
         except Exception as e:
             print(
@@ -470,6 +477,13 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = serializer.save()
         if instance.is_active:
             data = GrabbedOrderRequestsListSerializer(instance).data
+            Notification.objects.create(user=self.request.user, title=f'Offer Sent',
+                                        description=f'Order Request from customer has been accepted',
+                                        context=f'order-grab-{instance.pk}')
+            Notification.objects.create(user=instance.order_request.user, title=f'Pharmacist Offer',
+                                        description=f'You have a new offer from pharmacist.',
+                                        context=f'order-grab-{instance.pk}')
+
             send_message_to_group(f'order-request-{instance.order_request.pk}', data)
         if instance.is_accepted:
             chemist = instance.user
@@ -486,6 +500,13 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
             message = Message.objects.create(
                 conversation_history=conversation_history, author=self.request.user,
                 message=FIRST_MESSAGE_WHEN_ORDER_ACCEPTED)
+
+            Notification.objects.create(user=customer, title=f'You have a new Message',
+                                        description=message.message,
+                                        context=f'conversation-{conversation_history.pk}')
+            Notification.objects.create(user=chemist, title=f'You have a new Message',
+                                        description=message.message,
+                                        context=f'conversation-{conversation_history.pk}')
             send_message_to_group(f'receiver-{customer.pk}', MessageListSerializer(message, many=False).data)
             send_message_to_group(f'receiver-{chemist.pk}', MessageListSerializer(message, many=False).data)
 
@@ -581,6 +602,15 @@ class MessageListView(generics.ListCreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         instance = self.perform_create(serializer)
+
+        Notification.objects.create(user=instance.conversation_history.get_target_user(self.request.user),
+                                    title=f'You have a new Message',
+                                    description=instance.message,
+                                    context=f'conversation-{instance.conversation_history.pk}')
+        Notification.objects.create(user=self.request.user, title=f'You have a new Message',
+                                    description=instance.message,
+                                    context=f'conversation-{instance.conversation_history.pk}')
+
         send_message_to_group(f'receiving-{instance.conversation_history.get_target_user(self.request.user).pk}',
                               MessageListSerializer(instance, many=False).data)
         send_message_to_group(f'receiving-{self.request.user.pk}',
