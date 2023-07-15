@@ -357,15 +357,14 @@ class OrderRequestsView(generics.ListCreateAPIView):
 class TargetOrderRequestsView(generics.ListAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = OrderRequestListSerializer
+    serializer_class = GrabbedOrderRequestsListSerializer
 
     def get_queryset(self):
         user = self.kwargs.get('pk')
         user = get_object_or_404(User, pk=user)
         order_requests = GrabUserBridge.objects.filter(
             Q(user=self.request.user, order_request__user=user) | Q(user=user,
-                                                                    order_request__user=self.request.user)).values(
-            'order_request')
+                                                                    order_request__user=self.request.user))
         return order_requests.order_by('-pk')
 
 
