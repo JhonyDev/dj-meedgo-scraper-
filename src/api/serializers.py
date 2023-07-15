@@ -126,7 +126,7 @@ class OrderRequestCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderRequest
-        fields = ['medicine_cart']
+        fields = ['medicine_cart', 'prescription_request']
 
 
 class MedicineCartBridgeSerializer(serializers.ModelSerializer):
@@ -149,7 +149,8 @@ class OrderRequestListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderRequest
-        fields = ['pk', 'medicine_cart', 'order_status', 'user', 'created_on', 'grabbed_by']
+        fields = ['pk', 'medicine_cart', 'order_status', 'user', 'created_on', 'prescription_request', 'prescription',
+                  'grabbed_by']
 
 
 class OrderRequestUpdateSerializer(serializers.ModelSerializer):

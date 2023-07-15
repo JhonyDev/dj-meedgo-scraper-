@@ -334,8 +334,8 @@ class OrderRequestsView(generics.ListCreateAPIView):
         instance.save()
         order_request = {
             'prescription_request': instance.prescription_request,
-            'total_medicines': instance.medicine_cart.medicines.all().count(),
-            'total_price': instance.medicine_cart.medicines.aggregate(total=Sum('price'))['total'],
+            'total_medicines': instance.medicine_cart.medicines.all().count() if instance.medicine_cart is not None else None,
+            'total_price': instance.medicine_cart.medicines.aggregate(total=Sum('price'))['total'] if instance.medicine_cart is not None else None,
             'order_id': instance.id,
             'chemist_id': instance.user.pk
         }
