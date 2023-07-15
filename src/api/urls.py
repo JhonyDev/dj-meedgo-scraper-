@@ -17,6 +17,7 @@ urlpatterns = [
 
     # API VIEW
     path('', include(router.urls)),
+    path('dashboard/', views.DashboardAPIView.as_view()),
     path('my/ratings/', views.UserRatingListView.as_view()),
 
     path('auto-complete/', views.AutoCompleteView.as_view()),

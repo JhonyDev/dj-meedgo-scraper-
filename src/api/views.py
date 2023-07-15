@@ -1,3 +1,4 @@
+import datetime
 import time
 
 from django.conf import settings
@@ -131,6 +132,54 @@ ACID properties
     - Isolation
     - Durability
 """
+
+
+class DashboardAPIView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request, *args, **kwargs):
+        # TODO: Total earnings
+        # TODO: Total earnings missed
+        # TODO: Total earnings daily basis
+        # TODO: Total earnings missed daily basis
+        total_earnings = MedicineOfferBridge.objects.filter(
+            order_grab__user=self.request.user, order_grab__order_request__order_status='Completed',
+            # order_grab__created_on__gte=datetime.datetime.now() - datetime.timedelta(days=7)
+        ).aggregate(
+            total_earnings=Sum('offered_price'))['total_earnings']
+        total_earnings_missed = OrderRequest.objects.filter(
+            user__postal_code=self.request.user.postal_code,
+            # created_on__gte=datetime.datetime.now() - datetime.timedelta(days=7)
+        ).values('medicine_cart__medicines__price').aggregate(total_price=Sum('medicine_cart__medicines__price'))[
+            'total_price']
+
+        start_date = datetime.date.today() - datetime.timedelta(days=10)
+        end_date = datetime.date.today()
+
+        last_10_days_earnings = MedicineOfferBridge.objects.filter(
+            order_grab__user=self.request.user, order_grab__order_request__order_status='Completed',
+            order_grab__created_on__range=(start_date, end_date)
+        ).values_list('offered_price', flat=True)
+
+        last_10_days_earnings_missed = OrderRequest.objects.filter(
+            user__postal_code=self.request.user.postal_code,
+            created_on__range=(start_date, end_date)
+        ).annotate(total_price=Sum('medicine_cart__medicines__price')).values_list('total_price', flat=True)
+
+        labels = MedicineOfferBridge.objects.filter(
+            order_grab__user=self.request.user,
+            order_grab__created_on__range=(start_date, end_date)
+        ).values_list('order_grab__created_on', flat=True)
+
+        context = {
+            'total_earnings': total_earnings,
+            'total_earnings_missed': total_earnings_missed,
+            'labels': labels,
+            'last_10_days_earnings': last_10_days_earnings,
+            'last_10_days_earnings_missed': last_10_days_earnings_missed,
+        }
+        return Response(context, status=status.HTTP_200_OK)
 
 
 class UserRatingViewSet(viewsets.ModelViewSet):
