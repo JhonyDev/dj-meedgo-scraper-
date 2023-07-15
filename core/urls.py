@@ -62,7 +62,7 @@ urlpatterns = [
                   # path('auth/', include('dj_rest_auth.urls')),
 
                   path('api/', include('src.api.urls', namespace='api')),
-                  path('notifications/', include('src.notification.urls', namespace='notifications')),
+                  path('notify/', include('src.notification.urls', namespace='notifications')),
                   # path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
                   # path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
                   path('accounts/', include('allauth.urls')),
