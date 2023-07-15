@@ -27,7 +27,7 @@ from .serializers import MedicineSerializer, MedicineToCartSerializer, \
     MedicineOfferUpdateSerializer, LocalityOrderRequestListSerializer, \
     ConversationHistoryListSerializer, ConversationHistoryCreateSerializer, MessageCreateSerializer, \
     MessageListSerializer, UserRatingListSerializer, UserRatingCreateSerializer, OrderRequestUpdateSerializer, \
-    PaymentResponseSerializer, MedicineSearchSerializer
+    PaymentResponseSerializer, MedicineSearchSerializer, MedicineOfferListCreateSerializer, MedicineOfferListSerializer
 from .tasks import update_medicine_pharmeasy, update_medicine, \
     update_medicine_1mg, scrape_pharmeasy
 from .utils import get_platform_dict, balance_medicines
@@ -333,6 +333,7 @@ class OrderRequestsView(generics.ListCreateAPIView):
         instance.user = self.request.user
         instance.save()
         order_request = {
+            'prescription_request': instance.prescription_request,
             'total_medicines': instance.medicine_cart.medicines.all().count(),
             'total_price': instance.medicine_cart.medicines.aggregate(total=Sum('price'))['total'],
             'order_id': instance.id,
@@ -363,8 +364,7 @@ class TargetOrderRequestsView(generics.ListAPIView):
         user = self.kwargs.get('pk')
         user = get_object_or_404(User, pk=user)
         order_requests = GrabUserBridge.objects.filter(
-            Q(user=self.request.user, order_request__user=user) | Q(user=user,
-                                                                    order_request__user=self.request.user))
+            Q(user=self.request.user, order_request__user=user) | Q(user=user, order_request__user=self.request.user))
         return order_requests.order_by('-pk')
 
 
@@ -502,6 +502,31 @@ class MedicineOfferUpdateView(generics.RetrieveUpdateAPIView):
         elif self.request.method == 'UPDATE':
             return MedicineOfferUpdateSerializer
         return super().get_serializer_class()
+
+
+class MedicineOfferListCreateView(generics.ListCreateAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = MedicineOfferBridge.objects.all()
+    serializer_class = MedicineOfferUpdateSerializer
+    lookup_field = 'order_grab'
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return MedicineOfferListSerializer
+        elif self.request.method == 'POST':
+            return MedicineOfferListCreateSerializer
+        return super().get_serializer_class()
+
+    def get_queryset(self):
+        return MedicineOfferBridge.objects.filter(order_grab__pk=self.kwargs.get('order_grab'))
+
+    def perform_create(self, serializer):
+        grab_user_bridge = GrabUserBridge.objects.get(pk=self.kwargs.get('order_grab'))
+        instance = serializer.save()
+        instance.order_grab = grab_user_bridge
+        instance.save()
+        return instance
 
 
 class ConversationHistoryListView(generics.ListCreateAPIView):

@@ -34,7 +34,10 @@ urlpatterns = [
     path('my/active/grab-orders/', views.ActiveGrabOrdersView.as_view()),
     path('grab-orders/', views.GrabOrdersView.as_view()),
     path('grab-orders/<int:pk>/', views.GrabOrderDetailView.as_view()),
+
+    path('order-grab/<int:order_grab>/medicine-offers/', views.MedicineOfferListCreateView.as_view()),
     path('medicine-offer/<int:pk>/', views.MedicineOfferUpdateView.as_view()),
+
     path('my/conversations/', views.ConversationHistoryListView.as_view()),
     path('my/conversations/<int:pk>/', views.MessageListView.as_view()),
 

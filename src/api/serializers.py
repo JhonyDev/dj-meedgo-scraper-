@@ -189,6 +189,20 @@ class MedicineOfferSerializer(serializers.ModelSerializer):
         fields = ['pk', 'offered_price', 'medicine_cart_bridge']
 
 
+class MedicineOfferListSerializer(serializers.ModelSerializer):
+    medicine = MedicineSerializer()
+
+    class Meta:
+        model = MedicineOfferBridge
+        fields = ['pk', 'offered_price', 'medicine']
+
+
+class MedicineOfferListCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MedicineOfferBridge
+        fields = ['pk', 'offered_price', 'medicine']
+
+
 class MedicineOfferUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = MedicineOfferBridge
