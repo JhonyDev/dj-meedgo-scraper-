@@ -157,20 +157,21 @@ class DashboardAPIView(generics.GenericAPIView):
         start_date = datetime.date.today() - datetime.timedelta(days=10)
         end_date = datetime.date.today()
 
-        last_10_days_earnings = MedicineOfferBridge.objects.filter(
-            order_grab__user=self.request.user, order_grab__order_request__order_status='Completed',
-            order_grab__created_on__range=(start_date, end_date)
-        ).values_list('offered_price', flat=True)
-
-        last_10_days_earnings_missed = OrderRequest.objects.filter(
-            user__postal_code=self.request.user.postal_code,
-            created_on__range=(start_date, end_date)
-        ).annotate(total_price=Sum('medicine_cart__medicines__price')).values_list('total_price', flat=True)
-
-        labels = MedicineOfferBridge.objects.filter(
-            order_grab__user=self.request.user,
-            order_grab__created_on__range=(start_date, end_date)
-        ).values_list('order_grab__created_on', flat=True)
+        last_10_days_earnings = []
+        last_10_days_earnings_missed = []
+        labels = []
+        for i in range(10):
+            current_date = datetime.date.today() - datetime.timedelta(days=i)
+            formatted_date = current_date.strftime("%B %d, %Y")
+            labels.append(formatted_date)
+            last_10_days_earnings.append(MedicineOfferBridge.objects.filter(
+                order_grab__user=self.request.user, order_grab__order_request__order_status='Completed',
+                order_grab__created_on__range=(start_date, end_date)
+            ).aggregate(total_earnings=Sum('offered_price'))['total_earnings'])
+            last_10_days_earnings_missed.append(OrderRequest.objects.filter(
+                user__postal_code=self.request.user.postal_code,
+                created_on__range=(start_date, end_date)
+            ).aggregate(total_price=Sum('medicine_cart__medicines__price'))['total_price'])
 
         context = {
             'total_earnings': total_earnings,
