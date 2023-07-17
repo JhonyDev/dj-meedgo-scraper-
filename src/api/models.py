@@ -65,8 +65,8 @@ class OrderRequest(models.Model):
     created_on = models.DateField(auto_now_add=True, null=True, blank=True)
     is_cash_on_delivery = models.BooleanField(default=True)
     adhar = models.FileField(upload_to='adhar/', default=None, null=True)
-    prescription_request = models.FileField(upload_to='prescription_requests/', default=None, null=True)
     prescription = models.FileField(upload_to='prescription/', default=None, null=True)
+    prescription_request = models.FileField(upload_to='prescription_requests/', default=None, null=True)
 
     def __str__(self):
         return str(self.pk)
@@ -162,6 +162,7 @@ class Message(models.Model):
     conversation_history = models.ForeignKey(
         ConversationHistory, on_delete=models.CASCADE, null=True, blank=True, default=None)
     message = models.TextField(max_length=500)
+    image = models.FileField(upload_to='images/', default=None, null=True)
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, null=True, blank=True, default=None, related_name="+")
     created_on = models.DateTimeField(auto_now_add=True)

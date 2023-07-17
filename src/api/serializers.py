@@ -331,7 +331,7 @@ class ConversationHistoryCreateSerializer(serializers.ModelSerializer):
 class MessageListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
-        fields = ('message', 'created_on', 'author')
+        fields = ('message', 'created_on', 'image', 'author')
 
 
 class MessageCreateSerializer(serializers.ModelSerializer):

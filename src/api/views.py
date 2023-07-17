@@ -302,6 +302,34 @@ class OrderRequestUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = OrderRequestUpdateSerializer
     queryset = OrderRequest.objects.all()
 
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        instance_grab = GrabUserBridge.objects.filter(order_request=instance).first()
+        if instance_grab:
+            conversation_history = ConversationHistory.objects.filter(
+                Q(sending_user=self.request.user, receiving_user=instance_grab.user) | Q(
+                    receiving_user=instance_grab.user, sending_user=self.request.user))
+            if conversation_history.exists():
+                conversation_history = conversation_history.first()
+            else:
+                conversation_history = ConversationHistory.objects.create(
+                    sending_user=self.request.user, receiving_user=instance_grab.user)
+            if instance.adhar:
+                message = Message.objects.create(
+                    conversation_history=conversation_history, author=self.request.user, image=instance.prescription)
+                send_message_to_group(f'receiver-{instance_grab.user.pk}',
+                                      MessageListSerializer(message, many=False).data)
+                send_message_to_group(f'receiver-{self.request.user.pk}',
+                                      MessageListSerializer(message, many=False).data)
+
+            if instance.prescription:
+                message = Message.objects.create(
+                    conversation_history=conversation_history, author=self.request.user, image=instance.adhar)
+                send_message_to_group(f'receiver-{instance_grab.user.pk}',
+                                      MessageListSerializer(message, many=False).data)
+                send_message_to_group(f'receiver-{self.request.user.pk}',
+                                      MessageListSerializer(message, many=False).data)
+
 
 class OrderRequestsView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
