@@ -28,7 +28,8 @@ from .serializers import MedicineSerializer, MedicineToCartSerializer, \
     MedicineOfferUpdateSerializer, LocalityOrderRequestListSerializer, \
     ConversationHistoryListSerializer, ConversationHistoryCreateSerializer, MessageCreateSerializer, \
     MessageListSerializer, UserRatingListSerializer, UserRatingCreateSerializer, OrderRequestUpdateSerializer, \
-    PaymentResponseSerializer, MedicineSearchSerializer, MedicineOfferListCreateSerializer, MedicineOfferListSerializer
+    PaymentResponseSerializer, MedicineSearchSerializer, MedicineOfferListCreateSerializer, MedicineOfferListSerializer, \
+    OrderRequestPrescriptionRequestSerializer
 from .tasks import update_medicine_pharmeasy, update_medicine, \
     update_medicine_1mg, scrape_pharmeasy
 from .utils import get_platform_dict, balance_medicines
@@ -331,8 +332,9 @@ class OrderRequestsView(generics.ListCreateAPIView):
         instance = serializer.save()
         instance.user = self.request.user
         instance.save()
+        prescription_request = OrderRequestPrescriptionRequestSerializer(instance).data
         order_request = {
-            'prescription_request': instance.prescription_request.url,
+            'prescription_request': prescription_request['prescription_request'],
             'total_medicines': instance.medicine_cart.medicines.all().count() if instance.medicine_cart is not None else None,
             'total_price': instance.medicine_cart.medicines.aggregate(total=Sum('price'))[
                 'total'] if instance.medicine_cart is not None else None,

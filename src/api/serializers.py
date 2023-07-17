@@ -153,6 +153,12 @@ class OrderRequestListSerializer(serializers.ModelSerializer):
                   'grabbed_by']
 
 
+class OrderRequestPrescriptionRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderRequest
+        fields = ['prescription_request']
+
+
 class OrderRequestUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderRequest
