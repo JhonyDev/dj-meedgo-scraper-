@@ -143,10 +143,6 @@ class DashboardAPIView(generics.GenericAPIView):
     queryset = UserRating.objects.all()
 
     def get(self, request, *args, **kwargs):
-        # TODO: Total earnings
-        # TODO: Total earnings missed
-        # TODO: Total earnings daily basis
-        # TODO: Total earnings missed daily basis
         total_earnings = MedicineOfferBridge.objects.filter(
             order_grab__user=self.request.user, order_grab__order_request__order_status='Completed',
             # order_grab__created_on__gte=datetime.datetime.now() - datetime.timedelta(days=7)
@@ -336,7 +332,7 @@ class OrderRequestsView(generics.ListCreateAPIView):
         instance.user = self.request.user
         instance.save()
         order_request = {
-            'prescription_request': instance.prescription_request,
+            'prescription_request': instance.prescription_request.url,
             'total_medicines': instance.medicine_cart.medicines.all().count() if instance.medicine_cart is not None else None,
             'total_price': instance.medicine_cart.medicines.aggregate(total=Sum('price'))[
                 'total'] if instance.medicine_cart is not None else None,
