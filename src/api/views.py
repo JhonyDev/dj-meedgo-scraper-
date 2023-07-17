@@ -139,6 +139,8 @@ ACID properties
 class DashboardAPIView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
+    serializer_class = UserRatingListSerializer
+    queryset = UserRating.objects.all()
 
     def get(self, request, *args, **kwargs):
         # TODO: Total earnings
