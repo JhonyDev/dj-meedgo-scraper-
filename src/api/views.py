@@ -21,7 +21,7 @@ from core.settings import PHARM_EASY, NET_MEDS, ONE_MG, FIRST_MESSAGE_WHEN_ORDER
 from src.notification.models import Notification
 from .bll import add_medicine_to_card
 from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge, ConversationHistory, \
-    Message, UserRating
+    Message, UserRating, MedicineCartBridge
 from .serializers import MedicineSerializer, MedicineToCartSerializer, \
     OrderRequestListSerializer, OrderRequestCreateSerializer, GrabbedOrderRequestsListSerializer, \
     GrabbedOrderRequestsCreateSerializer, GrabbedOrderRequestsUpdateSerializer, MedicineOfferSerializer, \
@@ -361,11 +361,15 @@ class OrderRequestsView(generics.ListCreateAPIView):
         instance.user = self.request.user
         instance.save()
         prescription_request = OrderRequestPrescriptionRequestSerializer(instance).data
+        # TODO: Multiply quantity to estimate total cost.
+        # Your query to multiply quantity with medicine__price and get the net price
+        result = MedicineCartBridge.objects.annotate(total_price=F('quantity') * F('medicine__price'))
+        # Calculate the net price by summing all the total_price values
+        net_price = result.aggregate(net_price=Sum('total_price'))['net_price']
         order_request = {
             'prescription_request': prescription_request['prescription_request'],
             'total_medicines': instance.medicine_cart.medicines.all().count() if instance.medicine_cart is not None else None,
-            'total_price': instance.medicine_cart.medicines.aggregate(total=Sum('price'))[
-                'total'] if instance.medicine_cart is not None else None,
+            'total_price': net_price if instance.medicine_cart is not None else None,
             'order_id': instance.id,
             'chemist_id': instance.user.pk
         }
