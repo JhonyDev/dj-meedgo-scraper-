@@ -55,6 +55,7 @@ class OrderRequest(models.Model):
         ('Pending', 'Pending'),
         ('Picked', 'Picked'),
         ('Packed', 'Packed'),
+        ('Received', 'Received'),
         ('Dispatched', 'Dispatched'),
         ('Completed', 'Completed'),
     )

@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
-from django.db.models import Avg
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django_resized import ResizedImageField
@@ -171,6 +170,22 @@ class UserTime(models.Model):
 class AuthenticationToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     auth_token = models.CharField(max_length=100, default=None, null=True, blank=True)
+
+    class Meta:
+        ordering = ['-pk']
+
+
+class CustomUserWarning(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100, default=None, null=True, blank=True)
+    description = models.TextField(default=None, null=True, blank=True)
+
+    class Meta:
+        ordering = ['-pk']
+
+
+class WarningConfig(models.Model):
+    ping = models.TextField(default=None, null=True, blank=True)
 
     class Meta:
         ordering = ['-pk']
