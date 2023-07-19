@@ -361,10 +361,8 @@ class OrderRequestsView(generics.ListCreateAPIView):
         instance.user = self.request.user
         instance.save()
         prescription_request = OrderRequestPrescriptionRequestSerializer(instance).data
-        # TODO: Multiply quantity to estimate total cost.
-        # Your query to multiply quantity with medicine__price and get the net price
-        result = MedicineCartBridge.objects.annotate(total_price=F('quantity') * F('medicine__price'))
-        # Calculate the net price by summing all the total_price values
+        # Multiply quantity to estimate total cost.
+        result = MedicineCartBridge.objects.filter(medicine_card=instance.medicine_cart).annotate(total_price=F('quantity') * F('medicine__price'))
         net_price = result.aggregate(net_price=Sum('total_price'))['net_price']
         order_request = {
             'prescription_request': prescription_request['prescription_request'],
@@ -376,9 +374,9 @@ class OrderRequestsView(generics.ListCreateAPIView):
         try:
             users = User.objects.filter(postal_code=self.request.user.postal_code)
             for user in users:
-                Notification.objects.create(user=user, title=f'New Order Request',
-                                            description=f'You have a new order request',
-                                            context=f'order-request-{instance.pk}')
+                Notification.objects.create(
+                    user=user, title=f'New Order Request', description=f'You have a new order request',
+                    context=f'order-request-{instance.pk}')
             send_message_to_group(f'{self.request.user.postal_code}', order_request)
         except Exception as e:
             print(
