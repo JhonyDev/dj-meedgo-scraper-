@@ -517,7 +517,7 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
             send_message_to_group(f'order-request-{instance.order_request.pk}', data)
         if instance.is_accepted:
             chemist = instance.user
-            instance.order_request.order_status = 'Packed'
+            instance.order_request.order_status = 'Received'
             instance.order_request.save()
             customer = self.request.user
             conversation_history = ConversationHistory.objects.filter(
