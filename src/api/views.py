@@ -362,7 +362,8 @@ class OrderRequestsView(generics.ListCreateAPIView):
         instance.save()
         prescription_request = OrderRequestPrescriptionRequestSerializer(instance).data
         # Multiply quantity to estimate total cost.
-        result = MedicineCartBridge.objects.filter(medicine_card=instance.medicine_cart).annotate(total_price=F('quantity') * F('medicine__price'))
+        result = MedicineCartBridge.objects.filter(medicine_card=instance.medicine_cart).annotate(
+            total_price=F('quantity') * F('medicine__price'))
         net_price = result.aggregate(net_price=Sum('total_price'))['net_price']
         order_request = {
             'prescription_request': prescription_request['prescription_request'],
@@ -517,7 +518,7 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
             send_message_to_group(f'order-request-{instance.order_request.pk}', data)
         if instance.is_accepted:
             chemist = instance.user
-            instance.order_request.order_status = 'Received'
+            instance.order_request.order_status = 'Pending'
             instance.order_request.save()
             customer = self.request.user
             conversation_history = ConversationHistory.objects.filter(

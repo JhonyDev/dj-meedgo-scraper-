@@ -52,6 +52,7 @@ class MedicineCart(models.Model):
 class OrderRequest(models.Model):
     STATUS = (
         ('Cancelled', 'Cancelled'),
+        ('Processing', 'Processing'),
         ('Pending', 'Pending'),
         ('Picked', 'Picked'),
         ('Packed', 'Packed'),
@@ -62,7 +63,7 @@ class OrderRequest(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, default=None)
     medicine_cart = models.ForeignKey(MedicineCart, on_delete=models.CASCADE, null=True)
     grabbed_by = models.ManyToManyField(User, through='GrabUserBridge', blank=True, null=True, related_name="+")
-    order_status = models.CharField(max_length=25, null=True, blank=True, default='Pending', choices=STATUS)
+    order_status = models.CharField(max_length=25, null=True, blank=True, default='Processing', choices=STATUS)
     created_on = models.DateField(auto_now_add=True, null=True, blank=True)
     is_cash_on_delivery = models.BooleanField(default=True)
     adhar = models.FileField(upload_to='adhar/', default=None, null=True)
