@@ -94,3 +94,39 @@ def get_average_rating(user):
     average_rating = UserRating.objects.filter(given_to=user).aggregate(avg_rating=Avg('rating'))
     avg_rating_value = average_rating['avg_rating']
     return avg_rating_value
+
+
+def haversine(lat1, lon1, lat2, lon2):
+    from math import radians, sin, cos, sqrt, atan2
+    # Convert latitude and longitude from degrees to radians
+    lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+
+    # Radius of the Earth in kilometers
+    radius = 6371.0
+
+    # Haversine formula to calculate distance
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    distance = radius * c
+
+    return distance
+
+
+def get_order_requests_around_me(target_user):
+    from geopy.distance import geodesic
+    from .models import User
+    central_latitude = target_user.latitude
+    central_longitude = target_user.longitude
+    all_users = User.objects.all()
+    users_within_radius = []
+    for user in all_users:
+        user_latitude = user.latitude
+        user_longitude = user.longitude
+        user_coordinates = (user_latitude, user_longitude)
+        central_coordinates = (central_latitude, central_longitude)
+        distance = geodesic(user_coordinates, central_coordinates).kilometers
+        if distance <= 50:
+            users_within_radius.append(user.pk)
+    return users_within_radius

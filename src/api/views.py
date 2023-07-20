@@ -19,6 +19,7 @@ from rest_framework.views import APIView
 from core.consumers import send_message_to_group
 from core.settings import PHARM_EASY, NET_MEDS, ONE_MG, FIRST_MESSAGE_WHEN_ORDER_ACCEPTED
 from src.notification.models import Notification
+from . import utils
 from .bll import add_medicine_to_card
 from .models import Medicine, MedicineCart, OrderRequest, GrabUserBridge, MedicineOfferBridge, ConversationHistory, \
     Message, UserRating, MedicineCartBridge
@@ -149,11 +150,17 @@ class DashboardAPIView(generics.GenericAPIView):
             # order_grab__created_on__gte=datetime.datetime.now() - datetime.timedelta(days=7)
         ).aggregate(
             total_earnings=Sum('offered_price'))['total_earnings']
+        users_around_me = utils.get_order_requests_around_me(self.request.user)
         total_earnings_missed = OrderRequest.objects.filter(
-            user__postal_code=self.request.user.postal_code,
+            user__pk__in=users_around_me,
             # created_on__gte=datetime.datetime.now() - datetime.timedelta(days=7)
         ).values('medicine_cart__medicines__price').aggregate(total_price=Sum('medicine_cart__medicines__price'))[
             'total_price']
+        # total_earnings_missed = OrderRequest.objects.filter(
+        #     user__postal_code=self.request.user.postal_code,
+        #     # created_on__gte=datetime.datetime.now() - datetime.timedelta(days=7)
+        # ).values('medicine_cart__medicines__price').aggregate(total_price=Sum('medicine_cart__medicines__price'))[
+        #     'total_price']
 
         last_10_days_earnings = []
         last_10_days_earnings_missed = []
@@ -166,10 +173,15 @@ class DashboardAPIView(generics.GenericAPIView):
                 order_grab__user=self.request.user, order_grab__order_request__order_status='Completed',
                 order_grab__created_on=current_date
             ).aggregate(total_earnings=Sum('offered_price'))['total_earnings'])
+            users_around_me = utils.get_order_requests_around_me(self.request.user)
             last_10_days_earnings_missed.append(OrderRequest.objects.filter(
-                user__postal_code=self.request.user.postal_code,
+                user__pk__in=users_around_me,
                 created_on=current_date
             ).aggregate(total_price=Sum('medicine_cart__medicines__price'))['total_price'])
+            # last_10_days_earnings_missed.append(OrderRequest.objects.filter(
+            #     user__postal_code=self.request.user.postal_code,
+            #     created_on=current_date
+            # ).aggregate(total_price=Sum('medicine_cart__medicines__price'))['total_price'])
 
         context = {
             'total_earnings': total_earnings,
@@ -373,12 +385,16 @@ class OrderRequestsView(generics.ListCreateAPIView):
             'chemist_id': instance.user.pk
         }
         try:
-            users = User.objects.filter(postal_code=self.request.user.postal_code)
+            users_around_me = utils.get_order_requests_around_me(self.request.user)
+            print(users_around_me)
+            users = User.objects.filter(pk__in=users_around_me)
+            # users = User.objects.filter(postal_code=self.request.user.postal_code)
             for user in users:
                 Notification.objects.create(
                     user=user, title=f'New Order Request', description=f'You have a new order request',
                     context=f'order-request-{instance.pk}')
-            send_message_to_group(f'{self.request.user.postal_code}', order_request)
+                send_message_to_group(f'{user.pk}', order_request)
+            # send_message_to_group(f'{self.request.user.postal_code}', order_request)
         except Exception as e:
             print(
                 f"Exception when sending message against order-request - {instance} - {self.request.user.postal_code}")
@@ -415,8 +431,12 @@ class OrderRequestsLocalityView(generics.ListAPIView):
         order_requests = OrderRequest.objects.filter(user=self.request.user)
         if self.request.GET.get('scope') == 'missed':
             grabs = GrabUserBridge.objects.filter(user=self.request.user).values_list('order_request__pk', flat=True)
-            order_requests = order_requests.filter(user__postal_code=self.request.user.postal_code).exclude(
+            users_around_me = utils.get_order_requests_around_me(self.request.user)
+            order_requests = order_requests.filter(user__pk__in=users_around_me).exclude(
                 pk__in=grabs)
+            # order_requests = order_requests.filter(user__postal_code=self.request.user.postal_code).exclude(
+            #     pk__in=grabs)
+
         user = self.request.GET.get('user')
         if user:
             order_requests = OrderRequest.objects.filter(user__pk=user)
