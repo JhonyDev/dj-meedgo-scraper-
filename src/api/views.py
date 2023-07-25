@@ -362,7 +362,6 @@ class OrderRequestsView(generics.ListCreateAPIView):
         status_param = self.request.GET.get('status')
         if status_param:
             status_list = status_param.split(' ')
-            print(status_list)
             order_requests = order_requests.filter(order_status__in=status_list)
         date_param = self.request.GET.get('date')
         if date_param:
@@ -418,8 +417,13 @@ class TargetOrderRequestsView(generics.ListAPIView):
     def get_queryset(self):
         user = self.kwargs.get('pk')
         user = get_object_or_404(User, pk=user)
+
         order_requests = GrabUserBridge.objects.filter(
             Q(user=self.request.user, order_request__user=user) | Q(user=user, order_request__user=self.request.user))
+        status_param = self.request.GET.get('status')
+        if status_param:
+            status_list = status_param.split(' ')
+            order_requests = order_requests.filter(order_request__order_status__in=status_list)
         return order_requests.order_by('-pk')
 
 
