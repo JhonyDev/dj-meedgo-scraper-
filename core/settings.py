@@ -364,6 +364,6 @@ task_serializer = 'json'
 result_serializer = 'json'
 timezone = 'Asia/Karachi'
 
-logger = logging.getLogger('elasticsearch')
-logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.DEBUG)
+# logger = logging.getLogger('elasticsearch')
+# logger.addHandler(logging.StreamHandler())
+# logger.setLevel(logging.DEBUG)
