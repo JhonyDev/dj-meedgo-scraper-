@@ -493,6 +493,9 @@ class GrabOrdersView(generics.ListCreateAPIView):
         return super().get_serializer_class()
 
     def get_queryset(self):
+        status_param = self.request.GET.get('status')
+        if status_param:
+            return GrabUserBridge.objects.filter(user=self.request.user, order_request__order_status=status_param)
         return GrabUserBridge.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
