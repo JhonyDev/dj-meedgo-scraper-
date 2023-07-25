@@ -362,6 +362,7 @@ class OrderRequestsView(generics.ListCreateAPIView):
         status_param = self.request.GET.get('status')
         if status_param:
             status_list = status_param.split(' ')
+            print(status_list)
             order_requests = order_requests.filter(order_status__in=status_list)
         date_param = self.request.GET.get('date')
         if date_param:
