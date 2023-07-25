@@ -361,8 +361,11 @@ class OrderRequestsView(generics.ListCreateAPIView):
             order_requests = OrderRequest.objects.filter(user__pk=user)
         status_param = self.request.GET.get('status')
         if status_param:
-            status_list = status_param.split(' ')
-            order_requests = order_requests.filter(order_status__in=status_list)
+            try:
+                order_requests = order_requests.filter(order_status=status_param)
+            except:
+                status_list = status_param.split(' ')
+                order_requests = order_requests.filter(order_status__in=status_list)
         date_param = self.request.GET.get('date')
         if date_param:
             order_requests = order_requests.filter(date=date_param)
