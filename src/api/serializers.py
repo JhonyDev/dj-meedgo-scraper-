@@ -11,8 +11,9 @@ class UserGeneralSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'pk', 'username', 'full_name', 'business_name', 'email', 'postal_code', 'profile_image', 'address_line_1',
-            'address_line_2', 'state_name', 'country')
+            'pk', 'username', 'full_name', 'business_name', 'email', 'postal_code', 'latitude', 'longitude',
+            'profile_image', 'address_line_1',
+            'address_line_2', 'geo_address', 'state_name', 'country')
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -229,11 +230,6 @@ class GrabbedOrderRequestsListSerializer(serializers.ModelSerializer):
         pharmacist['rating'] = get_average_rating(q.user)
         pharmacist['completed_orders'] = \
             GrabUserBridge.objects.filter(order_request__order_status="Completed", user=q.user).count()
-        try:
-            pharmacist['latitude'] = q.user.latitude
-            pharmacist['longitude'] = q.user.longitude
-        except:
-            pass
         return pharmacist
 
     def get_customer(self, q):
