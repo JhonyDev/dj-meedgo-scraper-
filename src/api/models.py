@@ -87,7 +87,7 @@ class MedicineOfferBridge(models.Model):
     medicine_cart_bridge = models.ForeignKey(
         'MedicineCartBridge', on_delete=models.SET_NULL, null=True, blank=True, default=None)
     order_grab = models.ForeignKey('GrabUserBridge', on_delete=models.CASCADE, null=True, blank=True, default=None)
-    offered_price = models.PositiveIntegerField(
+    offered_price = models.FloatField(
         null=True, default=None, blank=True,
         help_text='Positive Integer expected. Mention amount in INR')
 

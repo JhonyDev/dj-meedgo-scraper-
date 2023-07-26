@@ -546,8 +546,8 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
             Notification.objects.create(user=instance.order_request.user, title=f'Pharmacist Offer',
                                         description=f'You have a new offer from pharmacist.',
                                         context=f'order-grab-{instance.pk}')
-
             send_message_to_group(f'order-request-{instance.order_request.pk}', data)
+
         if instance.is_accepted:
             chemist = instance.user
             instance.order_request.order_status = 'Pending'
