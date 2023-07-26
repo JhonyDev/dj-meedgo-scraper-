@@ -267,17 +267,17 @@ class GrabbedOrderRequestsListSerializer(serializers.ModelSerializer):
             MedicineOfferBridge.objects.filter(
                 order_grab=q).exclude(offered_price=None).values_list('offered_price', flat=True))
 
-    class Meta:
-        model = GrabUserBridge
-        fields = ['pk', 'customer', 'pharmacist', 'order_request', 'cost_comparisons', 'medicine_offers',
-                  'offered_total_price', 'created_on', 'is_with_delivery', 'prescription_required', 'adhar_required',
-                  'is_active']
-
     def get_fields(self):
         fields = super().get_fields()
         fields['order_request'].read_only = True
         fields['is_active'].read_only = True
         return fields
+
+    class Meta:
+        model = GrabUserBridge
+        fields = ['pk', 'customer', 'pharmacist', 'order_request', 'cost_comparisons', 'medicine_offers',
+                  'offered_total_price', 'created_on', 'is_with_delivery', 'prescription_required', 'adhar_required',
+                  'is_active']
 
 
 """ SIMPLE SERIALIZERS """

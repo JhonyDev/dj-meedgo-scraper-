@@ -207,7 +207,11 @@ class UserRatingViewSet(viewsets.ModelViewSet):
         return super().get_serializer_class()
 
     def perform_create(self, serializer):
-        serializer.save(given_by=self.request.user)
+        instance = serializer.save(given_by=self.request.user)
+        Notification.objects.create(
+            user=instance.given_to, title=f'Congratulations! You\'ve got Rating',
+            description=f'{self.request.user} has given {instance.rating} rating to you.',
+            context=f'user-rating-{instance.pk}')
 
     def get_queryset(self):
         return UserRating.objects.filter(given_by=self.request.user)
@@ -666,10 +670,11 @@ class MessageListView(generics.ListCreateAPIView):
         serializer.is_valid(raise_exception=True)
         instance = self.perform_create(serializer)
 
-        Notification.objects.create(user=instance.conversation_history.get_target_user(self.request.user),
-                                    title=f'You have a new Message',
-                                    description=instance.message,
-                                    context=f'conversation-{instance.conversation_history.pk}')
+        # Notification.objects.create(user=instance.conversation_history.get_target_user(self.request.user),
+        #                             title=f'You have a new Message',
+        #                             description=instance.message,
+        #                             context=f'conversation-{instance.conversation_history.pk}')
+        #
         Notification.objects.create(user=self.request.user, title=f'You have a new Message',
                                     description=instance.message,
                                     context=f'conversation-{instance.conversation_history.pk}')
