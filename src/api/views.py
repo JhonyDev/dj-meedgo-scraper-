@@ -540,7 +540,8 @@ class GrabOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
         if instance.is_active:
             data = GrabbedOrderRequestsListSerializer(instance).data
             Notification.objects.create(user=self.request.user, title=f'Offer Sent',
-                                        description=f'Order Request from customer has been accepted',
+                                        description=f'Order Request #{instance.order_request.pk}'
+                                                    f' sent to customer. Please wait.',
                                         context=f'order-grab-{instance.pk}')
             Notification.objects.create(user=instance.order_request.user, title=f'Pharmacist Offer',
                                         description=f'You have a new offer from pharmacist.',
