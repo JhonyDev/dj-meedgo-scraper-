@@ -670,14 +670,14 @@ class MessageListView(generics.ListCreateAPIView):
         serializer.is_valid(raise_exception=True)
         instance = self.perform_create(serializer)
 
-        # Notification.objects.create(user=instance.conversation_history.get_target_user(self.request.user),
-        #                             title=f'You have a new Message',
-        #                             description=instance.message,
-        #                             context=f'conversation-{instance.conversation_history.pk}')
-        #
-        Notification.objects.create(user=self.request.user, title=f'You have a new Message',
+        Notification.objects.create(user=instance.conversation_history.get_target_user(self.request.user),
+                                    title=f'You have a new Message',
                                     description=instance.message,
                                     context=f'conversation-{instance.conversation_history.pk}')
+
+        # Notification.objects.create(user=self.request.user, title=f'You have a new Message',
+        #                             description=instance.message,
+        #                             context=f'conversation-{instance.conversation_history.pk}')
 
         send_message_to_group(f'receiving-{instance.conversation_history.get_target_user(self.request.user).pk}',
                               MessageListSerializer(instance, many=False).data)
