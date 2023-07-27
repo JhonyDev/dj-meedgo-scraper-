@@ -511,8 +511,11 @@ class GrabOrdersView(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        instance = self.perform_create(serializer)
-        instance.order_request.save()
+        order_request = serializer.validated_data['order_request']
+        instance = GrabUserBridge.objects.filter(user=self.request.user, order_request=order_request).first()
+        if not instance:
+            instance = self.perform_create(serializer)
+            instance.order_request.save()
         return Response(GrabbedOrderRequestsListSerializer(instance, many=False).data,
                         status=status.HTTP_201_CREATED)
 
