@@ -128,6 +128,6 @@ def get_order_requests_around_me(target_user):
         central_coordinates = (central_latitude, central_longitude)
         distance = geodesic(user_coordinates, central_coordinates).kilometers
         print(distance)
-        if distance <= 50:
+        if distance <= 15:
             users_within_radius.append(user.pk)
     return users_within_radius
