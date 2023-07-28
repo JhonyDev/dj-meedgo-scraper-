@@ -73,8 +73,8 @@ class User(AbstractUser):
         help_text='Enter a valid postal code (e.g., 12345 or 12345-6789).',
         validators=[
             RegexValidator(
-                regex=r'^\d{5}(-\d{4})?$',
-                message='Enter a valid postal code (e.g., 12345 or 12345-6789).'
+                regex=r'^\d{6}(-\d{4})?$',
+                message='Enter a valid postal code (e.g., 123456 or 12345-6789).'
             )
         ]
     )
