@@ -108,6 +108,7 @@ INSTALLED_APPS = [
     'celery',
     'django_celery_results',
     'celery_progress',
+    'django_dump_load_utf8',
 
     'django_elasticsearch_dsl',
     'django_elasticsearch_dsl_drf',
