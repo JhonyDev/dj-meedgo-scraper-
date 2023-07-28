@@ -5,11 +5,6 @@ from rest_framework.views import APIView
 
 class ScrapeMedicineAPIView(APIView):
     def get(self, request, *args, **kwargs):
-        # TODO:
-
-
-
+        # TODO: Check asdasd asdasd
 
         return Response({"": ""}, status.HTTP_200_OK)
-
-
