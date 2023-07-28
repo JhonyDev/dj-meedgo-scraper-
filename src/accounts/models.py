@@ -71,12 +71,6 @@ class User(AbstractUser):
     postal_code = models.CharField(
         max_length=10, null=False, blank=False,
         help_text='Enter a valid postal code (e.g., 12345 or 12345-6789).',
-        validators=[
-            RegexValidator(
-                regex=r'^\d{6}(-\d{4})?$',
-                message='Enter a valid postal code (e.g., 123456 or 12345-6789).'
-            )
-        ]
     )
 
     """BUSINESS ADDRESS DETAILS"""
