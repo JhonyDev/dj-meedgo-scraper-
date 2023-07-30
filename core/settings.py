@@ -66,7 +66,7 @@ PAYTM_MERCHANT_KEY = 'jnJg0c7Rbvv13w@t'
 
 PAYTM_WEBSITE = 'WEB'  # Replace with 'DEFAULT' for production
 if SERVER:
-    SITE_ID = 4
+    SITE_ID = 1
     GOOGLE_CALLBACK_ADDRESS = "https://app.meedgo.com/auth/google-callback/"
     PAYTM_CALLBACK_URL = 'https://app.meedgo.com/api/callback/'
     BASE_URL = "https://app.meedgo.com/"
