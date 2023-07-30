@@ -20,7 +20,6 @@ import environ
 BASE_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 ROOT_URLCONF = 'core.urls'
-AUTH_USER_MODEL = 'accounts.User'
 
 env_file = os.path.join(BASE_DIR, ".env")
 env = environ.Env()
@@ -125,11 +124,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
 
-    # 'src.accounts',
-    'src.accounts.apps.AccountsAppConfig',
     'src.api',
-    'src.website',
-    'src.notification',
     'drf_yasg',
     'corsheaders',
 ]
@@ -183,21 +178,14 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.TokenAuthentication',
-        'src.accounts.authentication.JWTAuthentication',
-
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
 
 }
 
-REST_AUTH_REGISTER_SERIALIZERS = {
-    'REGISTER_SERIALIZER': 'src.accounts.serializers.RegisterSerializerRestAPI',
-}
-
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
-    'src.accounts.backends.CustomAuthBackend',
 ]
 
 # WSGI_APPLICATION = 'core.wsgi.application'
@@ -217,12 +205,13 @@ CHANNEL_LAYERS = {
 }
 
 if not SERVER:
-    # DATABASES = {
-    #     'default': {
-    #         'ENGINE': 'django.db.backends.sqlite3',
-    #         'NAME': BASE_DIR / 'db.sqlite3',
-    #     }
-    # }
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -231,18 +220,6 @@ if not SERVER:
             'PASSWORD': 'Twitter*222023',
             'HOST': 'meedgodb.postgres.database.azure.com',
             'PORT': '5432',
-        }
-    }
-
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'myproject',
-            'USER': 'myprojectuser',
-            'PASSWORD': 'password',
-            'HOST': 'localhost',
-            'PORT': '',
         }
     }
 
