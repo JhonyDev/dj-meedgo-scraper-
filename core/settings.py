@@ -30,6 +30,7 @@ SECRET_KEY = env('SERVER_KEY')
 # SECURITY WARNING: keep the secret key used in production secret!
 SERVER = env('SERVER') == 'True'
 DEBUG = env('DEBUG') == 'True'
+AUTH_USER_MODEL = 'accounts.User'
 
 SOLE_PROPRIETORSHIP = 'SP'
 PARTNERSHIP = 'P'
