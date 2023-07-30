@@ -4,6 +4,7 @@ import datetime
 import json
 import os
 import urllib.parse
+import uuid
 
 import requests
 from bs4 import BeautifulSoup
@@ -464,7 +465,8 @@ def scrape_flipkart(self, param):
     print("*" * 1000)
     print("SCRAPING FLIPKART - " * 10)
     import subprocess
-    file_name = f"temp/temp_flip.json"
+    id_ = str(uuid.uuid4())[:5]
+    file_name = f"temp/temp_flip{id_}.json"
     command = ["scrapy", "crawl", "health_plus", "-a", f"input={param}", "-o", file_name, "-s",
                "CLOSESPIDER_ITEMCOUNT=30",
                "-L", "WARN"]
@@ -482,9 +484,9 @@ def scrape_flipkart(self, param):
         print("Error:")
         print(error)
 
-    with open('temp/temp_flip.json', "r", encoding="utf-8") as f:
+    with open(file_name, "r", encoding="utf-8") as f:
         data_output = json.load(f)
-    os.remove('temp/temp_flip.json')
+    os.remove(file_name)
     data_output = data_output[:38]
     for x in data_output:
         product_image = x['ProductImage']

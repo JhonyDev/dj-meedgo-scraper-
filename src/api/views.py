@@ -17,8 +17,8 @@ class ScrapeMedicineAPIView(APIView):
     def get(self, request, *args, **kwargs):
         param = self.request.query_params.get('search')
         if param:
-            tasks.scrape_pharmeasy.delay(param)
             tasks.scrape_flipkart.delay(param)
+            tasks.scrape_pharmeasy.delay(param)
             tasks.scrape_netmeds.delay(param)
             tasks.scrape_1mg.delay(param)
             return Response({"message": "Added param to scraper queue"}, status.HTTP_200_OK)
