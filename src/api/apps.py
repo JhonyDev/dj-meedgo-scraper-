@@ -6,5 +6,4 @@ class ApiConfig(AppConfig):
     name = 'src.api'
 
     def ready(self):
-        from .documents import MedicineDocument
-        MedicineDocument.init()
+        import src.api.models
