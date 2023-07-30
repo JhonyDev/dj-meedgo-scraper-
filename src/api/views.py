@@ -1,6 +1,6 @@
 from django.db.models import F, Q
 from django.shortcuts import redirect
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -12,6 +12,8 @@ from src.api.utils import get_platform_dict
 
 
 class ScrapeMedicineAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+
     def get(self, request, *args, **kwargs):
         param = self.request.query_params.get('search')
         if param:
@@ -24,6 +26,8 @@ class ScrapeMedicineAPIView(APIView):
 
 
 class ScrapeNetmedsAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+
     def get(self, request, *args, **kwargs):
         param = self.request.query_params.get('search')
         if param:
@@ -33,6 +37,8 @@ class ScrapeNetmedsAPIView(APIView):
 
 
 class ScrapePharmeasyAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+
     def get(self, request, *args, **kwargs):
         param = self.request.query_params.get('search')
         if param:
@@ -42,6 +48,8 @@ class ScrapePharmeasyAPIView(APIView):
 
 
 class ScrapeOneMgAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+
     def get(self, request, *args, **kwargs):
         param = self.request.query_params.get('search')
         if param:
@@ -51,6 +59,8 @@ class ScrapeOneMgAPIView(APIView):
 
 
 class ScrapeFlipkartAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+
     def get(self, request, *args, **kwargs):
         param = self.request.query_params.get('search')
         if param:
