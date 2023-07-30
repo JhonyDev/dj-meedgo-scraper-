@@ -14,11 +14,49 @@ from src.api.utils import get_platform_dict
 class ScrapeMedicineAPIView(APIView):
     def get(self, request, *args, **kwargs):
         param = self.request.query_params.get('search')
-        tasks.scrape_pharmeasy.delay(param)
-        tasks.scrape_flipkart.delay(param)
-        tasks.scrape_netmeds.delay(param)
-        tasks.scrape_1mg.delay(param)
-        return Response({"message": "Added param to scraper queue"}, status.HTTP_200_OK)
+        if param:
+            tasks.scrape_pharmeasy.delay(param)
+            tasks.scrape_flipkart.delay(param)
+            tasks.scrape_netmeds.delay(param)
+            tasks.scrape_1mg.delay(param)
+            return Response({"message": "Added param to scraper queue"}, status.HTTP_200_OK)
+        return Response({"message": "Search String not found"}, status.HTTP_400_BAD_REQUEST)
+
+
+class ScrapeNetmedsAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        param = self.request.query_params.get('search')
+        if param:
+            tasks.scrape_netmeds.delay(param)
+            return Response({"message": "Added param to scraper queue"}, status.HTTP_200_OK)
+        return Response({"message": "Search String not found"}, status.HTTP_400_BAD_REQUEST)
+
+
+class ScrapePharmeasyAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        param = self.request.query_params.get('search')
+        if param:
+            tasks.scrape_pharmeasy.delay(param)
+            return Response({"message": "Added param to scraper queue"}, status.HTTP_200_OK)
+        return Response({"message": "Search String not found"}, status.HTTP_400_BAD_REQUEST)
+
+
+class ScrapeOneMgAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        param = self.request.query_params.get('search')
+        if param:
+            tasks.scrape_1mg.delay(param)
+            return Response({"message": "Added param to scraper queue"}, status.HTTP_200_OK)
+        return Response({"message": "Search String not found"}, status.HTTP_400_BAD_REQUEST)
+
+
+class ScrapeFlipkartAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        param = self.request.query_params.get('search')
+        if param:
+            tasks.scrape_flipkart.delay(param)
+            return Response({"message": "Added param to scraper queue"}, status.HTTP_200_OK)
+        return Response({"message": "Search String not found"}, status.HTTP_400_BAD_REQUEST)
 
 
 def custom_method_view(request, object_id):
