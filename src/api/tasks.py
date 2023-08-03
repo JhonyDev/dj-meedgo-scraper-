@@ -90,7 +90,7 @@ def scrape_netmeds(self, param):
                 is_available=is_available, name=name, price=price, discounted_price=discounted_price, med_url=med_url,
                 med_image=med_image, platform=get_platform_dict()[NET_MEDS])
         if name:
-            update_medicine.delay(medicine.id)
+            update_medicine(medicine.id)
 
     driver.quit()
     return "DONE!"
@@ -213,7 +213,7 @@ def scrape_1mg(self, param):
                 med_image=image_, platform=get_platform_dict()[ONE_MG])
 
         if medicine.name:
-            update_medicine_1mg.delay(medicine.id)
+            update_medicine_1mg(medicine.id)
 
     return "DONE!"
 
@@ -367,7 +367,7 @@ def scrape_pharmeasy(self, param):
             medicine.discounted_price = disc_price or medicine.discounted_price
             medicine.save()
             return_list.append(medicine.pk)
-            update_medicine_pharmeasy.delay(medicine.id)
+            update_medicine_pharmeasy(medicine.id)
             print("MEDICINE UPDATED")
             continue
         try:
