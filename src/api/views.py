@@ -16,6 +16,8 @@ class ScrapeMedicineAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
         param = self.request.query_params.get('search')
+        # TODO: Apply Keyword filtering here
+
         if param:
             tasks.scrape_flipkart.delay(param)
             tasks.scrape_pharmeasy.delay(param)
@@ -30,6 +32,7 @@ class ScrapeNetmedsAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
         param = self.request.query_params.get('search')
+        # TODO: Apply Keyword filtering here
         if param:
             tasks.scrape_netmeds.delay(param)
             return Response({"message": "Added param to scraper queue"}, status.HTTP_200_OK)
@@ -41,6 +44,7 @@ class ScrapePharmeasyAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
         param = self.request.query_params.get('search')
+        # TODO: Apply Keyword filtering here
         if param:
             tasks.scrape_pharmeasy.delay(param)
             return Response({"message": "Added param to scraper queue"}, status.HTTP_200_OK)
@@ -52,6 +56,7 @@ class ScrapeOneMgAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
         param = self.request.query_params.get('search')
+        # TODO: Apply Keyword filtering here
         if param:
             tasks.scrape_1mg.delay(param)
             return Response({"message": "Added param to scraper queue"}, status.HTTP_200_OK)
@@ -63,6 +68,7 @@ class ScrapeFlipkartAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
         param = self.request.query_params.get('search')
+        # TODO: Apply Keyword filtering here
         if param:
             tasks.scrape_flipkart.delay(param)
             return Response({"message": "Added param to scraper queue"}, status.HTTP_200_OK)

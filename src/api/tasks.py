@@ -112,7 +112,10 @@ def update_medicine(self, med_pk, is_forced=False):
     price = None
     if element:
         price_strike = element.find('strike').text.strip()
-        price = price_strike.split()[1]
+        try:
+            price = price_strike.split()[1]
+        except:
+            pass
         price = price.replace('₹', '')
         price = price.replace(',', '')
         price = float(price)
