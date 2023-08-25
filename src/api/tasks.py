@@ -51,6 +51,7 @@ def scrape_netmeds(self, param):
         try:
             price = li_tag.find_element(By.ID, "price").text
         except:
+            # TODO: REVIEW HERE
             price = ''
         price = price.replace('MRP Rs.', '')
         if limit_threading:
@@ -69,8 +70,11 @@ def scrape_netmeds(self, param):
             is_available = not li_tag.find_element(By.CLASS_NAME, "notify_me").text
         except:
             is_available = True
-
-        discounted_price = li_tag.find_element(By.ID, "final_price").text
+        try:
+            discounted_price = li_tag.find_element(By.ID, "final_price").text
+        except:
+            # TODO: REVIEW HERE
+            discounted_price = ''
         discounted_price = discounted_price.replace('MRP Rs.', '')
         discounted_price = discounted_price.replace('₹', '')
         if not discounted_price:
