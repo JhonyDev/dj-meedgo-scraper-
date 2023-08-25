@@ -127,9 +127,10 @@ def update_medicine(self, med_pk, is_forced=False):
             price = price_strike.split()[1]
         except:
             pass
-        price = price.replace('₹', '')
-        price = price.replace(',', '')
-        price = float(price)
+        if price:
+            price = price.replace('₹', '')
+            price = price.replace(',', '')
+            price = float(price)
 
     disc_element = soup.select_one('span.final-price')
     discounted_price = None
