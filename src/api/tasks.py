@@ -48,7 +48,10 @@ def scrape_netmeds(self, param):
 
         med_image = category_name.find_element(By.XPATH, ".//img[@class='product-image-photo']").get_attribute("src")
         name = li_tag.find_element(By.XPATH, ".//span[@class='clsgetname']").text
-        price = li_tag.find_element(By.ID, "price").text
+        try:
+            price = li_tag.find_element(By.ID, "price").text
+        except:
+            price = ''
         price = price.replace('MRP Rs.', '')
         if limit_threading:
             if check_med:
