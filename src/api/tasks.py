@@ -57,7 +57,7 @@ def scrape_netmeds(self, param):
                     print("INNER LOOP! Medicine already updated today!")
                     continue
                 if not check_med.name or not check_med.salt_name or not check_med.price:
-                    update_medicine.delay(check_med.id)
+                    update_medicine(check_med.id)
                     continue
 
         if not price:
@@ -173,7 +173,10 @@ def scrape_1mg(self, param):
     ul_tag = driver.find_elements(By.CLASS_NAME, "style__container___cTDz0")
     default_image = 'https://onemg.gumlet.io/w_150,c_fit,h_150,f_auto,q_auto/hx2gxivwmeoxxxsc1hix.png'
     for ul_ in ul_tag:
-        medicine_name = ul_.find_element(By.CLASS_NAME, "style__pro-title___3zxNC").text
+        try:
+            medicine_name = ul_.find_element(By.CLASS_NAME, "style__pro-title___3zxNC").text
+        except:
+            medicine_name = None
         discounted_price = ul_.find_element(By.CLASS_NAME, "style__price-tag___B2csA").text.replace(
             '₹', '')
         discounted_price = discounted_price.replace('MRP', '')
@@ -379,7 +382,7 @@ def scrape_pharmeasy(self, param):
                 med_image=image_url, platform=get_platform_dict()[PHARM_EASY])
             print("MEDICINE CREATED")
             if medicine_name:
-                update_medicine_pharmeasy.delay(medicine.id)
+                update_medicine_pharmeasy(medicine.id)
         except Exception as e:
             print(f"MEDICINE NOT CREATED - {str(e)}")
         return_list.append(medicine.pk)
