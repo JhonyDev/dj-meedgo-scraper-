@@ -85,6 +85,9 @@ def scrape_netmeds(self, param):
         print(price)
         print(discounted_price)
         print(is_available)
+        if price:
+            price = price.replace('MRP ₹', '')
+            price = float(price)
 
         if Medicine.objects.filter(med_url=med_url).exists():
             medicine = Medicine.objects.filter(med_url=med_url).first()
