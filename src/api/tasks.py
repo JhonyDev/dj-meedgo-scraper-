@@ -86,6 +86,7 @@ def scrape_netmeds(self, param):
         print(discounted_price)
         print(is_available)
         if price:
+            # TODO: REVIEW HERE
             price = price.replace('MRP ₹', '')
             price = float(price)
 
