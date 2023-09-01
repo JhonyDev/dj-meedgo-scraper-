@@ -121,6 +121,7 @@ def update_medicine(self, med_pk, is_forced=False):
     salt_name = drug_conf.text.strip() if drug_conf else None
     element = soup.select_one('span.price')
     price = None
+    # TODO: REVIEW HERE
     if element:
         price_strike = element.find('strike').text.strip()
         try:
@@ -241,7 +242,7 @@ def update_medicine_1mg(self, med_pk, is_forced=False):
     print("UPDATING MEDICINE IN ONEMG")
     medicine = Medicine.objects.get(id=med_pk)
     if not is_forced:
-        if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=15):
+        if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=2):
             return "Medicine already updated today!"
     driver = WebDriverCache.get_webdriver()
     try:
@@ -537,3 +538,4 @@ def scrape_flipkart(self, param):
         except Exception as e:
             print(f"EXCEPTION - {e}")
     return "Done"
+
