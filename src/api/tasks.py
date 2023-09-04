@@ -217,7 +217,10 @@ def scrape_1mg(self, param):
             except:
                 discounted_price = ''
         discounted_price = discounted_price.replace('MRP', '')
-        a_tag = ul_.find_element(By.TAG_NAME, "a").get_attribute('href')
+        try:
+            a_tag = ul_.find_element(By.TAG_NAME, "a").get_attribute('href')
+        except:
+            continue
         try:
             image_ = ul_.find_element(By.CLASS_NAME, "style__loaded___22epL").get_attribute('src')
         except:
