@@ -170,6 +170,8 @@ def update_medicine(self, med_pk, is_forced=False):
 
 @shared_task(bind=True)
 def scrape_1mg(self, param):
+    print('INSIDE SCRAPER')
+    print(param)
     if param is None:
         return "DONE!"
     param = urllib.parse.quote(param)
@@ -183,6 +185,7 @@ def scrape_1mg(self, param):
         WebDriverCache._cached_webdriver = None
         driver = WebDriverCache.get_webdriver()
         driver.get(url)
+    print(driver)
     ul_tag = driver.find_elements(By.CLASS_NAME, "style__container___cTDz0")
     print(ul_tag)
     default_image = 'https://onemg.gumlet.io/w_150,c_fit,h_150,f_auto,q_auto/hx2gxivwmeoxxxsc1hix.png'
@@ -539,4 +542,3 @@ def scrape_flipkart(self, param):
         except Exception as e:
             print(f"EXCEPTION - {e}")
     return "Done"
-
