@@ -211,8 +211,11 @@ def scrape_1mg(self, param):
             discounted_price = ul_.find_element(By.CLASS_NAME, "style__price-tag___B2csA").text.replace(
                 '₹', '')
         else:
-            discounted_price = ul_.find_element(By.CLASS_NAME, "style__price-tag___KzOkY").text.replace(
-                '₹', '')
+            try:
+                discounted_price = ul_.find_element(By.CLASS_NAME, "style__price-tag___KzOkY").text.replace(
+                    '₹', '')
+            except:
+                discounted_price = ''
         discounted_price = discounted_price.replace('MRP', '')
         a_tag = ul_.find_element(By.TAG_NAME, "a").get_attribute('href')
         try:
@@ -235,7 +238,7 @@ def scrape_1mg(self, param):
             if type_ == 1:
                 is_available = False if ul_.find_element(By.CLASS_NAME, "style__not-available___ADBvR") else True
             else:
-                is_available = False if ul_.find_element(By.CLASS_NAME, "style__interaction___3cb12") else True
+                is_available = False if ul_.find_element(By.CLASS_NAME, "style__not-available___1uGvz") else True
         except:
             is_available = True
         print("SCRAPPING ONE MG FOR MEDICINES")

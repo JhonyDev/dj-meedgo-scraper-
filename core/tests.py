@@ -130,7 +130,7 @@ for ul_ in ul_tag:
         if type_ == 1:
             is_available = False if ul_.find_element(By.CLASS_NAME, "style__not-available___ADBvR") else True
         else:
-            is_available = False if ul_.find_element(By.CLASS_NAME, "style__interaction___3cb12") else True
+            is_available = False if ul_.find_element(By.CLASS_NAME, "style__not-available___1uGvz") else True
     except:
         is_available = True
     print("SCRAPPING ONE MG FOR MEDICINES")
