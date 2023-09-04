@@ -177,7 +177,6 @@ def scrape_1mg(self, param):
     param = urllib.parse.quote(param)
     param = param.replace('/', '')
     print(param)
-    'https://www.1mg.com/search/all?name=oh%20d3'
     url = f"https://www.1mg.com/search/all?name={param}"
     driver = WebDriverCache.get_webdriver()
     print('INSIDE SCRAPER 2')
@@ -187,20 +186,33 @@ def scrape_1mg(self, param):
         WebDriverCache._cached_webdriver = None
         driver = WebDriverCache.get_webdriver()
         driver.get(url)
-    print(driver)
-    print('INSIDE SCRAPER 3')
-    ul_tag = driver.find_elements(By.CLASS_NAME, "style__container___cTDz0")
-    print(ul_tag)
-    print('INSIDE SCRAPER 4')
+
+    if driver.find_elements(By.CLASS_NAME, "style__container___cTDz0"):
+        type_ = 1
+    else:
+        type_ = 2
+
+    if type_ == 1:
+        ul_tag = driver.find_elements(By.CLASS_NAME, "style__container___cTDz0")
+    else:
+        ul_tag = driver.find_elements(By.CLASS_NAME, "style__container___jkjS2")
+
     default_image = 'https://onemg.gumlet.io/w_150,c_fit,h_150,f_auto,q_auto/hx2gxivwmeoxxxsc1hix.png'
     for ul_ in ul_tag:
-        print('INSIDE SCRAPER 5')
         try:
-            medicine_name = ul_.find_element(By.CLASS_NAME, "style__pro-title___3zxNC").text
+            if type_ == 1:
+                medicine_name = ul_.find_element(By.CLASS_NAME, "style__pro-title___3zxNC").text
+            else:
+                medicine_name = ul_.find_element(By.CLASS_NAME, "style__pro-title___3G3rr").text
+
         except:
             medicine_name = None
-        discounted_price = ul_.find_element(By.CLASS_NAME, "style__price-tag___B2csA").text.replace(
-            '₹', '')
+        if type_ == 1:
+            discounted_price = ul_.find_element(By.CLASS_NAME, "style__price-tag___B2csA").text.replace(
+                '₹', '')
+        else:
+            discounted_price = ul_.find_element(By.CLASS_NAME, "style__price-tag___KzOkY").text.replace(
+                '₹', '')
         discounted_price = discounted_price.replace('MRP', '')
         a_tag = ul_.find_element(By.TAG_NAME, "a").get_attribute('href')
         try:
@@ -208,14 +220,22 @@ def scrape_1mg(self, param):
         except:
             image_ = default_image
         try:
-            original_price = ul_.find_element(By.CLASS_NAME, "style__discount-price___-Cikw").text.replace(
-                '₹', '')
+            if type_ == 1:
+                original_price = ul_.find_element(By.CLASS_NAME, "style__discount-price___-Cikw").text.replace(
+                    '₹', '')
+            else:
+                original_price = ul_.find_element(By.CLASS_NAME, "style__discount-price___qlNIB").text.replace(
+                    '₹', '')
+
             original_price = original_price.replace('MRP', '')
         except:
             original_price = None
 
         try:
-            is_available = False if ul_.find_element(By.CLASS_NAME, "style__not-available___ADBvR") else True
+            if type_ == 1:
+                is_available = False if ul_.find_element(By.CLASS_NAME, "style__not-available___ADBvR") else True
+            else:
+                is_available = False if ul_.find_element(By.CLASS_NAME, "style__interaction___3cb12") else True
         except:
             is_available = True
         print("SCRAPPING ONE MG FOR MEDICINES")
