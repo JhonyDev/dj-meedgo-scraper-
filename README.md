@@ -1,4 +1,4 @@
-# HOW TO USE
+# Main Branch is in CI/CD. DO NOT PUSH DIRECTLY TO MAIN BRANCH. 
 * git clone repository_name
 * open terminal in project folder
 * Run the commands below
