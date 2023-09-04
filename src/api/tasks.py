@@ -177,8 +177,10 @@ def scrape_1mg(self, param):
     param = urllib.parse.quote(param)
     param = param.replace('/', '')
     print(param)
+    'https://www.1mg.com/search/all?name=oh%20d3'
     url = f"https://www.1mg.com/search/all?name={param}"
     driver = WebDriverCache.get_webdriver()
+    print('INSIDE SCRAPER 2')
     try:
         driver.get(url)
     except:
@@ -186,10 +188,13 @@ def scrape_1mg(self, param):
         driver = WebDriverCache.get_webdriver()
         driver.get(url)
     print(driver)
+    print('INSIDE SCRAPER 3')
     ul_tag = driver.find_elements(By.CLASS_NAME, "style__container___cTDz0")
     print(ul_tag)
+    print('INSIDE SCRAPER 4')
     default_image = 'https://onemg.gumlet.io/w_150,c_fit,h_150,f_auto,q_auto/hx2gxivwmeoxxxsc1hix.png'
     for ul_ in ul_tag:
+        print('INSIDE SCRAPER 5')
         try:
             medicine_name = ul_.find_element(By.CLASS_NAME, "style__pro-title___3zxNC").text
         except:
