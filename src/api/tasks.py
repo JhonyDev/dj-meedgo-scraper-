@@ -208,8 +208,11 @@ def scrape_1mg(self, param):
         except:
             medicine_name = None
         if type_ == 1:
-            discounted_price = ul_.find_element(By.CLASS_NAME, "style__price-tag___B2csA").text.replace(
-                '₹', '')
+            try:
+                discounted_price = ul_.find_element(By.CLASS_NAME, "style__price-tag___B2csA").text.replace(
+                    '₹', '')
+            except:
+                discounted_price = ''
         else:
             try:
                 discounted_price = ul_.find_element(By.CLASS_NAME, "style__price-tag___KzOkY").text.replace(
