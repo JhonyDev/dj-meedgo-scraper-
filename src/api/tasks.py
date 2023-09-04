@@ -57,7 +57,7 @@ def scrape_netmeds(self, param):
         if limit_threading:
             if check_med:
                 if check_med and check_med.last_updated \
-                        and check_med.last_updated > timezone.now() - datetime.timedelta(days=1):
+                        and check_med.last_updated > timezone.now() - datetime.timedelta(hours=5):
                     print("INNER LOOP! Medicine already updated today!")
                     continue
                 if not check_med.name or not check_med.salt_name or not check_med.price:
@@ -113,7 +113,7 @@ def update_medicine(self, med_pk, is_forced=False):
     medicine = Medicine.objects.get(id=med_pk)
     if not is_forced:
         if limit_threading:
-            if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
+            if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(hours=5):
                 return "Medicine already updated today!"
     response = requests.get(medicine.med_url)
     soup = BeautifulSoup(response.content, "html.parser")
@@ -280,7 +280,7 @@ def update_medicine_1mg(self, med_pk, is_forced=False):
     print("UPDATING MEDICINE IN ONEMG")
     medicine = Medicine.objects.get(id=med_pk)
     if not is_forced:
-        if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=2):
+        if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(hours=5):
             return "Medicine already updated today!"
     driver = WebDriverCache.get_webdriver()
     try:
@@ -446,7 +446,7 @@ def update_medicine_pharmeasy(self, med_pk, is_forced=False):
     print("UPDATING MEDICINE IN PHARMEASY")
     if not is_forced:
         if limit_threading:
-            if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(days=1):
+            if medicine.last_updated and medicine.last_updated > timezone.now() - datetime.timedelta(hours=5):
                 return "Medicine already updated today!"
     response = requests.get(medicine.med_url)
     soup = BeautifulSoup(response.text, 'html.parser')
